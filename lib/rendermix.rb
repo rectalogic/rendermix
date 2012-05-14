@@ -1,4 +1,5 @@
 require 'java'
+require 'rendermix/java'
 require 'rendermix/jme'
 require 'rendermix/timer'
 require 'rawmedia'

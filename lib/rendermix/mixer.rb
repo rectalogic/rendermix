@@ -37,8 +37,13 @@ module RenderMix
     end
 
     def simpleInitApp
-      viewport_pool = ViewportPool.new(@width, @height)
-      @render_context = RootRenderContext.new(viewport_pool, self.viewPort)
+      audio_context_pool = AudioContextPool.new(@rawmedia_session.audio_framebuffer_size)
+      visual_context_pool = VisualContextPool.new(@width, @height)
+      visual_context = VisualContext.new(self.viewPort, self.rootNode, nil)
+      @render_context = RootRenderContext.new(self.renderManager,
+                                              audio_context_pool,
+                                              visual_context_pool,
+                                              visual_context)
     end
     private :simpleInitApp
 

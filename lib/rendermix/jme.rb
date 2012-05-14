@@ -8,6 +8,9 @@ module RenderMix
   module JmeRenderer
     include_package 'com.jme3.renderer'
   end
+  module JmeScene
+    include_package 'com.jme3.scene'
+  end
   module JmeSystem
     include_package 'com.jme3.system'
   end
