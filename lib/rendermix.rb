@@ -1,0 +1,7 @@
+require 'java'
+require 'rendermix/jme'
+require 'rendermix/timer'
+require 'rawmedia'
+require 'rendermix/viewport_pool'
+require 'rendermix/render_context'
+require 'rendermix/mixer'

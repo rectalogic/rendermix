@@ -1,0 +1,17 @@
+module RenderMix
+  module JmeApp
+    include_package 'com.jme3.app'
+  end
+  module JmeAppState
+    include_package 'com.jme3.app.state'
+  end
+  module JmeRenderer
+    include_package 'com.jme3.renderer'
+  end
+  module JmeSystem
+    include_package 'com.jme3.system'
+  end
+  module JmeTexture
+    include_package 'com.jme3.texture'
+  end
+end
