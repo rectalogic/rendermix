@@ -1,4 +1,7 @@
 module RenderMix
+  MSAA_SAMPLES = 4
+  DEPTH_FORMAT = JmeTexture::Image::Format::Depth24
+
   class Mixer < JmeApp::SimpleApplication
     attr_reader :rawmedia_session
 
@@ -10,7 +13,8 @@ module RenderMix
       settings = JmeSystem::AppSettings.new(false)
       settings.renderer = JmeSystem::AppSettings::LWJGL_OPENGL3
       settings.setResolution(width, height)
-      settings.setSamples(4) # MSAA XXX may not want this here, want on individual FBOs we render into
+      settings.setSamples(MSAA_SAMPLES)
+      settings.setDepthBits(DEPTH_FORMAT.bitsPerPixel)
       settings.useInput = false
       settings.audioRenderer = nil
       settings.frameRate = framerate.to_i

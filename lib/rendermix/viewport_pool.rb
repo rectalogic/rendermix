@@ -1,26 +1,19 @@
 module RenderMix
   class ViewportPool
-    MSAA_SAMPLES = 4
-
     def initialize(width, height)
       @viewports = []
-      @viewports_3d = []
       @width = width
       @height = height
     end
 
-    def allocate_viewport(need_3d)
-      pool = need_3d ? @viewports_3d : @viewports
-      return pool.pop unless pool.empty?
+    def allocate_viewport
+      return @viewports.pop unless @viewports.empty?
 
       camera = JmeRenderer::Camera.new(@width, @height)
       viewport = JmeRenderer::ViewPort.new("viewport", camera)
-      # MSAA if 3d
-      fbo = JmeTexture::FrameBuffer.new(@width, @height, need_3d ? MSAA_SAMPLES : 1)
-      if need_3d
-        #XXX should we be explicit? Depth32 etc.?
-        fbo.setDepthBuffer(JmeTexture::Image::Format::Depth)
-      end
+      viewport.setClearFlags(true, true, true)
+      fbo = JmeTexture::FrameBuffer.new(@width, @height, MSAA_SAMPLES)
+      fbo.setDepthBuffer(DEPTH_FORMAT)
       #XXX is this the best image format?
       tex = JmeTexture::Texture2D(@width, @height,
                                   JmeTexture::Image::Format::ABGR8)
@@ -30,16 +23,13 @@ module RenderMix
     end
 
     def texture(viewport)
+      #XXX what about wrap/filter/mipmap of this texture? can caller reset those? when do they get unset? should we clone()?
       viewport.outputFrameBuffer.colorBuffer.texture
     end
 
-    def release_viewport(viewport, need_3d)
+    def release_viewport(viewport)
       if viewport
-        if need_3d
-          @viewports_3d << viewport
-        else
-          @viewports << viewport
-        end
+        @viewports << viewport
         viewport.clearScenes
       end
     end
