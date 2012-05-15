@@ -1,6 +1,8 @@
 module RenderMix
 
   class RenderContext
+    attr_accessor :tpf
+
     def initialize(render_manager, audio_context_pool, visual_context_pool)
       @render_manager = render_manager
       @audio_context_pool = audio_context_pool
@@ -12,51 +14,80 @@ module RenderMix
       RenderContext.new(@render_manager, @audio_context_pool, @visual_context_pool)
     end
 
-    def audio_context
-      @audio_context ||= @audio_context_pool.allocate_context
+    def begin_frame(tpf)
+      @tpf = tpf
+      @audio_rendered = false
+      @visual_rendered = false
     end
 
-    def visual_context
-      @visual_context ||= @visual_context_pool.allocate_context
+    def acquire_audio_context(renderer)
+      # Someone already rendered for this frame
+      raise(InvalidMixError, "Audio rendered twice in frame") if @audio_rendered
+
+      if @audio_renderer && renderer != @audio_renderer
+        @audio_renderer.audio_context_released
+        release_audio_context
+      end
+      @audio_renderer = renderer
+      @audio_rendered = true
+
+      @audio_context ||= @audio_context_pool.acquire_context
     end
 
+    def acquire_visual_context(renderer)
+      # Someone already rendered for this frame
+      raise(InvalidMixError, "Visual rendered twice in frame") if @visual_rendered
 
-    #XXX need a render method to actually render viewport into FBO
-    #XXX also to render audio, and set flag so we know we rendered
-    #XXX can we use this flag to blow up? i.e. if flag set and someone renders, then that's illegal (reset between frames)
+      if @visual_renderer && renderer != @visual_renderer
+        @visual_renderer.visual_context_released
+        release_visual_context
+      end
+      @visual_renderer = renderer
+      @visual_rendered = true
 
-    #XXX how does context user know when to setup their scene? not safe for them to cache the viewport, they get no notice when they are done - they know their duration though so could cleanup when done? 
-    #XXX need Renderable render_begin, render, render_end
-    #XXX can we keep track of renderable in context? and if a diff one tries to render, then cleanup and notify the old one, then if a 2nd tries in the same frame blow up
-
-    #XXX but a renderable may end and we have blank that doesn't render - so we never trigger the old renderable to clean up or release it's context
-    #XXX could add frame_complete to RenderContext - so after all renderables render, we can check 
-    #XXX so begin_frame/end_frame on RenderContext
-
-    #XXX audio may complicate this - may have track A rendering video and no audio, and track B in parallel rendering audio and no video
-
-    def render_audio(renderable)
-      if @audio_renderable
-        @audio_renderable.
+      @visual_context ||= @visual_context_pool.acquire_context
     end
 
-    def render_video(renderable)
-      #XXX also need to render viewport using render_manager
+    def end_frame
+      # If we have a renderer, and nothing rendered this frame, then end it
+      if @audio_renderer and not @audio_rendered
+        @audio_renderer.audio_context_released
+        @audio_renderer = nil
+        release_audio_context
+      end
+      if @visual_renderer and not @visual_rendered
+        @visual_renderer.visual_context_released
+        @visual_renderer = nil
+        release_visual_context
+      end
     end
 
-    # Should be called prior to reusing with a new renderable
-    def release_audio
+    def prepare_texture
+      #XXX if @visual_context is nil, just return - caller should use no texture?
+      #XXX should prepare_texture be on visual_context?
+
+      @visual_context.rootnode.updateLogicalState(@tpf)
+      @visual_context.rootnode.updateGeometricState
+
+      #XXX the user of the texture should call this - yes, so Effect will render each input to texture before using - and toplevel app will be responsible for rendring main context
+      @render_manager.renderViewPort(@visual_context.viewport, @tpf)
+    end
+
+    # Should be called prior to reusing with a new renderer
+    def release_audio_context
       @audio_context_pool.release_context(@audio_context)
       @audio_context = nil
     end
+    private :release_audio_context
 
-    # Should be called prior to reusing with a new renderable
-    def release_visual
+    # Should be called prior to reusing with a new renderer
+    def release_visual_context
       # Want to actually release instead of just reset because
-      # the next renderable may never actually render
+      # the next renderer may never actually render
       @visual_context_pool.release_context(@visual_context)
       @visual_context = nil
     end
+    private :release_visual_context
   end
 
   # Special context for the root visual - we don't use the pool to manage it
@@ -67,8 +98,9 @@ module RenderMix
     end
 
     # Override, we don't release since we're not pooled, just reset
-    def release_visual
+    def release_visual_context
       @visual_context.reset
     end
+    private :release_visual_context
   end
 end

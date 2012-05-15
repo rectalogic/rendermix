@@ -13,7 +13,7 @@ module RenderMix
       @size = size
     end
 
-    def allocate_context
+    def acquire_context
       return @contexts.pop unless @contexts.empty?
       AudioContext.new(@size)
     end

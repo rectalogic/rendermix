@@ -1,6 +1,6 @@
 module RenderMix
-  module Renderable
-    class Sequence
+  module Renderer
+    class Sequence < Base
       #XXX
     end
   end

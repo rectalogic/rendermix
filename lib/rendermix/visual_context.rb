@@ -46,7 +46,7 @@ module RenderMix
       @height = height
     end
 
-    def allocate_context
+    def acquire_context
       return @contexts.pop unless @contexts.empty?
       PooledVisualContext.new(@width, @height)
     end
