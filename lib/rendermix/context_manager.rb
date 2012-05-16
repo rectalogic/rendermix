@@ -36,8 +36,9 @@ module RenderMix
       @context ||= @context_pool.acquire_context
     end
 
-    # Subclass should override this and invoke super after informing current_renderer
+    # Subclasses should implement on_release_context
     def release_context(pooled=true)
+      on_release_context(@current_renderer)
       @current_renderer = nil
       # If context not pooled, keep it
       if pooled
@@ -46,15 +47,5 @@ module RenderMix
       end
     end
     private :release_context
-
-    def context
-      @context
-    end
-    private :context
-
-    def current_renderer
-      @current_renderer
-    end
-    private :current_renderer
   end
 end

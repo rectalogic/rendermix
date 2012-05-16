@@ -26,7 +26,7 @@ module RenderMix
       @height = height
     end
 
-    # If encoder is not set, then render to window onscreen
+    # If encoder is not set, then render to onscreen window
     def mix(renderer, encoder=nil)
       #XXX do something with encoder if set
       @renderer = renderer

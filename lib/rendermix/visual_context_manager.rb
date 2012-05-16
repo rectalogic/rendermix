@@ -19,11 +19,15 @@ module RenderMix
     private :on_render
 
     def release_context
-      current_renderer.visual_context_released
       # Special handling for non-pooled initial context - just want to reset it
       super(@initial_visual_context.nil?)
       @initial_visual_context.reset if @initial_visual_context
     end
     private :release_context
+
+    def on_release_context(renderer)
+      current_renderer.visual_context_released
+    end
+    private :on_release_context
   end
 end

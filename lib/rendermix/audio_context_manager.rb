@@ -10,10 +10,9 @@ module RenderMix
     end
     private :on_render
 
-    def release_context
-      current_renderer.audio_context_released
-      super
+    def on_release_context(renderer)
+      renderer.audio_context_released
     end
-    private :release_context
+    private :on_release_context
   end
 end
