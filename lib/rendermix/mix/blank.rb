@@ -1,5 +1,5 @@
 module RenderMix
-  module Renderer
+  module Mix
     class Blank < Base
       def initialize(duration)
         super(duration)

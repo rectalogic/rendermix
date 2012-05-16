@@ -1,9 +1,12 @@
 module RenderMix
-  module Renderer
+  module Mix
     #XXX can we do some common Effect handling in this base class?
     #XXX yes, support adding audio/visual effects, do insertion sort into arrays the subclass can access
 
     class Base
+      include AudioRenderer
+      include VisualRenderer
+
       # Current frame being rendered
       attr_reader :current_audio_frame
       attr_reader :current_visual_frame

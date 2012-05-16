@@ -1,6 +1,7 @@
 module RenderMix
   module Effect
     class Base
+
       # Beginning and ending frames of this effect in renderers timeline
       attr_reader :in_frame
       attr_reader :out_frame
@@ -15,9 +16,6 @@ module RenderMix
       def prepare_context_manager(context_manager)
       end
 
-      #XXX need equivalent to Renderer audio_context_released/visual
-      #XXX gah, we can't even acquire a context since we aren't a Renderer
-      #XXX need to define ContextManager in terms of ContextRenderer
     end
   end
 end

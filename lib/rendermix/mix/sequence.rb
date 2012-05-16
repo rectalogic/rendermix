@@ -1,5 +1,5 @@
 module RenderMix
-  module Renderer
+  module Mix
     class Sequence < Base
       def initialize
         super(0)

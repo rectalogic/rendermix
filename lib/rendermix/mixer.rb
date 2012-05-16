@@ -27,11 +27,11 @@ module RenderMix
     end
 
     # If encoder is not set, then render to onscreen window
-    def mix(renderer, encoder=nil)
+    def mix(mix, encoder=nil)
       #XXX do something with encoder if set
-      @renderer = renderer
-      renderer.in_frame = 0
-      renderer.out_frame = renderer.duration - 1
+      @mix = mix
+      mix.in_frame = 0
+      mix.out_frame = mix.duration - 1
       self.start(encoder
                  ? JmeSystem::JmeContext::Type::OffscreenSurface
                  : JmeSystem::JmeContext::Type::Display)
@@ -49,8 +49,8 @@ module RenderMix
 
     def simpleUpdate(tpf)
       #XXX deeper effects can create their own context e.g. to render each track into it's own audio buffer or scene node
-      @audio_context_manager.render(@renderer)
-      @visual_context_manager.render(@renderer)
+      @audio_context_manager.render(@mix)
+      @visual_context_manager.render(@mix)
     end
     private :simpleUpdate
 

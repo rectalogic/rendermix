@@ -1,5 +1,5 @@
 module RenderMix
-  module Renderer
+  module Mix
     class Parallel < Base
       def initialize
         super(0)
@@ -15,7 +15,7 @@ module RenderMix
         end
       end
 
-      def track_count
+      def track_count#XXX
         @renderers.length
       end
 
