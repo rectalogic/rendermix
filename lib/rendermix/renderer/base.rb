@@ -16,23 +16,32 @@ module RenderMix
 
       def initialize(duration)
         @duration = duration
-        # First frame will be 0
-        @current_audio_frame = -1
-        @current_visual_frame = -1
+        @current_audio_frame = 0
+        @current_visual_frame = 0
+      end
+
+      #XXX Blank also does not support Effect, it should raise - same with Image and audio effect
+      def add_audio_effect(effect, in_frame, out_frame)
+      end
+
+      def add_visual_effect(effect, in_frame, out_frame)
+      end
+
+      def track_count#XXX
+        1
       end
 
       # Subclasses must call acquire_audio_context for every frame
       # they render content
       def render_audio(context_manager)
+        #XXX invoke on_render_audio
         @current_audio_frame++
-
       end
 
       # Subclasses must call acquire_visual_context for every frame
       # they render content
       def render_visual(context_manager)
         @current_visual_frame++
-        #XXX make this method dispatch to on_render or something
       end
 
       # Subclasses should override to release any references they have
