@@ -30,6 +30,8 @@ module RenderMix
     def mix(renderer, encoder=nil)
       #XXX do something with encoder if set
       @renderer = renderer
+      renderer.in_frame = 0
+      renderer.out_frame = renderer.duration - 1
       self.start(encoder
                  ? JmeSystem::JmeContext::Type::OffscreenSurface
                  : JmeSystem::JmeContext::Type::Display)
