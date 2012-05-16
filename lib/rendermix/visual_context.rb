@@ -2,9 +2,10 @@ module RenderMix
   class VisualContext
     attr_reader :viewport
     attr_reader :rootnode
-    attr_reader :texture
 
-    def initialize(viewport, rootnode, texture)
+    def initialize(render_manager, tpf, viewport, rootnode, texture=nil)
+      @render_manager = render_manager
+      @tpf = tpf
       @viewport = viewport
       @rootnode = rootnode
       @texture = texture
@@ -17,38 +18,29 @@ module RenderMix
     def reset
       @rootnode.detachAllChildren
     end
-  end
 
-  class PooledVisualContext < VisualContext
-    def initialize(width, height)
-      camera = JmeRenderer::Camera.new(width, height)
-      viewport = JmeRenderer::ViewPort.new("viewport", camera)
-      viewport.setClearFlags(true, true, true)
-      fbo = JmeTexture::FrameBuffer.new(width, height, MSAA_SAMPLES)
-      fbo.setDepthBuffer(DEPTH_FORMAT)
-      #XXX is this the best image format?
-      #XXX what about wrap/filter/mipmap of this texture? can caller reset those? when do they get unset? should we clone()?
-      texture = JmeTexture::Texture2D(width, height,
-                                      JmeTexture::Image::Format::ABGR8)
-      fbo.colorTexture = texture
-      viewport.outputFrameBuffer = fbo
+    def prepare_texture
+      @rootnode.updateLogicalState(@tpf)
+      @rootnode.updateGeometricState
 
-      rootnode = JmeScene::Node.new("Root")
-      viewport.attachScene(rootnode)
-      super(viewport, rootnode, texture)
+      #XXX the user of the texture should call this - yes, so Effect will render each input to texture before using - and toplevel app will be responsible for rendring main context
+      @render_manager.renderViewPort(@viewport, @tpf)
+      @texture
     end
   end
 
   class VisualContextPool
-    def initialize(width, height)
+    def initialize(render_manager, width, height, tpf)
       @contexts = []
+      @render_manager = render_manager
       @width = width
       @height = height
+      @tpf = tpf
     end
 
     def acquire_context
       return @contexts.pop unless @contexts.empty?
-      PooledVisualContext.new(@width, @height)
+      create_context
     end
 
     def release_context(context)
@@ -57,5 +49,25 @@ module RenderMix
         context.reset
       end
     end
+
+    def create_context
+      camera = JmeRenderer::Camera.new(@width, @height)
+      viewport = JmeRenderer::ViewPort.new("viewport", camera)
+      viewport.setClearFlags(true, true, true)
+      fbo = JmeTexture::FrameBuffer.new(@width, @height, MSAA_SAMPLES)
+      fbo.setDepthBuffer(DEPTH_FORMAT)
+      #XXX is this the best image format?
+      #XXX what about wrap/filter/mipmap of this texture? can caller reset those? when do they get unset? should we clone()?
+      texture = JmeTexture::Texture2D(@width, @height,
+                                      JmeTexture::Image::Format::ABGR8)
+      fbo.colorTexture = texture
+      viewport.outputFrameBuffer = fbo
+
+      rootnode = JmeScene::Node.new("Root")
+      viewport.attachScene(rootnode)
+
+      VisualContext.new(@render_manager, @tpf, viewport, rootnode, texture)
+    end
+    private :create_context
   end
 end

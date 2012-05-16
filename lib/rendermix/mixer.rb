@@ -38,21 +38,19 @@ module RenderMix
     end
 
     def simpleInitApp
-      audio_context_pool = AudioContextPool.new(@rawmedia_session.audio_framebuffer_size)
-      visual_context_pool = VisualContextPool.new(@width, @height)
-      visual_context = VisualContext.new(self.viewPort, self.rootNode, nil)
-      @render_context = RootRenderContext.new(self.renderManager,
-                                              audio_context_pool,
-                                              visual_context_pool,
-                                              visual_context)
+      @audio_context_manager = AudioContextManager.new(@rawmedia_session.audio_framebuffer_size)
+
+      tpf = self.timer.timePerFrame
+      visual_context = VisualContext.new(self.renderManager, tpf, self.viewPort, self.rootNode)
+      @visual_context_manager =
+        VisualContextManager.new(self.renderManager, @width, @height, tpf, visual_context)
     end
     private :simpleInitApp
 
     def simpleUpdate(tpf)
       #XXX deeper effects can create their own context e.g. to render each track into it's own audio buffer or scene node
-      @render_context.begin_frame(tpf)
-      @renderer.render(@render_context)
-      @render_context.end_frame
+      @audio_context_manager.render(@renderer)
+      @visual_context_manager.render(@renderer)
     end
     private :simpleUpdate
 
