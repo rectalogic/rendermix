@@ -4,8 +4,7 @@ module RenderMix
     #XXX yes, support adding audio/visual effects, do insertion sort into arrays the subclass can access
 
     class Base
-      include AudioRenderer
-      include VisualRenderer
+      include Renderer
 
       # Current frame being rendered
       attr_reader :current_audio_frame
@@ -37,6 +36,10 @@ module RenderMix
       # Subclasses must call acquire_audio_context for every frame
       # they render content
       def render_audio(context_manager)
+        #XXX get active effect if there is one, if not then pop a new one if active, and prepare it
+        #XXX render effect if we now have one - Effect can expose tracks it renders
+        #XXX call on_render_audio with remaining tracks to be rendered (if any) - so 
+
         #XXX invoke on_render_audio
         @current_audio_frame++
       end

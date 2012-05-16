@@ -15,7 +15,7 @@ module RenderMix
         end
       end
 
-      def track_count#XXX
+      def track_count
         @renderers.length
       end
 

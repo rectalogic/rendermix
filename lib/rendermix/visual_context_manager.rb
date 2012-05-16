@@ -13,7 +13,6 @@ module RenderMix
       @initial_visual_context = nil
     end
 
-    # _renderer_ VisualRenderer
     def on_render(renderer)
       renderer.render_visual(self)
     end
@@ -26,7 +25,6 @@ module RenderMix
     end
     private :release_context
 
-    # _renderer_ VisualRenderer
     def on_release_context(renderer)
       renderer.visual_context_released
     end
