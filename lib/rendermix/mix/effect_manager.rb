@@ -9,12 +9,14 @@ module RenderMix
 
       def add_effect(effect_delegate, track_indexes, in_frame, out_frame)
         renderers = Array.new(track_indexes.length].fill do |i|
-          @tracks[track_indexes[i]]
+          index = track_indexes[i]
+          raise(InvalidMixError, "Effect track index #{index} out of range") if index >= @tracks.length
+          @tracks[index]
         end
         effect = Effect::Base.new(effect_delegate, renderers, in_frame, out_frame)
 
         #XXX insertion sort Effect::Base
-        #XXX check for overlap and raise
+        #XXX check for time overlap and raise
 
       end
 

@@ -14,25 +14,23 @@ module RenderMix
 
       def initialize(duration)
         @duration = duration
-        @current_audio_frame = 0
-        @current_visual_frame = 0
+        @audio_render_manager = AudioRenderManager.new(self)
+        @visual_render_manager = VisualRenderManager.new(self)
       end
 
       #XXX Blank also does not support Effect, it should raise - same with Image and audio effect
       # _track_indexes_ Array of track indexes effect applies to
       def add_audio_effect(audio_effect, track_indexes, in_frame, out_frame)
-        @audio_effect_manager ||= AudioEffectManager.new(tracks)
-        @audio_effect_manager.add_effect(audio_effect, track_indexes, in_frame, out_frame)
+        @audio_render_manager.add_effect(audio_effect, track_indexes, in_frame, out_frame)
       end
 
       # _track_indexes_ Array of track indexes effect applies to
       def add_visual_effect(visual_effect, track_indexes, in_frame, out_frame)
-        @visual_effect_manager ||= VisualEffectManager.new(tracks)
-        @visual_effect_manager.add_effect(visual_effect, track_indexes, in_frame, out_frame)
+        @visual_render_manager.add_effect(visual_effect, track_indexes, in_frame, out_frame)
       end
 
       def has_effects?
-        @audio_effect_manager or @visual_effect_manager
+        @audio_render_manager.has_effects? or @visual_render_manager.has_effects?
       end
 
       # Return an array of Renderers, one for each track
@@ -41,32 +39,22 @@ module RenderMix
         @tracks ||= [self].freeze
       end
 
-      # Subclasses must call acquire_audio_context for every frame
-      # they render content
       def render_audio(context_manager)
-        return if current_audio_frame > self.out_frame
-        renderers = @audio_effect_manager.render(context_manager, @current_audio_frame) if @audio_effect_manager
-        renderers ||= tracks
-        on_render_audio(context_manager, @current_audio_frame, renderers)
-        @current_audio_frame++
+        @audio_render_manager.render(context_manager)
       end
 
       # Subclass should override.
+      # Must call acquire_audio_context for every frame content is rendered
       # _render_tracks_ Array of Renderers to render
       def on_render_audio(context_manager, current_frame, render_tracks)
       end
 
-      # Subclasses must call acquire_visual_context for every frame
-      # they render content
       def render_visual(context_manager)
-        return if current_visual_frame > self.out_frame
-        renderers = @visual_effect_manager.render(context_manager, @current_visual_frame) if @visual_effect_manager
-        renderers ||= tracks
-        on_render_visual(context_manager, @current_visual_frame, renderers)
-        @current_visual_frame++
+        @visual_render_manager.render(context_manager)
       end
 
       # Subclass should override.
+      # Must call acquire_visual_context for every frame content is rendered
       # _render_tracks_ Array of Renderers to render
       def on_render_visual(context_manager, current_frame, render_tracks)
       end
