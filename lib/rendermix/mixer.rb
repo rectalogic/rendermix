@@ -38,6 +38,7 @@ module RenderMix
     end
 
     def simpleInitApp
+      #XXX we need a root non-pooled audiobuffer too, that we can access here (i.e. that doesn't get released before we can encode it)
       @audio_context_manager = AudioContextManager.new(@rawmedia_session.audio_framebuffer_size)
 
       tpf = self.timer.timePerFrame

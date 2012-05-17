@@ -3,10 +3,11 @@ module RenderMix
     class Base
       include Renderer
 
-      # Beginning and ending frames of this effect in renderers timeline
+      # Beginning and ending frames of this effect
       attr_reader :in_frame
       attr_reader :out_frame
 
+      #XXX pass in tracks array, also AudioEffect/VisualEffect delegate?
       def initialize(in_frame, out_frame)
         @in_frame = in_frame
         @out_frame = out_frame
