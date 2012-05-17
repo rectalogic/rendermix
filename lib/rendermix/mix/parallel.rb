@@ -6,7 +6,8 @@ module RenderMix
         @mix_renderers = []
       end
 
-      def append_mix_renderer(mix_renderer)
+      def add_track(mix_renderer)
+        raise(InvalidMixError, 'Parallel cannot be modified after Effects applied') if has_effects?
         @mix_renderers << mix_renderer
         mix_renderer.in_frame = 0
         mix_renderer.out_frame = mix_renderer.duration - 1
@@ -15,21 +16,19 @@ module RenderMix
         end
       end
 
-      def track_count
-        @mix_renderers.length
+      def tracks
+        @tracks ||= @mix_renderers.dup.freeze
       end
 
-      def on_render_audio(context_manager, current_frame, tracks)
-        return if current_frame > self.out_frame
-        tracks.each do |track|
-          @mix_renderers[track].render_audio(context_manager)
+      def on_render_audio(context_manager, current_frame, render_tracks)
+        render_tracks.each do |track|
+          track.render_audio(context_manager)
         end
       end
 
-      def on_render_visual(context_manager, current_frame, tracks)
-        return if current_frame > self.out_frame
-        tracks.each do |track|
-          @mix_renderers[track].render_visual(context_manager)
+      def on_render_visual(context_manager, current_frame, render_tracks)
+        render_tracks.each do |track|
+          track.render_visual(context_manager)
         end
       end
     end

@@ -26,7 +26,8 @@ module RenderMix
       @height = height
     end
 
-    # If encoder is not set, then render to onscreen window
+    # If encoder is not set, then render to onscreen window.
+    # _mix_ Root node of mix. Mix is destroyed as mixing proceeds.
     def mix(mix, encoder=nil)
       #XXX do something with encoder if set
       @mix = mix

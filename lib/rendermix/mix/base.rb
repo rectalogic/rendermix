@@ -19,44 +19,56 @@ module RenderMix
       end
 
       #XXX Blank also does not support Effect, it should raise - same with Image and audio effect
-      def add_audio_effect(effect, in_frame, out_frame)
-        @audio_effects ||= []
-        #XXX insertion sort - should effect be Effect::Base or an AudioEffect, and so should tracks be in Base already or passed to this method and we build Base and set AudioEffect on it?
+      # _track_indexes_ Array of track indexes effect applies to
+      def add_audio_effect(audio_effect, track_indexes, in_frame, out_frame)
+        @audio_effect_manager ||= AudioEffectManager.new(tracks)
+        @audio_effect_manager.add_effect(audio_effect, track_indexes, in_frame, out_frame)
       end
 
-      def add_visual_effect(effect, in_frame, out_frame)
-        @visual_effects ||= []
-        #XXX see add_audio_effect comments
+      # _track_indexes_ Array of track indexes effect applies to
+      def add_visual_effect(visual_effect, track_indexes, in_frame, out_frame)
+        @visual_effect_manager ||= VisualEffectManager.new(tracks)
+        @visual_effect_manager.add_effect(visual_effect, track_indexes, in_frame, out_frame)
       end
 
-      def track_count
-        1
+      def has_effects?
+        @audio_effect_manager or @visual_effect_manager
+      end
+
+      # Return an array of Renderers, one for each track
+      # Subclasses should override
+      def tracks
+        @tracks ||= [self].freeze
       end
 
       # Subclasses must call acquire_audio_context for every frame
       # they render content
       def render_audio(context_manager)
-        #XXX get active effect if there is one, if not then pop a new one if active, and prepare it
-        #XXX render effect if we now have one - Effect can expose tracks it renders
-        #XXX call on_render_audio with remaining tracks to be rendered (if any)
-        #XXX the only reason to render the remaining tracks is to validate they *don't* render - can we simplify? when we setup a new Effect, we can compute remaining tracks and cache
-
-        if @audio_effects
-          #XXX see above
-        end
-        #XXX invoke on_render_audio
-        on_render_audio(context_manager, @current_audio_frame, XXXtracks)
+        return if current_audio_frame > self.out_frame
+        renderers = @audio_effect_manager.render(context_manager, @current_audio_frame) if @audio_effect_manager
+        renderers ||= tracks
+        on_render_audio(context_manager, @current_audio_frame, renderers)
         @current_audio_frame++
       end
-      def on_render_audio(context_manager, current_frame, tracks)
+
+      # Subclass should override.
+      # _render_tracks_ Array of Renderers to render
+      def on_render_audio(context_manager, current_frame, render_tracks)
       end
 
       # Subclasses must call acquire_visual_context for every frame
       # they render content
       def render_visual(context_manager)
+        return if current_visual_frame > self.out_frame
+        renderers = @visual_effect_manager.render(context_manager, @current_visual_frame) if @visual_effect_manager
+        renderers ||= tracks
+        on_render_visual(context_manager, @current_visual_frame, renderers)
         @current_visual_frame++
       end
-      def on_render_visual(context_manager, current_frame, tracks)
+
+      # Subclass should override.
+      # _render_tracks_ Array of Renderers to render
+      def on_render_visual(context_manager, current_frame, render_tracks)
       end
 
       # Subclasses should override to release any references they have

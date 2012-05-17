@@ -3,41 +3,41 @@ module RenderMix
     class Sequence < Base
       def initialize
         super(0)
-        @mix_renderers = []
-        @audio_index = 0
-        @visual_index = 0
+        @audio_renderers = []
+        @visual_renderers = []
       end
 
-      def append_mix_renderer(mix_renderer)
-        @mix_renderers << mix_renderer
+      def append(mix_renderer)
+        raise(InvalidMixError, 'Sequence cannot be modified after Effects applied') if has_effects?
+        @audio_renderers << mix_renderer
+        @visual_renderers << mix_renderer
         mix_renderer.in_frame = self.duration
         mix_renderer.out_frame = self.duration + mix_renderer.duration - 1
         self.duration += mix_renderer.duration
       end
 
-      def on_render_audio(context_manager, current_frame, tracks)
-        #XXX should we zero @mix_renderers if past our duration? same for Parallel - this means we destroy the mix as we proceed, but may be better memory wise - document it in Mixer.mix
-        #XXX should Base do this check before calling on_render, and call some destroy method?
-        return if current_frame > self.out_frame
-        @audio_index = mix_renderer_index(@audio_index, current_frame)
-        return unless @audio_index
-        @mix_renderers[@audio_index].render_audio(context_manager)
+      def on_render_audio(context_manager, current_frame, renderer_tracks)
+        audio_renderer = current_mix_renderer(@audio_renderers, current_frame)
+        return unless audio_renderer
+        audio_renderer.render_audio(context_manager)
       end
 
-      def on_render_visual(context_manager, current_frame, tracks)
-        return if current_frame > self.out_frame
-        @visual_index = mix_renderer_index(@visual_index, current_frame)
-        return unless @visual_index
-        @mix_renderers[@visual_index].render_visual(context_manager)
+      def on_render_visual(context_manager, current_frame, renderer_tracks)
+        visual_renderer = current_mix_renderer(@visual_renderers, current_frame)
+        return unless visual_renderer
+        visual_renderer.render_visual(context_manager)
       end
 
-      def mix_renderer_index(current_index, current_frame)
-        mix_renderer = @mix_renderers[current_index]
+      def current_mix_renderer(mix_renderers, current_frame)
+        mix_renderer = mix_renderers.first
         return nil if mix_renderer.nil?
-        return current_index if mix_renderer.out_frame <= current_frame
-        current_index++
+        if mix_renderer.out_frame <= current_frame
+          return mix_renderer
+        else
+          mix_renderers.shift
+        end
       end
-      private :mix_renderer_index
+      private :current_mix_renderer
     end
   end
 end
