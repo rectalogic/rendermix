@@ -1,6 +1,5 @@
 module RenderMix
   class VisualContext
-    attr_reader :viewport
     attr_reader :rootnode
 
     # _render_manager_ JMERenderer::RenderManager
@@ -13,11 +12,16 @@ module RenderMix
       @tpf = tpf
       @viewport = viewport
       @rootnode = rootnode
-      @texture = texture
+      @texture_prototype = texture
+      reset
     end
 
     def reset
       @rootnode.detachAllChildren
+      # User may have set Texture properties (wrap etc.),
+      # so reset to a pristine clone.
+      # Cloning shares the Image, and the Image is the native GL texture object.
+      @texture = @texture_prototype.clone if @texture_prototype
     end
 
     def camera

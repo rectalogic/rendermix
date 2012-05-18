@@ -31,7 +31,6 @@ module RenderMix
       fbo = JmeTexture::FrameBuffer.new(@width, @height, MSAA_SAMPLES)
       fbo.setDepthBuffer(DEPTH_FORMAT)
       #XXX is this the best image format?
-      #XXX what about wrap/filter/mipmap of this texture? can caller reset those? when do they get unset? should we clone()?
       texture = JmeTexture::Texture2D(@width, @height,
                                       JmeTexture::Image::Format::ABGR8)
       fbo.colorTexture = texture
