@@ -1,0 +1,2 @@
+require_relative '../lib/rendermix/command'
+RenderMix::Command.run(ARGV)
