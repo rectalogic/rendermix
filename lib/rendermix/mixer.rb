@@ -34,9 +34,9 @@ module RenderMix
       @mix = mix
       mix.in_frame = 0
       mix.out_frame = mix.duration - 1
-      self.start(encoder
-                 ? JmeSystem::JmeContext::Type::OffscreenSurface
-                 : JmeSystem::JmeContext::Type::Display)
+      self.start(@encoder ?
+                 JmeSystem::JmeContext::Type::OffscreenSurface :
+                 JmeSystem::JmeContext::Type::Display)
     end
 
     def simpleInitApp

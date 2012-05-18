@@ -8,7 +8,7 @@ module RenderMix
       end
 
       def add_effect(effect_delegate, track_indexes, in_frame, out_frame)
-        renderers = Array.new(track_indexes.length].fill do |i|
+        renderers = Array.new(track_indexes.length).fill do |i|
           index = track_indexes[i]
           raise(InvalidMixError, "Effect track index #{index} out of range") if index >= @tracks.length
           @tracks[index]

@@ -18,7 +18,7 @@ module RenderMix
       end
 
       def render(context_manager)
-        return if current_frame > @mix.out_frame
+        return if @current_frame > @mix.out_frame
         if @effect_manager and not @skip_effects
           # In the case where the mix is its own track (Sequence, Media etc.),
           # we need to guard against reentrant rendering. The Effect may
@@ -27,9 +27,9 @@ module RenderMix
           renderers = @effect_manager.render(context_manager, @current_frame)
           @skip_effects = nil
         end
-        renderers ||= tracks
+        renderers ||= @mix.tracks
         on_render(context_manager, @current_frame, renderers) unless renderers.empty?
-        @current_frame++
+        @current_frame += 1
       end
     end
 

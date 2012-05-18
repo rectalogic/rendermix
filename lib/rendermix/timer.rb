@@ -2,6 +2,7 @@
 module RenderMix
   class Timer < JmeSystem::Timer
     def initialize(framerate)
+      super()
       @framerate = framerate.to_r
       @ticks = 0
     end
@@ -23,7 +24,7 @@ module RenderMix
     end
 
     def update
-      @ticks++
+      @ticks += 1
     end
 
     def reset
