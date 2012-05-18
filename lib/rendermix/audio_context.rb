@@ -20,6 +20,11 @@ module RenderMix
 
     def release_context(context)
       @contexts << context if context
+      reset_context(context)
+    end
+
+    def reset_context(context)
+      #XXX should we zero buffer?
     end
   end
 end

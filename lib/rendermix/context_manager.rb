@@ -2,8 +2,10 @@ module RenderMix
 
   class ContextManager
 
-    def initialize(context_pool)
+    def initialize(context_pool, initial_context=nil)
       @context_pool = context_pool
+      @initial_context = initial_context
+      @context = initial_context
       @rendered = false
     end
 
@@ -13,6 +15,7 @@ module RenderMix
       @current_renderer = nil
       @rendered = false
       @context = nil
+      @initial_context = nil
     end
 
     # Subclasses must implement on_render(renderer) hook
@@ -37,13 +40,15 @@ module RenderMix
     end
 
     # Subclasses should implement on_release_context
-    def release_context(pooled=true)
+    def release_context
       on_release_context(@current_renderer)
       @current_renderer = nil
       # If context not pooled, keep it
-      if pooled
+      if @context != @initial_context
         @context_pool.release_context(@context)
         @context = nil
+      elsif @initial_context
+        @context_pool.reset_context(@initial_context)
       end
     end
     private :release_context

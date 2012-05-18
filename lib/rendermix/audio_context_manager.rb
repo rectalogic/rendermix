@@ -1,8 +1,8 @@
 module RenderMix
 
   class AudioContextManager < ContextManager
-    def initialize(audio_framebuffer_size)
-      super(AudioContextPool.new(audio_framebuffer_size))
+    def initialize(audio_framebuffer_size, initial_context=nil)
+      super(AudioContextPool.new(audio_framebuffer_size), initial_context)
     end
 
     def on_render(renderer)

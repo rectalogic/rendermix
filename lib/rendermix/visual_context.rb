@@ -16,12 +16,12 @@ module RenderMix
       @texture = texture
     end
 
-    def camera
-      @viewport.camera
-    end
-
     def reset
       @rootnode.detachAllChildren
+    end
+
+    def camera
+      @viewport.camera
     end
 
     def prepare_texture
@@ -51,8 +51,12 @@ module RenderMix
     def release_context(context)
       if context
         @contexts << context
-        context.reset
+        reset_context(context)
       end
+    end
+
+    def reset_context(context)
+      context.reset
     end
 
     def create_context
