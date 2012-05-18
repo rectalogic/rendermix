@@ -1,2 +1,2 @@
-require_relative '../lib/rendermix/command'
+require_relative '../lib/rendermix'
 RenderMix::Command.run(ARGV)
