@@ -1,0 +1,3 @@
+# LWGL native libraries are extracted into this directory, ignore them
+*
+!.gitignore

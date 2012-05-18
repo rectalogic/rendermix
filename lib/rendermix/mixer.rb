@@ -5,6 +5,8 @@ module RenderMix
   class Mixer < JmeApp::SimpleApplication
     def initialize(width, height, framerate)
       super(nil)
+      # Use consistent natives directory, instead of process working dir
+      JmeSystem::Natives.extractionDir = File.expand_path('../../../natives', __FILE__)
       self.timer = Timer.new(framerate)
       self.showSettings = false
       self.pauseOnLostFocus = false
@@ -15,6 +17,7 @@ module RenderMix
       settings.setSamples(MSAA_SAMPLES)
       settings.setDepthBits(DEPTH_FORMAT.bitsPerPixel)
       settings.useInput = false
+      settings.useJoysticks = false
       settings.audioRenderer = nil
       self.settings = settings
 
