@@ -3,8 +3,6 @@ module RenderMix
   DEPTH_FORMAT = JmeTexture::Image::Format::Depth24
 
   class Mixer < JmeApp::SimpleApplication
-    attr_reader :rawmedia_session
-
     def initialize(width, height, framerate)
       super(nil)
       self.timer = Timer.new(framerate)
@@ -20,7 +18,6 @@ module RenderMix
       settings.audioRenderer = nil
       self.settings = settings
 
-      #XXX need to get session to decoders too though - caller can do that - we ca expose session and caller can create their media decoders with it
       @rawmedia_session = RawMedia::Session.new(width, height, framerate)
 
       @width = width
@@ -39,6 +36,26 @@ module RenderMix
       self.start(@encoder ?
                  JmeSystem::JmeContext::Type::OffscreenSurface :
                  JmeSystem::JmeContext::Type::Display)
+    end
+
+    def new_blank(duration)
+      Mix::Blank.new(duration)
+    end
+
+    def new_sequence
+      Mix::Sequence.new
+    end
+
+    def new_parallel
+      Mix::Parallel.new
+    end
+
+    def new_image(filename, duration)
+      Mix::Image.new(filename, duration)
+    end
+
+    def new_media(filename, start_frame=0, duration=nil)
+      Mix::Media.new(rawmedia_session, filename, start_frame, duration)
     end
 
     def simpleInitApp

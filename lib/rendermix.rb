@@ -29,6 +29,6 @@ require 'rendermix/mix/base'
 require 'rendermix/mix/parallel'
 require 'rendermix/mix/sequence'
 require 'rendermix/mix/blank'
-#require 'rendermix/mix/image'
+require 'rendermix/mix/image'
 require 'rendermix/mix/media'
 
