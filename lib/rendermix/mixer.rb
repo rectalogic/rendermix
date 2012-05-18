@@ -28,8 +28,9 @@ module RenderMix
 
     # If encoder is not set, then render to onscreen window.
     # _mix_ Root node of mix. Mix is destroyed as mixing proceeds.
-    def mix(mix, encoder=nil)
-      #XXX do something with encoder if set
+    # _filename_ Output filename to encode mix into, if nil then mix will be displayed in a window
+    def mix(mix, filename=nil)
+      @encoder = RawMedia::Encoder.new(filename, @rawmedia_session) if filename
       @mix = mix
       mix.in_frame = 0
       mix.out_frame = mix.duration - 1
@@ -56,9 +57,8 @@ module RenderMix
     end
     private :simpleUpdate
 
-    #XXX simplRender to encode
     def simpleRender(render_manager)
-      #XXX encode if encoder set
+      #XXX encode if @encoder set
     end
     private :simpleRender
   end

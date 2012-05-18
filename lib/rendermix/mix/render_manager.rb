@@ -14,23 +14,22 @@ module RenderMix
       end
 
       def has_effects?
-        not @effect_manager.nil?
+        !!@effect_manager
       end
 
       def render(context_manager)
         return if current_frame > @mix.out_frame
-        if @effect_manager
+        if @effect_manager and not @skip_effects
+          # In the case where the mix is its own track (Sequence, Media etc.),
+          # we need to guard against reentrant rendering. The Effect may
+          # render us, and we don't want to render the Effect again when it does.
+          @skip_effects = true
           renderers = @effect_manager.render(context_manager, @current_frame)
+          @skip_effects = nil
         end
         renderers ||= tracks
-        on_render(context_manager, @current_frame, renderers)
+        on_render(context_manager, @current_frame, renderers) unless renderers.empty?
         @current_frame++
-#XXX this won't work - Sequence is its own track, and so Effect on Sequence would render itself (which has an effect...) and recurse
-#XXX same problem for Media with Effect
-#XXX do we need 2 stage render? render effects then content? and ContextManager does this
-#XXX could we set a flag in here, so on the effect reentrant render we skip effects - will that work for Parallel too?
-
-#XXX maybe Parallel should be special - only multitrack case, so move tracks stuff down into it and simplify Sequence/Media etc.
       end
     end
 
