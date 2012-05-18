@@ -18,7 +18,10 @@ module RenderMix
       end
 
       def render(context_manager)
-        return if @current_frame > @mix.out_frame
+        if @current_frame > @mix.out_frame
+          rendering_complete
+          return
+        end
         if @effect_manager and not @skip_effects
           # In the case where the mix is its own track (Sequence, Media etc.),
           # we need to guard against reentrant rendering. The Effect may
@@ -41,6 +44,10 @@ module RenderMix
       def on_render(context_manager, current_frame, renderers)
         mix.on_render_audio(context_manager, current_frame, renderers)
       end
+
+      def rendering_complete
+        mix.audio_rendering_complete
+      end
     end
 
     class VisualRenderManager < RenderManager
@@ -50,6 +57,10 @@ module RenderMix
 
       def on_render(context_manager, current_frame, renderers)
         mix.on_render_visual(context_manager, current_frame, renderers)
+      end
+
+      def rendering_complete
+        mix.visual_rendering_complete
       end
     end
   end

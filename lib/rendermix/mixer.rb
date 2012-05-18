@@ -84,7 +84,10 @@ module RenderMix
 
       # Update frame and quit if mix completed
       @current_frame += 1
-      stop if @current_frame > @mix.out_frame
+      if @current_frame > @mix.out_frame
+        stop
+        @encoder.destroy if @encoder
+      end
     end
     private :simpleRender
 

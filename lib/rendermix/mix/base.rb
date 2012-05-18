@@ -13,6 +13,7 @@ module RenderMix
       attr_accessor :duration
 
       def initialize(duration)
+        raise(InvalidMixError, 'Duration not specified') unless duration
         @duration = duration
         @audio_render_manager = AudioRenderManager.new(self)
         @visual_render_manager = VisualRenderManager.new(self)
@@ -49,6 +50,14 @@ module RenderMix
       def on_render_audio(context_manager, current_frame, render_tracks)
       end
 
+      # Subclasses can override to cleanup state when rendering complete.
+      def audio_rendering_complete
+      end
+
+      # Subclasses can override to cleanup any context specific state.
+      # Rendering is not yet complete at this point.
+      # def audio_context_released
+
       def render_visual(context_manager)
         @visual_render_manager.render(context_manager)
       end
@@ -59,13 +68,13 @@ module RenderMix
       def on_render_visual(context_manager, current_frame, render_tracks)
       end
 
-      # Subclasses should override to release any references they have
-      # to anything in the context
-      #XXX these are defined by Renderer module, don't need to declare
-      def audio_context_released
+      # Subclasses can override to cleanup state when rendering complete.
+      def visual_rendering_complete
       end
-      def visual_context_released
-      end
+
+      # Subclasses can override to cleanup any context specific state.
+      # Rendering is not yet complete at this point.
+      # def visual_context_released
     end
   end
 end
