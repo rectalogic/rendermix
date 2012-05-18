@@ -9,6 +9,7 @@ module RenderMix
       super(nil)
       self.timer = Timer.new(framerate)
       self.showSettings = false
+      self.pauseOnLostFocus = false
 
       settings = JmeSystem::AppSettings.new(false)
       settings.renderer = JmeSystem::AppSettings::LWJGL_OPENGL3
@@ -32,8 +33,9 @@ module RenderMix
     def mix(mix, filename=nil)
       @encoder = RawMedia::Encoder.new(filename, @rawmedia_session) if filename
       @mix = mix
-      mix.in_frame = 0
-      mix.out_frame = mix.duration - 1
+      @current_frame = 0
+      @mix.in_frame = 0
+      @mix.out_frame = @mix.duration - 1
       self.start(@encoder ?
                  JmeSystem::JmeContext::Type::OffscreenSurface :
                  JmeSystem::JmeContext::Type::Display)
@@ -58,8 +60,21 @@ module RenderMix
     private :simpleUpdate
 
     def simpleRender(render_manager)
-      #XXX encode if @encoder set
+      if @encoder
+        #XXX encode audio/video
+        #XXX also need to know if nothing rendered this frame and encode silence or black
+      end
+
+      # Update frame and quit if mix completed
+      @current_frame += 1
+      stop if @current_frame > @mix.out_frame
     end
     private :simpleRender
+
+    def handleError(msg, ex)
+      super
+      raise ex
+    end
+    private :handleError
   end
 end
