@@ -1,9 +1,9 @@
 module RenderMix
   module Mix
     class Media < Base
-      def initialize(rawmedia_session, filename, start_frame=0, duration=nil)
-        #XXX init rawmedia decoder and use duration if none specified
-        super(duration)
+      def initialize(mixer, filename, start_frame=0, duration=nil)
+        #XXX init rawmedia decoder using mixer.rawmedia_session and use duration if none specified
+        super(mixer, duration)
       end
 
       def on_render_audio(context_manager, current_frame, renderer_tracks)

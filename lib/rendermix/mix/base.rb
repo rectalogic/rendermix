@@ -6,14 +6,17 @@ module RenderMix
     class Base
       include Renderer
 
+      attr_reader :mixer
+
       # Beginning and ending frames of this renderer in parents timeline
       attr_accessor :in_frame
       attr_accessor :out_frame
 
       attr_accessor :duration
 
-      def initialize(duration)
+      def initialize(mixer, duration)
         raise(InvalidMixError, 'Duration not specified') unless duration
+        @mixer = mixer
         @duration = duration
         @audio_render_manager = AudioRenderManager.new(self)
         @visual_render_manager = VisualRenderManager.new(self)

@@ -1,14 +1,15 @@
 module RenderMix
   module Mix
     class Sequence < Base
-      def initialize
-        super(0)
+      def initialize(mixer)
+        super(mixer, 0)
         @audio_renderers = []
         @visual_renderers = []
       end
 
       def append(mix_renderer)
         raise(RuntimeError, 'Sequence cannot be modified after Effects applied') if has_effects?
+        raise(InvalidMixError, 'Renderer does not belong to this Mixer') if mix_renderer.mixer != self.mixer
         @audio_renderers << mix_renderer
         @visual_renderers << mix_renderer
         mix_renderer.in_frame = self.duration

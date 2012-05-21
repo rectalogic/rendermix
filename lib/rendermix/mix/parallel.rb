@@ -1,13 +1,14 @@
 module RenderMix
   module Mix
     class Parallel < Base
-      def initialize
-        super(0)
+      def initialize(mixer)
+        super(mixer, 0)
         @mix_renderers = []
       end
 
       def add_track(mix_renderer)
         raise(RuntimeError, 'Parallel cannot be modified after Effects applied') if has_effects?
+        raise(InvalidMixError, 'Renderer does not belong to this Mixer') if mix_renderer.mixer != self.mixer
         @mix_renderers << mix_renderer
         mix_renderer.in_frame = 0
         mix_renderer.out_frame = mix_renderer.duration - 1

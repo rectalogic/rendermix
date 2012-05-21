@@ -1,9 +1,9 @@
 module RenderMix
   module Mix
     class Image < Base
-      def initialize(filename, duration)
-        super(duration)
         #XXX create JME Texture
+      def initialize(mixer, filename, duration)
+        super(mixer, duration)
         #XXX need to use AssetManager - pass it in here, and add path to it, load, then remove
         @texture = JmeTexture::Texture2D.new(JmeTexture::Image.new())
         #XXX set wrap mode, mipmaps etc. - transparent border?
