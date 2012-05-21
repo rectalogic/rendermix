@@ -18,8 +18,10 @@ module RenderMix
       end
 
       def render(context_manager)
-        if @current_frame > @mix.out_frame
-          rendering_complete
+        if @current_frame == @mix.in_frame
+          rendering_prepare(context_manager)
+        elsif @current_frame > @mix.out_frame
+          rendering_finished
           return
         end
         if @effect_manager and not @skip_effects
@@ -41,12 +43,16 @@ module RenderMix
         AudioEffectManager.new(mix.tracks)
       end
 
+      def rendering_prepare(context_manager)
+        mix.audio_rendering_prepare(context_manager)
+      end
+
       def on_render(context_manager, current_frame, renderers)
         mix.on_render_audio(context_manager, current_frame, renderers)
       end
 
-      def rendering_complete
-        mix.audio_rendering_complete
+      def rendering_finished
+        mix.audio_rendering_finished
       end
     end
 
@@ -55,12 +61,16 @@ module RenderMix
         VisualEffectManager.new(mix.tracks)
       end
 
+      def rendering_prepare(context_manager)
+        mix.visual_rendering_prepare(context_manager)
+      end
+
       def on_render(context_manager, current_frame, renderers)
         mix.on_render_visual(context_manager, current_frame, renderers)
       end
 
-      def rendering_complete
-        mix.visual_rendering_complete
+      def rendering_finished
+        mix.visual_rendering_finished
       end
     end
   end

@@ -7,6 +7,8 @@ module RenderMix
         #XXX need to use AssetManager - pass it in here, and add path to it, load, then remove
         @texture = JmeTexture::Texture2D.new(JmeTexture::Image.new())
         #XXX set wrap mode, mipmaps etc. - transparent border?
+      def visual_rendering_prepare(context_manager)
+        #XXX load texture
       end
 
       def on_render_visual(context_manager, current_frame, renderer_tracks)
@@ -17,7 +19,7 @@ module RenderMix
         #XXX cleanup any context specific state
       end
 
-      def visual_rendering_complete
+      def visual_rendering_finished
         @texture = nil
       end
     end

@@ -26,12 +26,12 @@ module RenderMix
         end
       end
 
-      def audio_rendering_complete
+      def audio_rendering_finished
         @mix_renderers.each do |renderer|
-          renderer.audio_rendering_complete
+          renderer.audio_rendering_finished
         end
-        @mix_renderers.clear if @rendering_complete
-        @rendering_complete = true
+        @mix_renderers.clear if @rendering_finished
+        @rendering_finished = true
       end
 
       def on_render_visual(context_manager, current_frame, render_tracks)
@@ -40,12 +40,12 @@ module RenderMix
         end
       end
 
-      def visual_rendering_complete
+      def visual_rendering_finished
         @mix_renderers.each do |renderer|
-          renderer.visual_rendering_complete
+          renderer.visual_rendering_finished
         end
-        @mix_renderers.clear if @rendering_complete
-        @rendering_complete = true
+        @mix_renderers.clear if @rendering_finished
+        @rendering_finished = true
       end
     end
   end

@@ -43,6 +43,9 @@ module RenderMix
         @audio_render_manager.render(context_manager)
       end
 
+      # Subclass can override
+      #def audio_rendering_prepare(context_manager)
+
       # Subclass should override.
       # Must call acquire_audio_context for every frame content is rendered
       # _render_tracks_ Array of Renderers to render
@@ -50,12 +53,14 @@ module RenderMix
       end
 
       # Subclasses can override to cleanup state when rendering complete.
-      def audio_rendering_complete
-      end
+      #def audio_rendering_finished
 
       # Subclasses can override to cleanup any context specific state.
       # Rendering is not yet complete at this point.
       # def audio_context_released(context)
+
+      # Subclass can override
+      #def visual_rendering_prepare(context_manager)
 
       def render_visual(context_manager)
         @visual_render_manager.render(context_manager)
@@ -68,8 +73,7 @@ module RenderMix
       end
 
       # Subclasses can override to cleanup state when rendering complete.
-      def visual_rendering_complete
-      end
+      #def visual_rendering_finished
 
       # Subclasses can override to cleanup any context specific state.
       # Rendering is not yet complete at this point.

@@ -26,15 +26,16 @@ module RenderMix
         if not @active_effect
           @active_effect = @effects.first
           return @tracks if not @active_effect
-          prepare_effect(context_manager)
+          rendering_prepare(context_manager)
         end
 
         # Past first effect, get the next one
         if current_frame > @active_effect.out_frame
+          on_rendering_finished
           @effects.shift
           @active_effect = @effects.first
           return @tracks if not @active_effect
-          prepare_effect(context_manager)
+          rendering_prepare(context_manager)
         end
 
         # Too early for effect
@@ -49,12 +50,12 @@ module RenderMix
         @tracks
       end
 
-      def prepare_effect(context_manager)
+      def rendering_prepare(context_manager)
         # Allow the effect to clone context
-        @active_effect.prepare_context(context_manager)
+        on_rendering_prepare(context_manager)
         @unrendered_tracks = @tracks - @active_effect.tracks
       end
-      private :prepare_effect
+      private :rendering_prepare
 
       def active_effect
         @active_effect
@@ -63,14 +64,30 @@ module RenderMix
     end
 
     class AudioEffectManager < EffectManager
+      def on_rendering_prepare(context_manager)
+        active_effect.audio_rendering_prepare(context_manager)
+      end
+
       def on_render(context_manager)
         active_effect.render_audio(context_manager)
+      end
+
+      def on_rendering_finished
+        active_effect.audio_rendering_finished
       end
     end
 
     class VisualEffectManager < EffectManager
+      def on_rendering_prepare(context_manager)
+        active_effect.visual_rendering_prepare(context_manager)
+      end
+
       def on_render(context_manager)
         active_effect.render_visual(context_manager)
+      end
+
+      def on_rendering_finished
+        active_effect.visual_rendering_finished
       end
     end
   end

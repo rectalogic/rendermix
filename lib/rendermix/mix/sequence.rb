@@ -22,9 +22,9 @@ module RenderMix
         audio_renderer.render_audio(context_manager)
       end
 
-      def audio_rendering_complete
+      def audio_rendering_finished
         audio_renderer = @audio_renderers.first
-        audio_renderer.audio_rendering_complete if audio_renderer
+        audio_renderer.audio_rendering_finished if audio_renderer
         @audio_renderers.clear
       end
 
@@ -34,9 +34,9 @@ module RenderMix
         visual_renderer.render_visual(context_manager)
       end
 
-      def visual_rendering_complete
+      def visual_rendering_finished
         visual_renderer = @visual_renderers.first
-        visual_renderer.visual_rendering_complete if visual_renderer
+        visual_renderer.visual_rendering_finished if visual_renderer
         @visual_renderers.clear
       end
 
