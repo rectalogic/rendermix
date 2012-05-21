@@ -109,8 +109,11 @@ module RenderMix
     private :simpleRender
 
     def handleError(msg, ex)
-      super
-      raise ex
+      @mutex.synchronize do
+        super
+        @error = ex
+        @condvar.signal
+      end
     end
     private :handleError
   end
