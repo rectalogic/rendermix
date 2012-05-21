@@ -53,4 +53,37 @@ module RenderMix
     end
     private :release_context
   end
+
+  class AudioContextManager < ContextManager
+    def initialize(audio_framebuffer_size, initial_context=nil)
+      super(AudioContextPool.new(audio_framebuffer_size), initial_context)
+    end
+
+    def on_render(renderer)
+      renderer.render_audio(self)
+    end
+    private :on_render
+
+    def on_release_context(renderer, context)
+      renderer.audio_context_released(context)
+    end
+    private :on_release_context
+  end
+
+  class VisualContextManager < ContextManager
+    def initialize(render_manager, width, height, tpf, initial_context=nil)
+      super(VisualContextPool.new(render_manager, width, height, tpf), initial_context)
+      @render_manager = render_manager
+    end
+
+    def on_render(renderer)
+      renderer.render_visual(self)
+    end
+    private :on_render
+
+    def on_release_context(renderer, context)
+      renderer.visual_context_released(context)
+    end
+    private :on_release_context
+  end
 end
