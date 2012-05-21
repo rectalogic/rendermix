@@ -70,6 +70,9 @@ module RenderMix
     end
 
     def simpleInitApp
+      # Register filesystem root so we can load textures from anywhere
+      self.assetManager.registerLocator('/', JmeAssetPlugins::FileLocator.java_class)
+
       audio_context = AudioContext.new(@rawmedia_session.audio_framebuffer_size)
       @audio_context_manager = AudioContextManager.new(@rawmedia_session.audio_framebuffer_size, audio_context)
 

@@ -5,6 +5,9 @@ module RenderMix
   module JmeAppState
     include_package 'com.jme3.app.state'
   end
+  module JmeAssetPlugins
+    include_package 'com.jme3.asset.plugins'
+  end
   module JmeRenderer
     include_package 'com.jme3.renderer'
   end
