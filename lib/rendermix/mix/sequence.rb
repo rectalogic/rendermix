@@ -43,7 +43,7 @@ module RenderMix
       def current_mix_renderer(mix_renderers, current_frame)
         mix_renderer = mix_renderers.first
         return nil if mix_renderer.nil?
-        if mix_renderer.out_frame <= current_frame
+        if mix_renderer.in_frame <= current_frame and mix_renderer.out_frame >= current_frame
           return mix_renderer
         else
           mix_renderers.shift
