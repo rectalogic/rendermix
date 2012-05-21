@@ -2,7 +2,7 @@ $LOAD_PATH.unshift(File.expand_path('..', __FILE__)).uniq!
 
 require 'java'
 require 'rawmedia'
-
+require 'thread'
 #XXX require_relative the jme3 jar?
 
 require 'rendermix/java'

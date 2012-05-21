@@ -25,6 +25,9 @@ module RenderMix
 
       @width = width
       @height = height
+
+      @mutex = Mutex.new
+      @condvar = ConditionVariable.new
     end
 
     # If encoder is not set, then render to onscreen window.
@@ -36,9 +39,14 @@ module RenderMix
       @current_frame = 0
       @mix.in_frame = 0
       @mix.out_frame = @mix.duration - 1
-      self.start(@encoder ?
-                 JmeSystem::JmeContext::Type::OffscreenSurface :
-                 JmeSystem::JmeContext::Type::Display)
+      @error = nil
+      @mutex.synchronize do
+        self.start(@encoder ?
+                   JmeSystem::JmeContext::Type::OffscreenSurface :
+                   JmeSystem::JmeContext::Type::Display)
+        @condvar.wait(@mutex)
+      end
+      raise @error if @error
     end
 
     def new_blank(duration)
@@ -88,8 +96,11 @@ module RenderMix
       # Update frame and quit if mix completed
       @current_frame += 1
       if @current_frame > @mix.out_frame
-        stop
-        @encoder.destroy if @encoder
+        @mutex.synchronize do
+          stop
+          @encoder.destroy if @encoder
+          @condvar.signal
+        end
       end
     end
     private :simpleRender
