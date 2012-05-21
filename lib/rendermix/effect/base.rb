@@ -29,7 +29,7 @@ module RenderMix
         #XXX render our context for each track
       end
 
-      def audio_context_released
+      def audio_context_released(context)
         #XXX
       end
 
@@ -37,7 +37,7 @@ module RenderMix
         #XXX
       end
 
-      def visual_context_released
+      def visual_context_released(context)
         #XXX
       end
     end

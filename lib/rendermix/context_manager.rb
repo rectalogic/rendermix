@@ -41,7 +41,7 @@ module RenderMix
 
     # Subclasses should implement on_release_context
     def release_context
-      on_release_context(@current_renderer)
+      on_release_context(@current_renderer, @context)
       @current_renderer = nil
       # If context not pooled, keep it
       if @context != @initial_context

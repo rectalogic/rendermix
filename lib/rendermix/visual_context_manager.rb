@@ -11,8 +11,8 @@ module RenderMix
     end
     private :on_render
 
-    def on_release_context(renderer)
-      renderer.visual_context_released
+    def on_release_context(renderer, context)
+      renderer.visual_context_released(context)
     end
     private :on_release_context
   end

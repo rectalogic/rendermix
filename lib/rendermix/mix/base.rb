@@ -19,7 +19,6 @@ module RenderMix
         @visual_render_manager = VisualRenderManager.new(self)
       end
 
-      #XXX Blank also does not support Effect, it should raise - same with Image and audio effect
       # _track_indexes_ Array of track indexes effect applies to
       def add_audio_effect(audio_effect, track_indexes, in_frame, out_frame)
         @audio_render_manager.add_effect(audio_effect, track_indexes, in_frame, out_frame)
@@ -56,7 +55,7 @@ module RenderMix
 
       # Subclasses can override to cleanup any context specific state.
       # Rendering is not yet complete at this point.
-      # def audio_context_released
+      # def audio_context_released(context)
 
       def render_visual(context_manager)
         @visual_render_manager.render(context_manager)
@@ -74,7 +73,7 @@ module RenderMix
 
       # Subclasses can override to cleanup any context specific state.
       # Rendering is not yet complete at this point.
-      # def visual_context_released
+      # def visual_context_released(context)
     end
   end
 end

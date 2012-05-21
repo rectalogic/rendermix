@@ -13,7 +13,7 @@ module RenderMix
         visual_context = context_manager.acquire_context(self)
       end
 
-      def visual_context_released
+      def visual_context_released(context)
         #XXX cleanup any context specific state
       end
 
