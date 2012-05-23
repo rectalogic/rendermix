@@ -18,6 +18,7 @@ require 'rendermix/audio_context_pool'
 require 'rendermix/visual_context'
 require 'rendermix/visual_context_pool'
 require 'rendermix/context_manager'
+require 'rendermix/ortho_quad'
 
 require 'rendermix/effect/base'
 require 'rendermix/effect/audio_effect'

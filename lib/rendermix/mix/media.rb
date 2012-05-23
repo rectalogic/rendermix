@@ -1,6 +1,8 @@
 module RenderMix
   module Mix
     class Media < Base
+      #XXX change rawmedia to not pad/letterbox  - use OrthoQuad.panzoom
+
       def initialize(mixer, filename, start_frame=0, duration=nil)
         #XXX init rawmedia decoder using mixer.rawmedia_session and use duration if none specified
         super(mixer, duration)

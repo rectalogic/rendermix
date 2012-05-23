@@ -16,6 +16,10 @@ module RenderMix
       @app = MixerApplication.new(self)
     end
 
+    def asset_manager
+      @app.assetManager
+    end
+
     def new_blank(duration)
       Mix::Blank.new(self, duration)
     end
