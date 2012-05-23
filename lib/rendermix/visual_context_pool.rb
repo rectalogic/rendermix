@@ -31,8 +31,8 @@ module RenderMix
       fbo = JmeTexture::FrameBuffer.new(@width, @height, MSAA_SAMPLES)
       fbo.setDepthBuffer(DEPTH_FORMAT)
       #XXX is this the best image format?
-      texture = JmeTexture::Texture2D(@width, @height,
-                                      JmeTexture::Image::Format::ABGR8)
+      texture = JmeTexture::Texture2D.new(@width, @height, MSAA_SAMPLES,
+                                          JmeTexture::Image::Format::ABGR8)
       fbo.colorTexture = texture
       viewport.outputFrameBuffer = fbo
 
