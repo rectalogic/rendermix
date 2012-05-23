@@ -1,5 +1,6 @@
 module RenderMix
   class VisualContextPool
+    # _render_manager_ JMERenderer::RenderManager
     def initialize(render_manager, width, height, tpf)
       @contexts = []
       @render_manager = render_manager
