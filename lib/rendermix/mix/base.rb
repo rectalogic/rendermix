@@ -37,7 +37,7 @@ module RenderMix
       end
 
       # Return an array of Renderers, one for each track
-      # Subclasses should override
+      # Subclasses may override
       def tracks
         @tracks ||= [self].freeze
       end

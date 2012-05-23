@@ -47,6 +47,8 @@ module RenderMix
   end
 
   class MixerApplication < JmeApp::SimpleApplication
+    field_reader :settings
+
     def initialize(mixer)
       super(nil)
       @mixer = mixer
@@ -73,7 +75,13 @@ module RenderMix
     # _mix_ Root node of mix. Mix is destroyed as mixing proceeds.
     # _filename_ Output filename to encode mix into, if nil then mix will be displayed in a window
     def mix(mix, filename=nil)
-      @encoder = RawMedia::Encoder.new(filename, @mixer.rawmedia_session) if filename
+      if filename
+        @encoder = RawMedia::Encoder.new(filename, @mixer.rawmedia_session)
+      else
+        # If not encoding, limit framerate so stuff looks right
+        self.settings.frameRate = @mixer.framerate.to_i
+      end
+
       @mix = mix
       @current_frame = 0
       @mix.in_frame = 0
