@@ -41,7 +41,7 @@ module RenderMix
       let!(:pool) do
         on_render_thread do
           VisualContextPool.new(@app.renderManager, @mixer.width, @mixer.height,
-                                @mixer.framerate.denominator / @mixer.framerate.numerator.to_f)
+                                @mixer.tpf)
         end
       end
 

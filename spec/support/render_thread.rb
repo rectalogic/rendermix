@@ -5,10 +5,12 @@ shared_context 'requires render thread' do
       attr_reader :width
       attr_reader :height
       attr_reader :framerate
+      attr_reader :tpf
       def initialize(width, height, framerate)
         @width = width
         @height = height
         @framerate = framerate
+        @tpf = framerate.denominator / framerate.numerator.to_f
       end
     end
 
@@ -39,9 +41,15 @@ shared_context 'requires render thread' do
   def on_render_thread(&block)
     result = @app.enqueue(&block)
     result.get
+=begin XXX This sometimes rescues 'nil' http://stackoverflow.com/questions/8947954/jruby-makes-rescue-exception-nil-with-rescue-javasystem-out
+
+  rescue java.util.concurrent.ExecutionException => e
+    raise e.cause
+=end
   end
 
   after(:all) do
-    @app.stop
+    # Stop and wait for the app to finish
+    @app.stop(true)
   end
 end
