@@ -40,8 +40,8 @@ module RenderMix
     it_behaves_like 'a context pool' do
       let!(:pool) do
         on_render_thread do
-          VisualContextPool.new(@app.renderManager, @mixer.width, @mixer.height,
-                                @mixer.tpf)
+          VisualContextPool.new(@app.renderManager, @app.mixer.width,
+                                @app.mixer.height, @app.mixer.tpf)
         end
       end
 

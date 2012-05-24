@@ -17,8 +17,11 @@ shared_context 'requires render thread' do
     # Subclass MixerApplication to noop some methods.
     # Also make start() wait until render thread is actually started
     class MixerApplicationMock < RenderMix::MixerApplication
+      attr_reader :mixer
+
       def initialize(mixer)
         super
+        @mixer = mixer
         @mutex = Mutex.new
         @condvar = ConditionVariable.new
       end
@@ -33,8 +36,8 @@ shared_context 'requires render thread' do
       end
     end
 
-    @mixer = MixerMock.new(640, 480, Rational(30))
-    @app = MixerApplicationMock.new(@mixer)
+    mixer = MixerMock.new(640, 480, Rational(30))
+    @app = MixerApplicationMock.new(mixer)
     @app.start
   end
 

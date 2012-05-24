@@ -102,8 +102,8 @@ module RenderMix
     it_should_behave_like 'a context manager', :render_visual, :visual_context_released, false do
       let!(:manager) do
         on_render_thread do
-          VisualContextManager.new(@app.renderManager, @mixer.width,
-                                   @mixer.height, @mixer.tpf)
+          VisualContextManager.new(@app.renderManager, @app.mixer.width,
+                                   @app.mixer.height, @app.mixer.tpf)
         end
       end
       #XXX
@@ -113,10 +113,12 @@ module RenderMix
       it_should_behave_like 'a context manager', :render_visual, :visual_context_released, true do
         let!(:manager) do
           on_render_thread do
-            visual_context = VisualContext.new(@app.renderManager, @mixer.tpf,
-                                               @app.viewPort, @app.rootNode)
-            VisualContextManager.new(@app.renderManager, @mixer.width,
-                                     @mixer.height, @mixer.tpf, visual_context)
+            visual_context = VisualContext.new(@app.renderManager,
+                                               @app.mixer.tpf, @app.viewPort,
+                                               @app.rootNode)
+            VisualContextManager.new(@app.renderManager, @app.mixer.width,
+                                     @app.mixer.height, @app.mixer.tpf,
+                                     visual_context)
           end
         end
       end
