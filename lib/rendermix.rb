@@ -1,9 +1,14 @@
 $LOAD_PATH.unshift(File.expand_path('..', __FILE__)).uniq!
 
+require 'rubygems'
 require 'java'
-require 'rawmedia'
 require 'thread'
-#XXX require_relative the jme3 jar?
+
+require 'bundler'
+Bundler.setup(:default)
+
+require 'rawmedia'
+require_relative '../jme3/jMonkeyEngine3.jar'
 
 require 'rendermix/java'
 require 'rendermix/jme'
