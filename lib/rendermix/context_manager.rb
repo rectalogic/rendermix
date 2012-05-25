@@ -30,7 +30,7 @@ module RenderMix
 
     def acquire_context(renderer)
       # Someone already rendered for this frame
-      raise(InvalidMixError, "Frame double render") if @rendered
+      raise(InvalidMixError, "Frame already rendered for this context") if @rendered
 
       release_context if @current_renderer && renderer != @current_renderer
       @current_renderer = renderer

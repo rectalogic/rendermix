@@ -44,6 +44,14 @@ module RenderMix
         quad.localScale.should eq(JmeMath::Vector3f.new(scale, scale, 1))
       end
     end
-    
+
+    it 'should support scaled, translated panzoom' do
+      on_render_thread do
+        ortho, quad = ortho_quad
+        ortho.panzoom(2, 0.5, 0.2)
+        quad.localTranslation.should eq(JmeMath::Vector3f.new(0, -24, 0))
+        quad.localScale.should eq(JmeMath::Vector3f.new(1, 1, 1))
+      end
+    end
   end
 end

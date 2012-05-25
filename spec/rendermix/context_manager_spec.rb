@@ -58,6 +58,17 @@ shared_examples 'a context manager' do |render_av_method, av_context_released_me
     end
   end
 
+  it 'should raise on double render' do
+    on_render_thread do
+      renderer.should_receive(render_av_method) do |mgr|
+        mgr.acquire_context(renderer)
+        expect { mgr.acquire_context(renderer) }.to raise_error(RenderMix::InvalidMixError)
+      end.with(manager).once
+      renderer.should_not_receive(av_context_released_method)
+      manager.render(renderer)
+    end
+  end
+
   it 'should not clone the current context' do
     on_render_thread do
       context = manager.acquire_context(renderer)
