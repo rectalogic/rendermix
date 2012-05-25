@@ -2,6 +2,7 @@ module RenderMix
   module Mix
     class RenderManager
       attr_reader :mix_renderer
+      private :mix_renderer
 
       def initialize(mix_renderer)
         @mix_renderer = mix_renderer
