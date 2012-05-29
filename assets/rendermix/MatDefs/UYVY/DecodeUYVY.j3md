@@ -1,0 +1,18 @@
+MaterialDef UYVY {
+
+    MaterialParameters {
+        Texture2D Texture
+    }
+
+    Technique {
+        VertexShader GLSL100:   rendermix/MatDefs/UYVY/DecodeUYVY.vert
+        FragmentShader GLSL100: rendermix/MatDefs/UYVY/DecodeUYVY.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+        }
+    }
+
+    Technique FixedFunc {
+    }
+}

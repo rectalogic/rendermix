@@ -12,7 +12,7 @@ module RenderMix
       @width = width
       @height = height
       @framerate = framerate
-      @rawmedia_session = RawMedia::Session.new(width, height, framerate)
+      @rawmedia_session = RawMedia::Session.new(framerate)
       @app = MixerApplication.new(self)
     end
 
@@ -36,8 +36,9 @@ module RenderMix
       Mix::Image.new(self, filename, duration)
     end
 
-    def new_media(filename, start_frame=0, duration=nil)
-      Mix::Media.new(self, filename, start_frame, duration)
+    # @param opts (see Mix::Media#new)
+    def new_media(filename, opts={})
+      Mix::Media.new(self, filename, opts)
     end
 
     def mix(mix, filename=nil)
@@ -76,7 +77,8 @@ module RenderMix
     # _filename_ Output filename to encode mix into, if nil then mix will be displayed in a window
     def mix(mix, filename=nil)
       if filename
-        @encoder = RawMedia::Encoder.new(filename, @mixer.rawmedia_session)
+        @encoder = RawMedia::Encoder.new(filename, @mixer.rawmedia_session,
+                                         @mixer.width, @mixer.height)
       else
         # If not encoding, limit framerate so stuff looks right
         self.settings.frameRate = @mixer.framerate.to_i
