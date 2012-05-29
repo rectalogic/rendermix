@@ -28,6 +28,12 @@ module RenderMix
       release_context if @current_renderer and not @rendered
     end
 
+    # @return [Boolean] returns true if renderer acquired the context when
+    #  rendering. (i.e. something was actually rendered)
+    def rendered?
+      @rendered
+    end
+
     def acquire_context(renderer)
       # Someone already rendered for this frame
       raise(InvalidMixError, "Frame already rendered for this context") if @rendered
