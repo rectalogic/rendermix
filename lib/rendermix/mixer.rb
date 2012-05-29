@@ -99,8 +99,8 @@ module RenderMix
     end
 
     def simpleInitApp
-      # Register filesystem root so we can load textures from anywhere
-      self.assetManager.registerLocator('/', JmeAssetPlugins::FileLocator.java_class)
+      asset_root = File.expand_path('../../../assets', __FILE__)
+      self.assetManager.registerLocator(asset_root, JmeAssetPlugins::FileLocator.java_class)
 
       audio_context = AudioContext.new(@mixer.rawmedia_session.audio_framebuffer_size)
       @audio_context_manager = AudioContextManager.new(@mixer.rawmedia_session.audio_framebuffer_size, audio_context)
