@@ -3,6 +3,7 @@ require 'bundler'
 
 Bundler.setup(:default, :test)
 require 'rspec/core/rake_task'
+require 'yard'
 
 RSpec::Core::RakeTask.new
 
@@ -15,3 +16,5 @@ RSpec::Core::RakeTask.new(:coverage) do |task|
   task.rcov_path = 'rspec'
   task.rcov_opts = '--require simplecov_start'
 end
+
+YARD::Rake::YardocTask.new
