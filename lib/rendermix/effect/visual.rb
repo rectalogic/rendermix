@@ -1,6 +1,6 @@
 module RenderMix
   module Effect
-    class VisualEffect
+    class Visual
       #XXX plugin for Base?
     end
   end

@@ -10,7 +10,7 @@ module RenderMix
       end
 
       def add_effect(effect_delegate, track_indexes, in_frame, out_frame)
-        @effect_manager ||= create_effect_manager
+        @effect_manager ||= EffectManager.new(@mix_renderer.tracks)
         @effect_manager.add_effect(effect_delegate, track_indexes, in_frame, out_frame)
       end
 
@@ -41,10 +41,6 @@ module RenderMix
     end
 
     class AudioRenderManager < RenderManager
-      def create_effect_manager
-        AudioEffectManager.new(mix_renderer.tracks)
-      end
-
       def rendering_prepare(context_manager)
         mix_renderer.audio_rendering_prepare(context_manager)
       end
@@ -59,10 +55,6 @@ module RenderMix
     end
 
     class VisualRenderManager < RenderManager
-      def create_effect_manager
-        VisualEffectManager.new(mix_renderer.tracks)
-      end
-
       def rendering_prepare(context_manager)
         mix_renderer.visual_rendering_prepare(context_manager)
       end

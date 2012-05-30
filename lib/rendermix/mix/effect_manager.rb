@@ -17,6 +17,7 @@ module RenderMix
 
         #XXX insertion sort Effect::Base
         #XXX check for time overlap and raise
+        #XXX check fits within duration?
 
       end
 
@@ -31,7 +32,7 @@ module RenderMix
 
         # Past first effect, get the next one
         if current_frame > @active_effect.out_frame
-          on_rendering_finished
+          @active_effect.rendering_finished
           @effects.shift
           @active_effect = @effects.first
           return @tracks if not @active_effect
@@ -44,7 +45,7 @@ module RenderMix
         # Effect is current
         if current_frame >= @active_effect.in_frame and
             current_frame <= @active_effect.out_frame
-          on_render(context_manager)
+          @active_effect.render(context_manager)
           return @unrendered_tracks
         end
         @tracks
@@ -52,43 +53,10 @@ module RenderMix
 
       def rendering_prepare(context_manager)
         # Allow the effect to clone context
-        on_rendering_prepare(context_manager)
+        @active_effect.rendering_prepare(context_manager)
         @unrendered_tracks = @tracks - @active_effect.tracks
       end
       private :rendering_prepare
-
-      def active_effect
-        @active_effect
-      end
-      private :active_effect
-    end
-
-    class AudioEffectManager < EffectManager
-      def on_rendering_prepare(context_manager)
-        active_effect.audio_rendering_prepare(context_manager)
-      end
-
-      def on_render(context_manager)
-        active_effect.render_audio(context_manager)
-      end
-
-      def on_rendering_finished
-        active_effect.audio_rendering_finished
-      end
-    end
-
-    class VisualEffectManager < EffectManager
-      def on_rendering_prepare(context_manager)
-        active_effect.visual_rendering_prepare(context_manager)
-      end
-
-      def on_render(context_manager)
-        active_effect.render_visual(context_manager)
-      end
-
-      def on_rendering_finished
-        active_effect.visual_rendering_finished
-      end
     end
   end
 end

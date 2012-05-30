@@ -1,8 +1,5 @@
 module RenderMix
   module Mix
-    #XXX can we do some common Effect handling in this base class?
-    #XXX yes, support adding audio/visual effects, do insertion sort into arrays the subclass can access
-
     class Base
       include Renderer
 
@@ -22,12 +19,14 @@ module RenderMix
         @visual_render_manager = VisualRenderManager.new(self)
       end
 
-      # _track_indexes_ Array of track indexes effect applies to
+      # @param [Effect::Audio] audio_effect
+      # @param [Array<Fixnum>] track_indexes array of track indexes effect applies to
       def add_audio_effect(audio_effect, track_indexes, in_frame, out_frame)
         @audio_render_manager.add_effect(audio_effect, track_indexes, in_frame, out_frame)
       end
 
-      # _track_indexes_ Array of track indexes effect applies to
+      # @param [Effect::Visual] visual_effect
+      # @param [Array<Fixnum>] track_indexes array of track indexes effect applies to
       def add_visual_effect(visual_effect, track_indexes, in_frame, out_frame)
         @visual_render_manager.add_effect(visual_effect, track_indexes, in_frame, out_frame)
       end

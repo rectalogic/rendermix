@@ -1,8 +1,6 @@
 module RenderMix
   module Effect
     class Base
-      include Renderer
-
       # Beginning and ending frames of this effect
       attr_reader :in_frame
       attr_reader :out_frame
@@ -19,35 +17,19 @@ module RenderMix
       end
       
       #XXX Clone context for each track
-      def audio_rendering_prepare(context_manager)
+      def rendering_prepare(context_manager)
       end
 
-      def render_audio(context_manager)
+      def render(context_manager)
         #XXX
         #XXX render our context for each track
       end
 
-      def audio_context_released(context)
+      def context_released(context)
         #XXX
       end
 
-      def audio_rendering_finished
-        #XXX
-      end
-
-      #XXX Clone context for each track
-      def visual_rendering_prepare(context_manager)
-      end
-
-      def render_visual(context_manager)
-        #XXX
-      end
-
-      def visual_context_released(context)
-        #XXX
-      end
-
-      def visual_rendering_finished
+      def rendering_finished
         #XXX
       end
     end

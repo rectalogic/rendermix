@@ -1,6 +1,6 @@
 module RenderMix
   module Effect
-    class AudioEffect
+    class Audio
       #XXX plugin for Base?
     end
   end
