@@ -1,8 +1,7 @@
 module RenderMix
   module Mix
     class Base
-      include Renderer
-
+      # @return [Mixer] parent mixer
       attr_reader :mixer
 
       # Beginning and ending frames of this renderer in parents timeline
@@ -35,8 +34,8 @@ module RenderMix
         @audio_render_manager.has_effects? or @visual_render_manager.has_effects?
       end
 
-      # Return an array of Renderers, one for each track
       # Subclasses may override
+      # @return [Array<Mix::Base>] array of Mix elements, one for each track
       def tracks
         @tracks ||= [self].freeze
       end
@@ -45,41 +44,63 @@ module RenderMix
         @audio_render_manager.render(context_manager)
       end
 
-      # Subclass can override
-      #def audio_rendering_prepare(context_manager)
+      # Prepare for rendering audio. Called once before first call to #render_audio
+      # Subclass can implement.
+      # @param [AudioContextManager] context_manager
+      def audio_rendering_prepare(context_manager)
+      end
 
-      # Subclass should override.
-      # Must call acquire_audio_context for every frame content is rendered
-      # _render_tracks_ Array of Renderers to render
+      # Subclass should override to render audio.
+      # Must call ContextManager#acquire_audio_context from this method
+      # for every frame audio is rendered.
+      # @param [AudioContextManager] context_manager
+      # @param [Array<Mix::Base>] render_tracks Array of Mix elements to render
       def on_render_audio(context_manager, current_frame, render_tracks)
       end
 
+      # Called when audio rendering is finished,
+      # #render_audio will not be called again.
       # Subclasses can override to cleanup state when rendering complete.
-      #def audio_rendering_finished
+      def audio_rendering_finished
+      end
 
-      # Subclasses can override to cleanup any context specific state.
+      # Subclasses can override to release any context specific data,
+      # or revert any context changes made when context initially acquired.
       # Rendering is not yet complete at this point.
-      # def audio_context_released(context)
+      # @param [AudioContext] context
+      def audio_context_released(context)
+      end
 
-      # Subclass can override
-      #def visual_rendering_prepare(context_manager)
+      # Prepare for rendering visual. Called once before first call to #render_visual
+      # Subclass can implement.
+      # @param [VisualContextManager] context_manager
+      def visual_rendering_prepare(context_manager)
+      end
 
       def render_visual(context_manager)
         @visual_render_manager.render(context_manager)
       end
 
-      # Subclass should override.
-      # Must call acquire_visual_context for every frame content is rendered
-      # _render_tracks_ Array of Renderers to render
+      # Subclass should override to render visual.
+      # Must call ContextManager#acquire_visual_context from this method
+      # for every frame visual is rendered.
+      # @param [VisualContextManager] context_manager
+      # @param [Array<Mix::Base>] render_tracks Array of Mix elements to render
       def on_render_visual(context_manager, current_frame, render_tracks)
       end
 
+      # Called when audio rendering is finished,
+      # #render_audio will not be called again.
       # Subclasses can override to cleanup state when rendering complete.
-      #def visual_rendering_finished
+      def visual_rendering_finished
+      end
 
-      # Subclasses can override to cleanup any context specific state.
+      # Subclasses can override to release any context specific data,
+      # or revert any context changes made when context initially acquired.
       # Rendering is not yet complete at this point.
-      # def visual_context_released(context)
+      # @param [VisualContext] context
+      def visual_context_released(context)
+      end
     end
   end
 end

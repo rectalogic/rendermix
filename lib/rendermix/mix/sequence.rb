@@ -1,56 +1,57 @@
 module RenderMix
   module Mix
     class Sequence < Base
+      # @param [Mixer] mixer
       def initialize(mixer)
         super(mixer, 0)
-        @audio_renderers = []
-        @visual_renderers = []
+        @audio_mix_elements = []
+        @visual_mix_elements = []
       end
 
-      def append(mix_renderer)
+      def append(mix_element)
         raise(RuntimeError, 'Sequence cannot be modified after Effects applied') if has_effects?
-        raise(InvalidMixError, 'Renderer does not belong to this Mixer') if mix_renderer.mixer != self.mixer
-        @audio_renderers << mix_renderer
-        @visual_renderers << mix_renderer
-        mix_renderer.in_frame = self.duration
-        mix_renderer.out_frame = self.duration + mix_renderer.duration - 1
-        self.duration += mix_renderer.duration
+        raise(InvalidMixError, 'Mix element does not belong to this Mixer') if mix_element.mixer != self.mixer
+        @audio_mix_elements << mix_element
+        @visual_mix_elements << mix_element
+        mix_element.in_frame = self.duration
+        mix_element.out_frame = self.duration + mix_element.duration - 1
+        self.duration += mix_element.duration
       end
 
       def on_render_audio(context_manager, current_frame, renderer_tracks)
-        audio_renderer = current_mix_renderer(@audio_renderers, current_frame)
-        return unless audio_renderer
-        audio_renderer.render_audio(context_manager)
+        audio_mix_element = current_mix_element(@audio_mix_elements, current_frame)
+        return unless audio_mix_element
+        audio_mix_element.render_audio(context_manager)
       end
 
       def audio_rendering_finished
-        audio_renderer = @audio_renderers.first
-        audio_renderer.audio_rendering_finished if audio_renderer
-        @audio_renderers.clear
+        audio_mix_element = @audio_mix_elements.first
+        audio_mix_element.audio_rendering_finished if audio_mix_element
+        @audio_mix_elements.clear
       end
 
       def on_render_visual(context_manager, current_frame, renderer_tracks)
-        visual_renderer = current_mix_renderer(@visual_renderers, current_frame)
-        return unless visual_renderer
-        visual_renderer.render_visual(context_manager)
+        visual_mix_element = current_mix_element(@visual_mix_elements, current_frame)
+        return unless visual_mix_element
+        visual_mix_element.render_visual(context_manager)
       end
 
       def visual_rendering_finished
-        visual_renderer = @visual_renderers.first
-        visual_renderer.visual_rendering_finished if visual_renderer
-        @visual_renderers.clear
+        visual_mix_element = @visual_mix_elements.first
+        visual_mix_element.visual_rendering_finished if visual_mix_element
+        @visual_mix_elements.clear
       end
 
-      def current_mix_renderer(mix_renderers, current_frame)
-        mix_renderer = mix_renderers.first
-        return nil if mix_renderer.nil?
-        if mix_renderer.in_frame <= current_frame and mix_renderer.out_frame >= current_frame
-          return mix_renderer
+      def current_mix_element(mix_elements, current_frame)
+        mix = mix_elements.first
+        return nil if mix.nil?
+        if mix.in_frame <= current_frame and mix.out_frame >= current_frame
+          return mix
         else
-          mix_renderers.shift
+          mix_elements.shift
         end
       end
-      private :current_mix_renderer
+      private :current_mix_element
     end
   end
 end

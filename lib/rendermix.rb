@@ -16,7 +16,6 @@ require 'rendermix/errors'
 require 'rendermix/timer'
 require 'rendermix/mixer'
 require 'rendermix/command'
-require 'rendermix/renderer'
 
 require 'rendermix/audio_context'
 require 'rendermix/audio_context_pool'

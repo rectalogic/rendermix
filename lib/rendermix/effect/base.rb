@@ -4,11 +4,12 @@ module RenderMix
       # Beginning and ending frames of this effect
       attr_reader :in_frame
       attr_reader :out_frame
-      # Array of Renderers this Effect processes
+
+      # @return [Array<Mix::Base>] array of mix tracks this Effect processes
       attr_reader :tracks
 
-      # _effect_delegate_ AudioEffect or VisualEffect
-      # _tracks_ Array of renderers this Effect applies to
+      # @param [Audio, Video] effect_delegate
+      # @param [Array<Mix::Base>] tracks array of mix elements this effect applies to
       def initialize(effect_delegate, tracks, in_frame, out_frame)
         #XXX deal with effect_delegate
         @tracks = tracks.freeze
