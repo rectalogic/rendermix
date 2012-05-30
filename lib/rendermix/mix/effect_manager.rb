@@ -1,33 +1,54 @@
 module RenderMix
   module Mix
     class EffectManager
-      # _tracks_ Array of all renderers that an Effect could apply to
+      # @param [Array<Mix::Base>] tracks array of all mix elements an Effect could apply to
       def initialize(tracks)
         @tracks = tracks
         @effects = []
       end
 
       def add_effect(effect_delegate, track_indexes, in_frame, out_frame)
-        renderers = Array.new(track_indexes.length).fill do |i|
+        mix_elements = Array.new(track_indexes.length).fill do |i|
           index = track_indexes[i]
           raise(InvalidMixError, "Effect track index #{index} out of range") if index >= @tracks.length
           @tracks[index]
         end
-        effect = Effect::Base.new(effect_delegate, renderers, in_frame, out_frame)
+        effect = Effect::Base.new(effect_delegate, mix_elements, in_frame, out_frame)
 
-        #XXX insertion sort Effect::Base
-        #XXX check for time overlap and raise
-        #XXX check fits within duration?
-
+        insert_effect(effect)
       end
 
-      # Returns an Array of renderers that were not rendered.
+      # Insertion sort effect into array
+      def insert_effect(effect)
+        if @effects.empty?
+          @effects << effect
+        else
+          # Find first element ahead of us
+          index = @effects.find_index {|e| e.in_frame > effect.in_frame }
+          if index
+            if effect.out_frame >= @effects[index].in_frame ||
+                (index > 0 && @effects[index-1].out_frame >= effect.in_frame)
+              raise(InvalidMixError, 'Overlapping effects')
+            end
+            @effects.insert(index, effect)
+          else
+            # Check for overlap with last element
+            if @effects.last.out_frame >= effect.in_frame
+              raise(InvalidMixError, 'Overlapping effects')
+            end
+            @effects << effect
+          end
+        end
+      end
+      private :insert_effect
+
+      # Returns an Array of mix elements that were not rendered.
       # i.e. returns what still needs to be rendered.
       def render(context_manager, current_frame)
         if not @active_effect
           @active_effect = @effects.first
           return @tracks if not @active_effect
-          rendering_prepare(context_manager)
+          @unrendered_tracks = rendering_prepare(context_manager)
         end
 
         # Past first effect, get the next one
@@ -36,7 +57,7 @@ module RenderMix
           @effects.shift
           @active_effect = @effects.first
           return @tracks if not @active_effect
-          rendering_prepare(context_manager)
+          @unrendered_tracks = rendering_prepare(context_manager)
         end
 
         # Too early for effect
@@ -52,9 +73,9 @@ module RenderMix
       end
 
       def rendering_prepare(context_manager)
-        # Allow the effect to clone context
+        # Allow the effect to clone context manager
         @active_effect.rendering_prepare(context_manager)
-        @unrendered_tracks = @tracks - @active_effect.tracks
+        @tracks - @active_effect.tracks
       end
       private :rendering_prepare
     end

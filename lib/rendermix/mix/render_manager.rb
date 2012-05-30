@@ -1,18 +1,24 @@
 module RenderMix
   module Mix
     class RenderManager
-      # @return [Base] mix
-      attr_reader :mix
-      private :mix
+      # @return [Mix::Base] mix_element
+      attr_reader :mix_element
+      private :mix_element
 
-      # @param [Base] mix
-      def initialize(mix)
-        @mix = mix
+      # @param [Mix::Base] mix_element
+      def initialize(mix_element)
+        @mix_element = mix_element
         @current_frame = 0
       end
 
+      # @param [Effect::Audio, Effect::Visual] effect_delegate the type of the
+      #  delegate depends on the type of the RenderManager
       def add_effect(effect_delegate, track_indexes, in_frame, out_frame)
-        @effect_manager ||= EffectManager.new(@mix.tracks)
+        if in_frame < 0 || in_frame >= @mix_element.duration ||
+            out_frame < in_frame || out_frame >= @mix_element.duration
+          raise InvalidMixError, "Effect frame range (#{in_frame}..#{out_frame}) is invalid"
+        end
+        @effect_manager ||= EffectManager.new(@mix_element.tracks)
         @effect_manager.add_effect(effect_delegate, track_indexes, in_frame, out_frame)
       end
 
@@ -24,7 +30,7 @@ module RenderMix
       def render(context_manager)
         if @current_frame == 0
           rendering_prepare(context_manager)
-        elsif @current_frame >= @mix.duration
+        elsif @current_frame >= @mix_element.duration
           rendering_finished
           return
         end
@@ -37,7 +43,7 @@ module RenderMix
           renderers = @effect_manager.render(context_manager, @current_frame)
           @skip_effects = nil
         end
-        renderers ||= @mix.tracks
+        renderers ||= @mix_element.tracks
         on_render(context_manager, @current_frame, renderers) unless renderers.empty?
         @current_frame += 1
       end
@@ -45,29 +51,29 @@ module RenderMix
 
     class AudioRenderManager < RenderManager
       def rendering_prepare(context_manager)
-        mix.audio_rendering_prepare(context_manager)
+        mix_element.audio_rendering_prepare(context_manager)
       end
 
       def on_render(context_manager, current_frame, renderers)
-        mix.on_render_audio(context_manager, current_frame, renderers)
+        mix_element.on_render_audio(context_manager, current_frame, renderers)
       end
 
       def rendering_finished
-        mix.audio_rendering_finished
+        mix_element.audio_rendering_finished
       end
     end
 
     class VisualRenderManager < RenderManager
       def rendering_prepare(context_manager)
-        mix.visual_rendering_prepare(context_manager)
+        mix_element.visual_rendering_prepare(context_manager)
       end
 
       def on_render(context_manager, current_frame, renderers)
-        mix.on_render_visual(context_manager, current_frame, renderers)
+        mix_element.on_render_visual(context_manager, current_frame, renderers)
       end
 
       def rendering_finished
-        mix.visual_rendering_finished
+        mix_element.visual_rendering_finished
       end
     end
   end

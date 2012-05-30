@@ -8,7 +8,7 @@ module RenderMix
       # @return [Array<Mix::Base>] array of mix tracks this Effect processes
       attr_reader :tracks
 
-      # @param [Audio, Video] effect_delegate
+      # @param [Effect::Audio, Effect::Video] effect_delegate
       # @param [Array<Mix::Base>] tracks array of mix elements this effect applies to
       def initialize(effect_delegate, tracks, in_frame, out_frame)
         #XXX deal with effect_delegate

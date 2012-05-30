@@ -14,6 +14,7 @@ shared_examples 'a render manager' do |av_rendering_prepare, on_render_av, av_re
     on_render_thread do
       mix_element = double('mix element')
       mix_element.should_receive(:tracks).and_return [mix_element]
+      mix_element.should_receive(:duration).exactly(2).times.and_return 5
       manager = described_class.new(mix_element)
       manager.add_effect(double('delegate'), [0], 0, 1)
       manager.has_effects?.should be true
