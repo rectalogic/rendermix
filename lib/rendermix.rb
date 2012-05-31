@@ -14,6 +14,7 @@ require 'rendermix/java'
 require 'rendermix/jme'
 require 'rendermix/errors'
 require 'rendermix/timer'
+require 'rendermix/log'
 require 'rendermix/mixer'
 require 'rendermix/command'
 
@@ -36,4 +37,3 @@ require 'rendermix/mix/sequence'
 require 'rendermix/mix/blank'
 require 'rendermix/mix/image'
 require 'rendermix/mix/media'
-
