@@ -13,8 +13,8 @@ module RenderMix
           raise(InvalidMixError, "Effect track index #{index} out of range") if index >= @tracks.length
           @tracks[index]
         end
-        effect = Effect::Base.new(effect_delegate, mix_elements, in_frame, out_frame)
-
+        effect = Effect::Base.new(effect_delegate, mix_elements,
+                                  in_frame, out_frame)
         insert_effect(effect)
       end
 
@@ -72,10 +72,11 @@ module RenderMix
         @tracks
       end
 
+      # @return [Array<Mix::Base>] array of mix tracks that still need to be rendered
       def rendering_prepare(context_manager)
         # Allow the effect to clone context manager
-        @active_effect.rendering_prepare(context_manager)
-        @tracks - @active_effect.tracks
+        effect_tracks = @active_effect.rendering_prepare(context_manager)
+        @tracks - effect_tracks
       end
       private :rendering_prepare
     end

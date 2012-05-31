@@ -1,12 +1,10 @@
 module RenderMix
   module Effect
     class Base
-      # Beginning and ending frames of this effect
+      # @return [Fixnum] starting frame of this effect
       attr_reader :in_frame
+      # @return [Fixnum] ending frame of this effect
       attr_reader :out_frame
-
-      # @return [Array<Mix::Base>] array of mix tracks this Effect processes
-      attr_reader :tracks
 
       # @param [Effect::Audio, Effect::Video] effect_delegate
       # @param [Array<Mix::Base>] tracks array of mix elements this effect applies to
@@ -17,8 +15,14 @@ module RenderMix
         @out_frame = out_frame
       end
       
-      #XXX Clone context for each track
+      # @return [Array<Mix::Base>] array of mix tracks this Effect processes
       def rendering_prepare(context_manager)
+        # Clone context manager for each track
+        @context_managers = Array.new(@tracks.length)
+        @context_managers.fill { context_manager.clone }
+        @current_contexts = Array.new(@tracks.length)
+        #XXX inform delegate?
+        @tracks
       end
 
       def render(context_manager)

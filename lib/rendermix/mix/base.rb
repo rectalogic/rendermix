@@ -4,8 +4,9 @@ module RenderMix
       # @return [Mixer] parent mixer
       attr_reader :mixer
 
-      # Beginning and ending frames of this renderer in parents timeline
+      # @return [Fixnum] starting frame of this element in parents timeline
       attr_accessor :in_frame
+      # @return [Fixnum] ending frame of this element in parents timeline
       attr_accessor :out_frame
 
       attr_accessor :duration
