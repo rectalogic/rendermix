@@ -3,7 +3,7 @@ module RenderMix
     attr_reader :buffer
 
     def initialize(size)
-      @buffer = FFI::Buffer.new_out(size)
+      @buffer = FFI::MemoryPointer.new(size)
     end
   end
 end
