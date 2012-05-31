@@ -29,7 +29,7 @@ module RenderMix
         @texture.wrap = JmeTexture::Texture::WrapMode::Clamp
       end
 
-      def on_render_visual(context_manager, current_frame, renderer_tracks)
+      def on_visual_render(context_manager, current_frame, renderer_tracks)
         visual_context = context_manager.acquire_context(self)
         unless @quad
           image = @texture.image

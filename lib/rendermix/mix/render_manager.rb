@@ -55,7 +55,7 @@ module RenderMix
       end
 
       def on_render(context_manager, current_frame, renderers)
-        mix_element.on_render_audio(context_manager, current_frame, renderers)
+        mix_element.on_audio_render(context_manager, current_frame, renderers)
       end
 
       def rendering_finished
@@ -69,7 +69,7 @@ module RenderMix
       end
 
       def on_render(context_manager, current_frame, renderers)
-        mix_element.on_render_visual(context_manager, current_frame, renderers)
+        mix_element.on_visual_render(context_manager, current_frame, renderers)
       end
 
       def rendering_finished

@@ -96,12 +96,12 @@ end
 
 module RenderMix
   describe AudioContextManager do
-    it_should_behave_like 'a context manager', :render_audio, :audio_context_released, false do
+    it_should_behave_like 'a context manager', :audio_render, :audio_context_released, false do
       let!(:manager) { AudioContextManager.new(1024) }
     end
 
     context 'with initial context' do
-      it_should_behave_like 'a context manager', :render_audio, :audio_context_released, true do
+      it_should_behave_like 'a context manager', :audio_render, :audio_context_released, true do
         let!(:manager) do
           AudioContextManager.new(1024, AudioContext.new(1024))
         end
@@ -110,7 +110,7 @@ module RenderMix
   end
 
   describe VisualContextManager do
-    it_should_behave_like 'a context manager', :render_visual, :visual_context_released, false do
+    it_should_behave_like 'a context manager', :visual_render, :visual_context_released, false do
       let!(:manager) do
         on_render_thread do
           VisualContextManager.new(@app.renderManager, @app.mixer.width,
@@ -121,7 +121,7 @@ module RenderMix
     end
 
     context 'with initial context' do
-      it_should_behave_like 'a context manager', :render_visual, :visual_context_released, true do
+      it_should_behave_like 'a context manager', :visual_render, :visual_context_released, true do
         let!(:manager) do
           on_render_thread do
             visual_context = VisualContext.new(@app.renderManager,

@@ -21,9 +21,9 @@ module RenderMix
         @tracks ||= @mix_elements.dup.freeze
       end
 
-      def on_render_audio(context_manager, current_frame, render_tracks)
+      def on_audio_render(context_manager, current_frame, render_tracks)
         render_tracks.each do |track|
-          track.render_audio(context_manager)
+          track.audio_render(context_manager)
         end
       end
 
@@ -35,9 +35,9 @@ module RenderMix
         @rendering_finished = true
       end
 
-      def on_render_visual(context_manager, current_frame, render_tracks)
+      def on_visual_render(context_manager, current_frame, render_tracks)
         render_tracks.each do |track|
-          track.render_visual(context_manager)
+          track.visual_render(context_manager)
         end
       end
 

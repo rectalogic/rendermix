@@ -67,7 +67,7 @@ module RenderMix
     end
 
     def on_render(renderer)
-      renderer.render_audio(self)
+      renderer.audio_render(self)
     end
     private :on_render
 
@@ -84,7 +84,7 @@ module RenderMix
     end
 
     def on_render(renderer)
-      renderer.render_visual(self)
+      renderer.visual_render(self)
     end
     private :on_render
 

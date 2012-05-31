@@ -41,11 +41,11 @@ module RenderMix
         @tracks ||= [self].freeze
       end
 
-      def render_audio(context_manager)
+      def audio_render(context_manager)
         @audio_render_manager.render(context_manager)
       end
 
-      # Prepare for rendering audio. Called once before first call to #render_audio
+      # Prepare for rendering audio. Called once before first call to #audio_render
       # Subclass can implement.
       # @param [AudioContextManager] context_manager
       def audio_rendering_prepare(context_manager)
@@ -56,11 +56,11 @@ module RenderMix
       # for every frame audio is rendered.
       # @param [AudioContextManager] context_manager
       # @param [Array<Mix::Base>] render_tracks Array of Mix elements to render
-      def on_render_audio(context_manager, current_frame, render_tracks)
+      def on_audio_render(context_manager, current_frame, render_tracks)
       end
 
       # Called when audio rendering is finished,
-      # #render_audio will not be called again.
+      # #audio_render will not be called again.
       # Subclasses can override to cleanup state when rendering complete.
       def audio_rendering_finished
       end
@@ -72,13 +72,13 @@ module RenderMix
       def audio_context_released(context)
       end
 
-      # Prepare for rendering visual. Called once before first call to #render_visual
+      # Prepare for rendering visual. Called once before first call to #visual_render
       # Subclass can implement.
       # @param [VisualContextManager] context_manager
       def visual_rendering_prepare(context_manager)
       end
 
-      def render_visual(context_manager)
+      def visual_render(context_manager)
         @visual_render_manager.render(context_manager)
       end
 
@@ -87,11 +87,11 @@ module RenderMix
       # for every frame visual is rendered.
       # @param [VisualContextManager] context_manager
       # @param [Array<Mix::Base>] render_tracks Array of Mix elements to render
-      def on_render_visual(context_manager, current_frame, render_tracks)
+      def on_visual_render(context_manager, current_frame, render_tracks)
       end
 
-      # Called when audio rendering is finished,
-      # #render_audio will not be called again.
+      # Called when visual rendering is finished,
+      # #visual_render will not be called again.
       # Subclasses can override to cleanup state when rendering complete.
       def visual_rendering_finished
       end

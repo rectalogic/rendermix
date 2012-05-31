@@ -76,11 +76,11 @@ end
 module RenderMix
   module Mix
     describe AudioRenderManager do 
-      it_should_behave_like 'a render manager', :audio_rendering_prepare, :on_render_audio, :audio_rendering_finished
+      it_should_behave_like 'a render manager', :audio_rendering_prepare, :on_audio_render, :audio_rendering_finished
     end
 
     describe VisualRenderManager do
-      it_should_behave_like 'a render manager', :visual_rendering_prepare, :on_render_visual, :visual_rendering_finished
+      it_should_behave_like 'a render manager', :visual_rendering_prepare, :on_visual_render, :visual_rendering_finished
     end
   end
 end
