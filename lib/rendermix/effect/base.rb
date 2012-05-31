@@ -24,6 +24,12 @@ module RenderMix
       def render(context_manager)
         #XXX
         #XXX render our context for each track
+        # Render each track into its context manager
+        @context_managers.each_with_index do |cm, i|
+          cm.render(@tracks[i])
+          @current_contexts[i] = cm.current_context
+        end
+        #XXX need to provide @current_contexts to delegate - it then needs to render into our context_manager
       end
 
       def context_released(context)

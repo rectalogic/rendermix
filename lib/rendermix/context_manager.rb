@@ -28,10 +28,11 @@ module RenderMix
       release_context if @current_renderer and not @rendered
     end
 
-    # @return [Boolean] returns true if renderer acquired the context when
-    #  rendering. (i.e. something was actually rendered)
-    def rendered?
-      @rendered
+    # @return [AudioContext, VisualContext, nil] returns the current context if
+    #  the context was acquired during the last #render
+    #  Returns nil if nothing was rendered.
+    def current_context
+      return @context if @rendered
     end
 
     def acquire_context(renderer)
