@@ -3,7 +3,7 @@ module RenderMix
     class RenderManager
       # @return [Mix::Base] mix_element
       attr_reader :mix_element
-      private :mix_element
+      protected :mix_element
 
       # @param [Mix::Base] mix_element
       def initialize(mix_element)
@@ -11,15 +11,15 @@ module RenderMix
         @current_frame = 0
       end
 
-      # @param [Effect::Audio, Effect::Visual] effect_delegate the type of the
-      #  delegate depends on the type of the RenderManager
-      def add_effect(effect_delegate, track_indexes, in_frame, out_frame)
+      # @param [Effect::Audio, Effect::Visual] effect the type of the
+      #  effect depends on the type of the RenderManager
+      def apply_effect(effect, track_indexes, in_frame, out_frame)
         if in_frame < 0 || in_frame >= @mix_element.duration ||
             out_frame < in_frame || out_frame >= @mix_element.duration
           raise InvalidMixError, "Effect frame range (#{in_frame}..#{out_frame}) is invalid"
         end
-        @effect_manager ||= EffectManager.new(@mix_element.tracks)
-        @effect_manager.add_effect(effect_delegate, track_indexes, in_frame, out_frame)
+        @effect_manager ||= EffectManager.new(@mix_element)
+        @effect_manager.apply_effect(effect, track_indexes, in_frame, out_frame)
       end
 
       def has_effects?

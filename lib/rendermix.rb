@@ -28,6 +28,7 @@ require 'rendermix/ortho_quad'
 require 'rendermix/effect/base'
 require 'rendermix/effect/audio'
 require 'rendermix/effect/visual'
+require 'rendermix/effect/audio_mixer'
 
 require 'rendermix/mix/effect_manager'
 require 'rendermix/mix/render_manager'

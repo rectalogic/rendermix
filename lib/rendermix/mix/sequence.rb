@@ -8,9 +8,11 @@ module RenderMix
         @visual_mix_elements = []
       end
 
+      # @param [Mix::Base] mix_element
       def append(mix_element)
         raise(RuntimeError, 'Sequence cannot be modified after Effects applied') if has_effects?
         raise(InvalidMixError, 'Mix element does not belong to this Mixer') if mix_element.mixer != self.mixer
+        raise(RuntimeError, 'Mix element already added') if mix_element.in_frame || mix_element.out_frame
         @audio_mix_elements << mix_element
         @visual_mix_elements << mix_element
         mix_element.in_frame = self.duration

@@ -18,7 +18,11 @@ module RenderMix
       @initial_context = nil
     end
 
-    # Subclasses must implement on_render(renderer) hook
+    # @param [#visual_render, #visual_context_released,
+    #  #audio_render, #audio_context_released] renderer
+    #  should implement either the set of visual or audio methods,
+    #  depending on the ContextManager subclass.
+    # Subclasses must implement #on_render(renderer) hook
     def render(renderer)
       @rendered = false
 
@@ -69,28 +73,27 @@ module RenderMix
     def on_render(renderer)
       renderer.audio_render(self)
     end
-    private :on_render
+    protected :on_render
 
     def on_release_context(renderer, context)
       renderer.audio_context_released(context)
     end
-    private :on_release_context
+    protected :on_release_context
   end
 
   class VisualContextManager < ContextManager
     def initialize(render_manager, width, height, tpf, initial_context=nil)
       super(VisualContextPool.new(render_manager, width, height, tpf), initial_context)
-      @render_manager = render_manager
     end
 
     def on_render(renderer)
       renderer.visual_render(self)
     end
-    private :on_render
+    protected :on_render
 
     def on_release_context(renderer, context)
       renderer.visual_context_released(context)
     end
-    private :on_release_context
+    protected :on_release_context
   end
 end

@@ -12,11 +12,15 @@ shared_examples 'a render manager' do |av_rendering_prepare, on_render_av, av_re
 
   it 'should have effects when added' do
     on_render_thread do
-      mix_element = double('mix element')
-      mix_element.should_receive(:tracks).and_return [mix_element]
-      mix_element.should_receive(:duration).exactly(2).times.and_return 5
+      mixer = double('mixer')
+      mix_element = double('mix element', :mixer => mixer)
+      tracks = [mix_element]
+      mix_element.should_receive(:tracks).at_least(:once).and_return(tracks)
+      mix_element.should_receive(:duration).at_least(:once).and_return 5
       manager = described_class.new(mix_element)
-      manager.add_effect(double('delegate'), [0], 0, 1)
+      effect = double('effect')
+      effect.should_receive(:apply).with(mixer, tracks, 0, 1)
+      manager.apply_effect(effect, [0], 0, 1)
       manager.has_effects?.should be true
     end
   end

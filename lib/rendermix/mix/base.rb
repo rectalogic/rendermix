@@ -8,7 +8,7 @@ module RenderMix
       attr_accessor :in_frame
       # @return [Fixnum] ending frame of this element in parents timeline
       attr_accessor :out_frame
-
+      # @return [Fixnum] total duration in frames of this element in parents timeline
       attr_accessor :duration
 
       def initialize(mixer, duration)
@@ -21,14 +21,14 @@ module RenderMix
 
       # @param [Effect::Audio] audio_effect
       # @param [Array<Fixnum>] track_indexes array of track indexes effect applies to
-      def add_audio_effect(audio_effect, track_indexes, in_frame, out_frame)
-        @audio_render_manager.add_effect(audio_effect, track_indexes, in_frame, out_frame)
+      def apply_audio_effect(audio_effect, track_indexes, in_frame, out_frame)
+        @audio_render_manager.apply_effect(audio_effect, track_indexes, in_frame, out_frame)
       end
 
       # @param [Effect::Visual] visual_effect
       # @param [Array<Fixnum>] track_indexes array of track indexes effect applies to
-      def add_visual_effect(visual_effect, track_indexes, in_frame, out_frame)
-        @visual_render_manager.add_effect(visual_effect, track_indexes, in_frame, out_frame)
+      def apply_visual_effect(visual_effect, track_indexes, in_frame, out_frame)
+        @visual_render_manager.apply_effect(visual_effect, track_indexes, in_frame, out_frame)
       end
 
       def has_effects?
@@ -52,7 +52,7 @@ module RenderMix
       end
 
       # Subclass should override to render audio.
-      # Must call ContextManager#acquire_audio_context from this method
+      # Must call AudioContextManager#acquire_context from this method
       # for every frame audio is rendered.
       # @param [AudioContextManager] context_manager
       # @param [Array<Mix::Base>] render_tracks Array of Mix elements to render
@@ -83,7 +83,7 @@ module RenderMix
       end
 
       # Subclass should override to render visual.
-      # Must call ContextManager#acquire_visual_context from this method
+      # Must call VisualContextManager#acquire_context from this method
       # for every frame visual is rendered.
       # @param [VisualContextManager] context_manager
       # @param [Array<Mix::Base>] render_tracks Array of Mix elements to render

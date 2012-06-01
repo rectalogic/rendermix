@@ -36,7 +36,8 @@ module RenderMix
       Mix::Image.new(self, filename, duration)
     end
 
-    # @param opts (see Mix::Media#new)
+    # @param [String] filename
+    # @param [Hash] opts (see Mix::Media#initialize)
     def new_media(filename, opts={})
       Mix::Media.new(self, filename, opts)
     end
