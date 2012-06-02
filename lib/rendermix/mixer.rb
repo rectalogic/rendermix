@@ -43,7 +43,7 @@ module RenderMix
     end
 
     def mix(mix, filename=nil)
-      raise(InvalidMixError, 'Mix was not created by this Mixer') if mix.mixer != self
+      mix.add(self)
       @app.mix(mix, filename)
     end
   end

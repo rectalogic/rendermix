@@ -11,12 +11,16 @@ module RenderMix
       # @return [Fixnum] total duration in frames of this element in parents timeline
       attr_accessor :duration
 
-      def initialize(mixer, duration)
-        raise(InvalidMixError, 'Duration not specified') unless duration
+      def initialize(mixer, duration=0)
         @mixer = mixer
         @duration = duration
         @audio_render_manager = AudioRenderManager.new(self)
         @visual_render_manager = VisualRenderManager.new(self)
+      end
+
+      def add(mixer)
+        raise(InvalidMixError, 'Mix element does not belong to this Mixer') if mixer != self.mixer
+        raise(RuntimeError, 'Mix element already added') if in_frame || out_frame
       end
 
       # @param [Effect::Audio] audio_effect
