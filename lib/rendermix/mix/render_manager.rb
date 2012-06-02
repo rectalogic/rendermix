@@ -13,13 +13,13 @@ module RenderMix
 
       # @param [Effect::Audio, Effect::Visual] effect the type of the
       #  effect depends on the type of the RenderManager
-      def apply_effect(effect, track_indexes, in_frame, out_frame)
+      def apply_effect(effect, in_frame, out_frame)
         if in_frame < 0 || in_frame >= @mix_element.duration ||
             out_frame < in_frame || out_frame >= @mix_element.duration
           raise InvalidMixError, "Effect frame range (#{in_frame}..#{out_frame}) is invalid"
         end
         @effect_manager ||= EffectManager.new(@mix_element)
-        @effect_manager.apply_effect(effect, track_indexes, in_frame, out_frame)
+        @effect_manager.apply_effect(effect, in_frame, out_frame)
       end
 
       def has_effects?
@@ -40,11 +40,10 @@ module RenderMix
           # we need to guard against reentrant rendering. The Effect may
           # render us, and we don't want to render the Effect again when it does.
           @skip_effects = true
-          renderers = @effect_manager.render(context_manager, @current_frame)
+          rendered = @effect_manager.render(context_manager, @current_frame)
           @skip_effects = nil
         end
-        renderers ||= @mix_element.tracks
-        on_render(context_manager, @current_frame, renderers) unless renderers.empty?
+        on_render(context_manager, @current_frame) unless rendered
         @current_frame += 1
       end
     end
@@ -54,8 +53,8 @@ module RenderMix
         mix_element.audio_rendering_prepare(context_manager)
       end
 
-      def on_render(context_manager, current_frame, renderers)
-        mix_element.on_audio_render(context_manager, current_frame, renderers)
+      def on_render(context_manager, current_frame)
+        mix_element.on_audio_render(context_manager, current_frame)
       end
 
       def rendering_finished
@@ -68,8 +67,8 @@ module RenderMix
         mix_element.visual_rendering_prepare(context_manager)
       end
 
-      def on_render(context_manager, current_frame, renderers)
-        mix_element.on_visual_render(context_manager, current_frame, renderers)
+      def on_render(context_manager, current_frame)
+        mix_element.on_visual_render(context_manager, current_frame)
       end
 
       def rendering_finished

@@ -19,7 +19,7 @@ module RenderMix
         self.duration += mix_element.duration
       end
 
-      def on_audio_render(context_manager, current_frame, renderer_tracks)
+      def on_audio_render(context_manager, current_frame)
         audio_mix_element = current_mix_element(@audio_mix_elements, current_frame)
         return unless audio_mix_element
         audio_mix_element.audio_render(context_manager)
@@ -31,7 +31,7 @@ module RenderMix
         @audio_mix_elements.clear
       end
 
-      def on_visual_render(context_manager, current_frame, renderer_tracks)
+      def on_visual_render(context_manager, current_frame)
         visual_mix_element = current_mix_element(@visual_mix_elements, current_frame)
         return unless visual_mix_element
         visual_mix_element.visual_render(context_manager)

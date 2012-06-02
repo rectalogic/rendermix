@@ -21,13 +21,11 @@ module RenderMix
         @current_frame = 0
       end
 
-      # @return [Array<Mix::Base>] array of mix tracks this Effect processes
       def rendering_prepare(context_manager)
         # Clone context manager for each track
         @context_managers = Array.new(@tracks.length)
         @context_managers.fill { context_manager.clone }
         on_rendering_prepare(@tracks)
-        @tracks
       end
 
       # Acquires the effects context, and renders effect tracks into their

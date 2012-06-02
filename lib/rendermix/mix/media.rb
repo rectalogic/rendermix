@@ -20,7 +20,7 @@ module RenderMix
         super(mixer, duration)
       end
 
-      def on_audio_render(context_manager, current_frame, renderer_tracks)
+      def on_audio_render(context_manager, current_frame)
         return unless @decoder.has_audio?
         audio_context = context_manager.acquire_context(self)
         @decoder.decode_audio(audio_context.buffer)
@@ -44,7 +44,7 @@ module RenderMix
         @material.setTexture('Texture', @texture)
       end
 
-      def on_visual_render(context_manager, current_frame, renderer_tracks)
+      def on_visual_render(context_manager, current_frame)
         return unless @decoder.has_video?
         visual_context = context_manager.acquire_context(self)
         result = @decoder.decode_video

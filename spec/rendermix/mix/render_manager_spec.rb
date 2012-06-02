@@ -20,7 +20,7 @@ shared_examples 'a render manager' do |av_rendering_prepare, on_render_av, av_re
       manager = described_class.new(mix_element)
       effect = double('effect')
       effect.should_receive(:apply).with(mixer, tracks, 0, 1)
-      manager.apply_effect(effect, [0], 0, 1)
+      manager.apply_effect(effect, 0, 1)
       manager.has_effects?.should be true
     end
   end
@@ -49,9 +49,8 @@ XXX need to flesh out effects more
       context_manager = double('context manager')
       mix_element = double('mix element')
       tracks = [ mix_element ]
-      mix_element.should_receive(:tracks).and_return tracks
       mix_element.should_receive(av_rendering_prepare).with(context_manager).once
-      mix_element.should_receive(on_render_av).with(context_manager, 0, tracks).once
+      mix_element.should_receive(on_render_av).with(context_manager, 0).once
       mix_element.should_not_receive(av_rendering_finished)
       manager = described_class.new(mix_element)
       manager.render(context_manager)
@@ -63,11 +62,10 @@ XXX need to flesh out effects more
       context_manager = double('context manager')
       mix_element = double('mix element', duration: 2)
       tracks = [ mix_element ]
-      mix_element.should_receive(:tracks).exactly(2).times.and_return tracks
       mix_element.should_receive(av_rendering_prepare).with(context_manager).once
-      mix_element.should_receive(on_render_av).with(context_manager, 0, tracks).once
-      mix_element.should_receive(on_render_av).with(context_manager, 1, tracks).once
-      mix_element.should_not_receive(on_render_av).with(context_manager, 2, tracks)
+      mix_element.should_receive(on_render_av).with(context_manager, 0).once
+      mix_element.should_receive(on_render_av).with(context_manager, 1).once
+      mix_element.should_not_receive(on_render_av).with(context_manager, 2)
       mix_element.should_receive(av_rendering_finished).once
       manager = described_class.new(mix_element)
       manager.render(context_manager)

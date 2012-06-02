@@ -7,15 +7,8 @@ module RenderMix
         @effects = []
       end
 
-      def apply_effect(effect, track_indexes, in_frame, out_frame)
-        tracks = @mix_element.tracks
-        effect_tracks = Array.new(track_indexes.length).fill do |i|
-          index = track_indexes[i]
-          raise(InvalidMixError, "Effect track index #{index} out of range") if index < 0 || index >= @mix_element.tracks.length
-          tracks[index]
-        end
-
-        effect.apply(@mix_element.mixer, effect_tracks, in_frame, out_frame)
+      def apply_effect(effect, in_frame, out_frame)
+        effect.apply(@mix_element.mixer, @mix_element.tracks, in_frame, out_frame)
         insert_effect(effect)
       end
 
@@ -43,41 +36,32 @@ module RenderMix
       end
       private :insert_effect
 
-      # @return [Array<Mix::Base>] array of mix elements that were not rendered.
-      #  i.e. returns what still needs to be rendered.
+      # @return [Boolean] true if effect rendered
       def render(context_manager, current_frame)
         # No effects, no tracks rendered
-        return @mix_element.tracks if @effects.empty?
+        return false if @effects.empty?
 
         # Past first effect, get the next one
         if current_frame > @effects.first.out_frame
           @effects.first.rendering_finished
           @effects.shift
-          return @mix_element.tracks if @effects.empty?
+          return false if @effects.empty?
         end
 
         effect = @effects.first
 
         # Too early for this effect
-        if current_frame < effect.in_frame
-          return @mix_element.tracks
-        end
+        return false if current_frame < effect.in_frame
 
         # First frame for effect, prepare it
-        if effect.in_frame == current_frame
-          # Allow the effect to clone context manager
-          effect_tracks = effect.rendering_prepare(context_manager)
-          # Cache tracks the effect won't be rendering
-          @unrendered_tracks = @mix_element.tracks - effect_tracks
-        end
+        effect.rendering_prepare(context_manager) if effect.in_frame == current_frame
 
         # Effect is current
         if current_frame >= effect.in_frame and current_frame <= effect.out_frame
           context_manager.render(effect)
-          return @unrendered_tracks
-        else
-          @mix_element.tracks
+          return true
         end
+        return false
       end
     end
   end

@@ -24,15 +24,13 @@ module RenderMix
       end
 
       # @param [Effect::Audio] audio_effect
-      # @param [Array<Fixnum>] track_indexes array of track indexes effect applies to
-      def apply_audio_effect(audio_effect, track_indexes, in_frame, out_frame)
-        @audio_render_manager.apply_effect(audio_effect, track_indexes, in_frame, out_frame)
+      def apply_audio_effect(audio_effect, in_frame, out_frame)
+        @audio_render_manager.apply_effect(audio_effect, in_frame, out_frame)
       end
 
       # @param [Effect::Visual] visual_effect
-      # @param [Array<Fixnum>] track_indexes array of track indexes effect applies to
-      def apply_visual_effect(visual_effect, track_indexes, in_frame, out_frame)
-        @visual_render_manager.apply_effect(visual_effect, track_indexes, in_frame, out_frame)
+      def apply_visual_effect(visual_effect, in_frame, out_frame)
+        @visual_render_manager.apply_effect(visual_effect, in_frame, out_frame)
       end
 
       def has_effects?
