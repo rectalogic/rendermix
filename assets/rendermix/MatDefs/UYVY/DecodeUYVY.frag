@@ -1,7 +1,7 @@
 // For textureSize2D
 #extension GL_EXT_gpu_shader4 : enable
 
-varying vec2 texCoord;
+varying vec2 texCoord1;
 
 uniform sampler2D m_Texture;
 
@@ -20,9 +20,9 @@ const mat3 BT601 = mat3(1.1640,  0.0000,  1.5960,
 
 void main(){
     float texWidth = float(textureSize2D(m_Texture, 0).x);
-    vec4 macropixel = texture2D(m_Texture, texCoord);
+    vec4 macropixel = texture2D(m_Texture, texCoord1);
     vec3 color;
-    color[Y] = (fract(texCoord.s * texWidth) < 0.5
+    color[Y] = (fract(texCoord1.s * texWidth) < 0.5
                 ? macropixel.g
                 : macropixel.a) + BT601_bias.x;
     color[Cb] = macropixel.r + BT601_bias.y;

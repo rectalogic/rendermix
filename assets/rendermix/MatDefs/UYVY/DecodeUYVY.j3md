@@ -5,11 +5,15 @@ MaterialDef UYVY {
     }
 
     Technique {
-        VertexShader GLSL100:   rendermix/MatDefs/UYVY/DecodeUYVY.vert
+        VertexShader GLSL100:   Common/MatDefs/Misc/Unshaded.vert
         FragmentShader GLSL100: rendermix/MatDefs/UYVY/DecodeUYVY.frag
 
         WorldParameters {
             WorldViewProjectionMatrix
+        }
+
+        Defines {
+            NEED_TEXCOORD1
         }
     }
 
