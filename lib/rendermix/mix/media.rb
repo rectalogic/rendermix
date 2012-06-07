@@ -13,6 +13,7 @@ module RenderMix
       # @option opts [Fixnum] :start_frame starting video frame, default 0
       # @option opts [Fixnum] :duration override intrinsic media duration
       def initialize(mixer, filename, opts={})
+        opts.assert_valid_keys(:volume, :start_frame, :duration)
         volume = opts.fetch(:volume, 1.0)
         start_frame = opts.fetch(:start_frame, 0.0)
         @decoder = RawMedia::Decoder.new(filename, mixer.rawmedia_session,

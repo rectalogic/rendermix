@@ -15,6 +15,7 @@ require_relative '../jme3/jMonkeyEngine3.jar'
 
 require 'rendermix/java'
 require 'rendermix/jme'
+require 'rendermix/core_ext/hash'
 require 'rendermix/errors'
 require 'rendermix/timer'
 require 'rendermix/log'

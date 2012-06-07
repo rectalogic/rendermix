@@ -12,6 +12,7 @@ module RenderMix
     #  :material - JmeMaterial::Material to use. A default material will
     #    be used if not set. The default has a Texture param named 'Texture'
     def initialize(visual_context, asset_manager, image_width, image_height, opts={})
+      opts.assert_valid_keys(:flip_y, :clear_flags, :material)
       @image_width = image_width
       @image_height = image_height
       @context_width = visual_context.width
