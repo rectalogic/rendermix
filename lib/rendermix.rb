@@ -29,8 +29,8 @@ require 'rendermix/context_manager'
 require 'rendermix/ortho_quad'
 
 require 'rendermix/effect/base'
-require 'rendermix/effect/audio'
-require 'rendermix/effect/visual'
+require 'rendermix/effect/audio_base'
+require 'rendermix/effect/visual_base'
 require 'rendermix/effect/audio_mixer'
 
 require 'rendermix/mix/effect_manager'

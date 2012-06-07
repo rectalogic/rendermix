@@ -21,7 +21,6 @@ module RenderMix
         @in_frame = in_frame
         @out_frame = out_frame
         @duration = out_frame - in_frame + 1
-        @current_frame = 0
       end
 
       def rendering_prepare(context_manager)
@@ -45,21 +44,7 @@ module RenderMix
         end
         return context_manager.acquire_context(self), current_contexts
       end
-      private :render
-
-      # Either this or #visual_render will be called, not both
-      def audio_render(context_manager)
-        context, track_contexts = render(context_manager)
-        on_audio_render(context, track_contexts, @current_frame)
-        @current_frame += 1
-      end
-
-      # Either this or #audio_render will be called, not both
-      def visual_render(context_manager)
-        context, track_contexts = render(context_manager)
-        on_visual_render(context, track_contexts, @current_frame)
-        @current_frame += 1
-      end
+      protected :render
     end
   end
 end

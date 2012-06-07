@@ -3,9 +3,19 @@
 
 module RenderMix
   module Effect
-    class Audio < Base
+    class AudioBase < Base
+      def initialize
+        @current_frame = 0
+      end
+
       # @param [Array<Mix::Base>] tracks effect tracks
       def on_rendering_prepare(tracks)
+      end
+
+      def audio_render(context_manager)
+        context, track_contexts = render(context_manager)
+        on_audio_render(context, track_contexts, @current_frame)
+        @current_frame += 1
       end
 
       # @param [AudioContext] audio_context
