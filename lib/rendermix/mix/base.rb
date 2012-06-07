@@ -60,8 +60,7 @@ module RenderMix
       # Must call AudioContextManager#acquire_context from this method
       # for every frame audio is rendered.
       # @param [AudioContextManager] context_manager
-      # @param [Array<Mix::Base>] render_tracks Array of Mix elements to render
-      def on_audio_render(context_manager, current_frame, render_tracks)
+      def on_audio_render(context_manager, current_frame)
       end
 
       # Called when audio rendering is finished,
@@ -91,8 +90,7 @@ module RenderMix
       # Must call VisualContextManager#acquire_context from this method
       # for every frame visual is rendered.
       # @param [VisualContextManager] context_manager
-      # @param [Array<Mix::Base>] render_tracks Array of Mix elements to render
-      def on_visual_render(context_manager, current_frame, render_tracks)
+      def on_visual_render(context_manager, current_frame)
       end
 
       # Called when visual rendering is finished,
