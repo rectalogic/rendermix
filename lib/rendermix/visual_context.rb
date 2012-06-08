@@ -55,11 +55,12 @@ module RenderMix
       @viewport.camera
     end
 
+    # Renders this context and returns the texture
+    # @return [JmeTexture::Texture2D]
     def prepare_texture
       @rootnode.updateLogicalState(@tpf)
       @rootnode.updateGeometricState
 
-      #XXX the user of the texture should call this - yes, so Effect will render each input to texture before using - and toplevel app will be responsible for rendring main context
       @render_manager.renderViewPort(@viewport, @tpf)
       @texture
     end

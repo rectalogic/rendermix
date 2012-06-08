@@ -32,10 +32,11 @@ module RenderMix
       camera = JmeRenderer::Camera.new(@width, @height)
       viewport = JmeRenderer::ViewPort.new("viewport", camera)
       viewport.setClearFlags(true, true, true)
-      fbo = JmeTexture::FrameBuffer.new(@width, @height, MSAA_SAMPLES)
+      # We don't multisample any except the root context
+      fbo = JmeTexture::FrameBuffer.new(@width, @height, 1)
       fbo.setDepthBuffer(DEPTH_FORMAT)
       #XXX is this the best image format?
-      texture = JmeTexture::Texture2D.new(@width, @height, MSAA_SAMPLES,
+      texture = JmeTexture::Texture2D.new(@width, @height,
                                           JmeTexture::Image::Format::ABGR8)
       fbo.colorTexture = texture
       viewport.outputFrameBuffer = fbo

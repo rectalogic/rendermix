@@ -13,7 +13,4 @@ MaterialDef UYVY {
         }
 
     }
-
-    Technique FixedFunc {
-    }
 }

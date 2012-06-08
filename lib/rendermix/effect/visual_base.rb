@@ -22,7 +22,6 @@ module RenderMix
       # @param [Array<VisualContext>] track_visual_contexts contexts for each track
       # @param [Fixnum] current_frame
       def on_visual_render(visual_context, track_visual_contexts, current_frame)
-        #XXX can use current_frame / duration for percentage progress
       end
 
       def visual_context_released(context)
