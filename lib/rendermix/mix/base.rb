@@ -23,7 +23,7 @@ module RenderMix
 
       def add(mixer)
         raise(InvalidMixError, 'Mix element does not belong to this Mixer') if mixer != self.mixer
-        raise(RuntimeError, 'Mix element already added') if in_frame || out_frame
+        raise(InvalidMixError, 'Mix element already added') if in_frame || out_frame
       end
 
       # @param [Effect::Audio] audio_effect

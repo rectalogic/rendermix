@@ -10,7 +10,8 @@ module RenderMix
       end
 
       def append(mix_element)
-        raise(RuntimeError, 'Parallel cannot be modified after Effects applied') if has_effects?
+        raise(InvalidMixError, 'Parallel cannot be modified after Effects applied') if has_effects?
+        raise(InvalidMixError, 'Parallel cannot be modified after it has been added') if in_frame || out_frame
         mix_element.add(mixer)
         @mix_elements << mix_element
         mix_element.in_frame = 0

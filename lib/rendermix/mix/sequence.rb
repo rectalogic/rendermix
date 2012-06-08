@@ -13,7 +13,9 @@ module RenderMix
 
       # @param [Mix::Base] mix_element
       def append(mix_element)
-        raise(RuntimeError, 'Sequence cannot be modified after Effects applied') if has_effects?
+        raise(InvalidMixError, 'Sequence cannot be modified after Effects applied') if has_effects?
+        raise(InvalidMixError, 'Sequence cannot be modified after it has been added') if in_frame || out_frame
+
         mix_element.add(mixer)
         @audio_mix_elements << mix_element
         @visual_mix_elements << mix_element
