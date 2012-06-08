@@ -8,8 +8,9 @@ module RenderMix
         @current_frame = 0
       end
 
+      # @param [VisualContextManager] context_manager
       # @param [Array<Mix::Base>] tracks effect tracks
-      def on_rendering_prepare(tracks)
+      def on_rendering_prepare(context_manager, tracks)
       end
 
       def visual_render(context_manager)

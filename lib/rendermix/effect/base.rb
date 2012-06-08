@@ -27,7 +27,7 @@ module RenderMix
         # Clone context manager for each track
         @context_managers = Array.new(@tracks.length)
         @context_managers.fill { context_manager.clone }
-        on_rendering_prepare(@tracks)
+        on_rendering_prepare(context_manager, @tracks)
       end
 
       # Acquires the effects context, and renders effect tracks into their

@@ -29,6 +29,9 @@ module RenderMix
   module JmeScene
     include_package 'com.jme3.scene'
   end
+  module JmeShader
+    include_package 'com.jme3.shader'
+  end
   module JmeShape
     include_package 'com.jme3.scene.shape'
   end
