@@ -26,7 +26,7 @@ module RenderMix
       end
 
       def on_audio_render(context_manager, current_frame)
-        @tracks.each do |track|
+        @mix_elements.each do |track|
           track.audio_render(context_manager)
         end
       end
@@ -40,7 +40,7 @@ module RenderMix
       end
 
       def on_visual_render(context_manager, current_frame)
-        @tracks.each do |track|
+        @mix_elements.each do |track|
           track.visual_render(context_manager)
         end
       end

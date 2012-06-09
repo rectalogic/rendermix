@@ -55,6 +55,7 @@ module RenderMix
           return mix
         else
           mix_elements.shift
+          return mix_elements.first
         end
       end
       private :current_mix_element
