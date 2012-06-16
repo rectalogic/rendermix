@@ -45,6 +45,14 @@ module RenderMix
         return context_manager.acquire_context(self), current_contexts
       end
       protected :render
+
+      def rendering_finished
+        @context_managers.each do |context_manager|
+          context_manager.release_context
+        end
+        @context_managers = nil
+        on_rendering_finished
+      end
     end
   end
 end

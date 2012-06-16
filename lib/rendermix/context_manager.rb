@@ -32,7 +32,7 @@ module RenderMix
       on_render(renderer)
 
       # If we have a renderer, and nothing rendered this frame, then end it
-      release_context if @current_renderer and not @rendered
+      release_context unless @rendered
     end
 
     # @return [AudioContext, VisualContext, nil] returns the current context if
@@ -46,7 +46,7 @@ module RenderMix
       # Someone already rendered for this frame
       raise(InvalidMixError, "Frame already rendered for this context") if @rendered
 
-      release_context if @current_renderer && renderer != @current_renderer
+      release_context if renderer != @current_renderer
       @current_renderer = renderer
       @rendered = true
 
@@ -55,6 +55,7 @@ module RenderMix
 
     # Subclasses should implement on_release_context
     def release_context
+      return unless @current_renderer
       on_release_context(@current_renderer, @context)
       @current_renderer = nil
       # If context not pooled, keep it
@@ -65,7 +66,6 @@ module RenderMix
         @context_pool.reset_context(@initial_context)
       end
     end
-    private :release_context
   end
 
   class AudioContextManager < ContextManager

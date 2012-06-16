@@ -70,7 +70,7 @@ module RenderMix
         @quad = nil
       end
 
-      def rendering_finished
+      def on_rendering_finished
         @material = nil
       end
     end

@@ -28,7 +28,7 @@ module RenderMix
       def audio_context_released(context)
       end
 
-      def rendering_finished
+      def on_rendering_finished
       end
     end
   end

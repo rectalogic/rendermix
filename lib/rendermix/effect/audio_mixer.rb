@@ -15,7 +15,7 @@ module RenderMix
         @audio_mixer.mix(buffers, audio_context.buffer)
       end
 
-      def rendering_finished
+      def on_rendering_finished
         @audio_mixer = nil
       end
     end
