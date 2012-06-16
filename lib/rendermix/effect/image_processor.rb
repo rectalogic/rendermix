@@ -50,7 +50,8 @@ module RenderMix
         unless @quad
           @quad = OrthoQuad.new(visual_context, mixer.asset_manager,
                                 mixer.width, mixer.height,
-                                material: @material, flip_y: false)
+                                material: @material, flip_y: false,
+                                name: 'ImageProcessor')
         end
 
         if @needs_time

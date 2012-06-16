@@ -6,13 +6,15 @@ module RenderMix
   class OrthoQuad
     attr_reader :material
 
-    # _opts_
-    #  :flip_y - True if image should be flipped vertically. Default true.
-    #  :clear_flags - Array of boolean [color, depth, stencil]. Default [true,false,false]
-    #  :material - JmeMaterial::Material to use. A default material will
-    #    be used if not set. The default has a Texture param named 'Texture'
+    # @param [Hash] opts
+    # @option opts [Boolean] :flip_y rrue if image should be flipped vertically. Default true.
+    # @option opts [Array<Boolean>] :clear_flags array of boolean [color, depth, stencil]. Default [true,false,false]
+    # @option opts [JmeMaterial::Material] :material material to use.
+    #  A default material will be used if not set.
+    #  The default has a Texture param named 'Texture'
+    # @option opts [String] :name debug name for geometry
     def initialize(visual_context, asset_manager, image_width, image_height, opts={})
-      opts.assert_valid_keys(:flip_y, :clear_flags, :material)
+      opts.assert_valid_keys(:flip_y, :clear_flags, :material, :name)
       @image_width = image_width
       @image_height = image_height
       @context_width = visual_context.width
@@ -26,7 +28,7 @@ module RenderMix
 
       flip_y = opts.fetch(:flip_y, true)
       quad = JmeShape::Quad.new(@image_width, @image_height, flip_y)
-      @quad = JmeScene::Geometry.new("quad", quad)
+      @quad = JmeScene::Geometry.new(opts.fetch(:name, "quad"), quad)
       @quad.cullHint = JmeScene::Spatial::CullHint::Never
       
       @material = opts[:material]

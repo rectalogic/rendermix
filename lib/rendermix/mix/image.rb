@@ -37,7 +37,7 @@ module RenderMix
         unless @quad
           image = @texture.image
           @quad = OrthoQuad.new(visual_context, mixer.asset_manager,
-                                image.width, image.height)
+                                image.width, image.height, name: 'Image')
           @quad.material.setTexture('Texture', @texture)
         end
       end

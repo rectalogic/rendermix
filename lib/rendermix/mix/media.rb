@@ -55,7 +55,7 @@ module RenderMix
         unless @quad
           @quad = OrthoQuad.new(visual_context, mixer.asset_manager,
                                 @decoder.width, @decoder.height,
-                                material: @material)
+                                material: @material, name: 'Media')
         end
         # Only reset the texture if something new decoded
         if result > 0
