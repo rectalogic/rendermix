@@ -20,7 +20,9 @@ module RenderMix
         quad = q
         attach_child.call(q)
       end.once
-      ortho = OrthoQuad.new(context, @app.assetManager, image_width, image_height)
+      ortho = OrthoQuad.new(@app.assetManager, context.width, context.height,
+                            image_width, image_height)
+      ortho.configure_context(context)
       return ortho, quad
     end
 
