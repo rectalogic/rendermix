@@ -37,12 +37,15 @@ module RenderMix
       # @return [VisualContext, Array<VisualContext>] if context_manager is VisualContextManager
       # @return [AudioContext, Array<AudioContext>] if context_manager is AudioContextManager
       def render(context_manager)
+        # Acquire context first, before rendering tracks.
+        # So if any track was using this context, it will lose it first.
+        context = context_manager.acquire_context(self)
         # Render each track into its context manager
         current_contexts = @context_managers.each_with_index.collect do |cm, i|
           cm.render(@tracks[i])
           cm.current_context
         end
-        return context_manager.acquire_context(self), current_contexts
+        return context, current_contexts
       end
       protected :render
 
