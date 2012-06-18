@@ -22,32 +22,36 @@ module RenderMix
           # Temporarily register filesystem root so we can load textures
           # from anywhere
           mixer.asset_manager.registerLocator('/', JmeAssetPlugins::FileLocator.java_class)
-          @texture = mixer.asset_manager.loadTexture(key)
+          texture = mixer.asset_manager.loadTexture(key)
         ensure
           mixer.asset_manager.unregisterLocator('/', JmeAssetPlugins::FileLocator.java_class)
         end
-        @texture.magFilter = JmeTexture::Texture::MagFilter::Bilinear
+        texture.magFilter = JmeTexture::Texture::MagFilter::Bilinear
         # This does mipmapping
-        @texture.minFilter = JmeTexture::Texture::MinFilter::Trilinear
-        @texture.wrap = JmeTexture::Texture::WrapMode::Clamp
+        texture.minFilter = JmeTexture::Texture::MinFilter::Trilinear
+        texture.wrap = JmeTexture::Texture::WrapMode::Clamp
+
+        image = texture.image
+        @quad = OrthoQuad.new(mixer.asset_manager, mixer.width, mixer.height,
+                              image.width, image.height, name: 'Image')
+        @quad.material.setTexture('Texture', texture)
+        @configure_context = true
       end
 
       def on_visual_render(context_manager, current_frame)
         visual_context = context_manager.acquire_context(self)
-        unless @quad
-          image = @texture.image
-          @quad = OrthoQuad.new(visual_context, mixer.asset_manager,
-                                image.width, image.height, name: 'Image')
-          @quad.material.setTexture('Texture', @texture)
+        if @configure_context
+          @quad.configure_context(visual_context)
+          @configure_context = false
         end
       end
 
       def visual_context_released(context)
-        @quad = nil
+        @configure_context = true
       end
 
       def visual_rendering_finished
-        @texture = nil
+        @quad = nil
       end
     end
   end

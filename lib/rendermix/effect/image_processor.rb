@@ -42,16 +42,21 @@ module RenderMix
         @material.preload(context_manager.render_manager)
 
         @needs_time = !!matdef.getMaterialParam(TIME_UNIFORM)
+
+        @quad = OrthoQuad.new(mixer.asset_manager,
+                              mixer.width, mixer.height,
+                              mixer.width, mixer.height,
+                              material: @material, flip_y: false,
+                              name: 'ImageProcessor')
+        @configure_context = true
       ensure
         mixer.asset_manager.unregisterLocator(@asset_location, locator_class)
       end
 
       def on_visual_render(visual_context, track_visual_contexts, current_frame)
-        unless @quad
-          @quad = OrthoQuad.new(visual_context, mixer.asset_manager,
-                                mixer.width, mixer.height,
-                                material: @material, flip_y: false,
-                                name: 'ImageProcessor')
+        if @configure_context
+          @quad.configure_context(visual_context)
+          @configure_context = false
         end
 
         if @needs_time
@@ -68,10 +73,11 @@ module RenderMix
       end
 
       def visual_context_released(context)
-        @quad = nil
+        @configure_context = true
       end
 
       def on_rendering_finished
+        @quad = nil
         @material = nil
       end
     end

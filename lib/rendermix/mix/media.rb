@@ -52,11 +52,20 @@ module RenderMix
         return unless @decoder.has_video?
         visual_context = context_manager.acquire_context(self)
         result = @decoder.decode_video
+
         unless @quad
-          @quad = OrthoQuad.new(visual_context, mixer.asset_manager,
+          @quad = OrthoQuad.new(mixer.asset_manager,
+                                mixer.width, mixer.height,
                                 @decoder.width, @decoder.height,
                                 material: @material, name: 'Media')
+          @configure_context = true
         end
+
+        if @configure_context
+          @quad.configure_context(visual_context)
+          @configure_context = false
+        end
+
         # Only reset the texture if something new decoded
         if result > 0
           # Image is half width since we are stuffing UYVY in RGBA
@@ -68,12 +77,13 @@ module RenderMix
       end
 
       def visual_context_released(context)
-        @quad = nil
+        @configure_context = true
       end
 
       def visual_rendering_finished
         @texture = nil
         @material = nil
+        @quad = nil
 
         @visual_finished = true
         cleanup

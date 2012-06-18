@@ -13,18 +13,14 @@ module RenderMix
     #  A default material will be used if not set.
     #  The default has a Texture param named 'Texture'
     # @option opts [String] :name debug name for geometry
-    def initialize(visual_context, asset_manager, image_width, image_height, opts={})
+    def initialize(asset_manager, quad_width, quad_height, image_width, image_height, opts={})
       opts.assert_valid_keys(:flip_y, :clear_flags, :material, :name)
       @image_width = image_width
       @image_height = image_height
-      @context_width = visual_context.width
-      @context_height = visual_context.height
+      @quad_width = quad_width
+      @quad_height = quad_height
 
-      visual_context.camera.parallelProjection = true
-
-      clear_flags = opts.fetch(:clear_flags, [true, false, false])
-      visual_context.set_clear_flags(*clear_flags)
-      visual_context.render_bucket = :gui
+      @clear_flags = opts.fetch(:clear_flags, [true, false, false])
 
       flip_y = opts.fetch(:flip_y, true)
       quad = JmeShape::Quad.new(@image_width, @image_height, flip_y)
@@ -42,15 +38,24 @@ module RenderMix
       #XXX set blendMode if we want to use alpha from texture - caller can do that on provided material
       @quad.material = @material
 
-      visual_context.attach_child(@quad)
-
-      scales = [@context_width / @image_width.to_f,
-                @context_height / @image_height.to_f]
+      scales = [@quad_width / @image_width.to_f,
+                @quad_height / @image_height.to_f]
       @meet_scale = scales.min
       @fill_scale = scales.max
       @auto_scale = @fill_scale >= 1.5 ? @meet_scale : @fill_scale
 
       panzoom
+    end
+
+    # @param [VisualContext] visual_context configure and attach this quad
+    #  as a child of the context
+    def configure_context(visual_context)
+      visual_context.camera.parallelProjection = true
+
+      visual_context.set_clear_flags(*@clear_flags)
+      visual_context.render_bucket = :gui
+
+      visual_context.attach_child(@quad)
     end
 
     # _scale_ amount to scale beyond the prescale for _fit_
@@ -74,11 +79,11 @@ module RenderMix
         raise(InvalidMixError, "Invalid panzoom fit value #{fit}")
       end
 
-      tx *= @context_width
-      ty *= @context_height
+      tx *= @quad_width
+      ty *= @quad_height
 
-      x = (@context_width - @image_width * scale) / 2.0 + tx
-      y = (@context_height - @image_height * scale) / 2.0 + ty
+      x = (@quad_width - @image_width * scale) / 2.0 + tx
+      y = (@quad_height - @image_height * scale) / 2.0 + ty
 
       @quad.setLocalTranslation(x, y, 0)
       @quad.setLocalScale(scale, scale, 1.0)
