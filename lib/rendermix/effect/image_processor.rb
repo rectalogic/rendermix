@@ -65,10 +65,7 @@ module RenderMix
 
         @texture_names.each_with_index do |name, i|
           texture = track_visual_contexts[i] && track_visual_contexts[i].prepare_texture
-          # Setting texture to nil is only valid if it has already been set
-          if texture or @material.getTextureParam(name)
-            @material.setTexture(name, texture)
-          end
+          @material.setTexture(name, texture)
         end
       end
 
