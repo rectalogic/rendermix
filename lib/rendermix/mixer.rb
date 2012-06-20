@@ -51,26 +51,35 @@ module RenderMix
     end
   end
 
-  class MixerApplication < Jme::App::SimpleApplication
-    field_reader :settings
-
-    def initialize(mixer)
-      super(nil)
-      @mixer = mixer
+  class ApplicationBase < Jme::App::SimpleApplication
+    def initialize(app_states=nil)
+      super(app_states)
       # Use consistent natives directory, instead of process working dir
       Jme::System::Natives.extractionDir = File.expand_path('../../../natives', __FILE__)
-      self.timer = Timer.new(mixer.framerate)
       self.showSettings = false
       self.pauseOnLostFocus = false
+    end
 
+    def default_settings
       settings = Jme::System::AppSettings.new(false)
       settings.renderer = Jme::System::AppSettings::LWJGL_OPENGL3
-      settings.setResolution(mixer.width, mixer.height)
       settings.setSamples(MSAA_SAMPLES)
       settings.setDepthBits(DEPTH_FORMAT.bitsPerPixel)
       settings.useInput = false
       settings.useJoysticks = false
       settings.audioRenderer = nil
+      settings
+    end
+  end
+
+  class MixerApplication < ApplicationBase
+    def initialize(mixer)
+      super(nil)
+      @mixer = mixer
+      self.timer = Timer.new(mixer.framerate)
+
+      settings = default_settings
+      settings.setResolution(mixer.width, mixer.height)
       self.settings = settings
 
       @mutex = Mutex.new
