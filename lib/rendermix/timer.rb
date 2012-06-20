@@ -3,7 +3,7 @@
 
 # Timer that is independent of real time
 module RenderMix
-  class Timer < JmeSystem::Timer
+  class Timer < Jme::System::Timer
     def initialize(framerate)
       super()
       @framerate = framerate.to_r

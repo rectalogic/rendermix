@@ -25,15 +25,15 @@ module RenderMix
         raise(InvalidMixError, "Material #@matdef_name does not have as many textures as tracks") unless tracks.length == @texture_names.length
 
         locator_class = File.directory?(@asset_location) ?
-          JmeAssetPlugins::FileLocator.java_class :
-          JmeAssetPlugins::ZipLocator.java_class
+          Jme::Asset::Plugins::FileLocator.java_class :
+          Jme::Asset::Plugins::ZipLocator.java_class
         mixer.asset_manager.registerLocator(@asset_location, locator_class)
 
-        @material = JmeMaterial::Material.new(mixer.asset_manager, @matdef_name)
+        @material = Jme::Material::Material.new(mixer.asset_manager, @matdef_name)
         matdef = @material.materialDef
         @texture_names.each do |name|
           param = matdef.getMaterialParam(name)
-          if not param or param.varType != JmeShader::VarType::Texture2D
+          if not param or param.varType != Jme::Shader::VarType::Texture2D
             raise(InvalidMixError, "Material #@matdef_name missing texture uniform #{name}")
           end
         end

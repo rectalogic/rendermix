@@ -16,20 +16,20 @@ module RenderMix
 
       def visual_rendering_prepare(context_manager)
         # Don't flipY when loading, we flip via UV in OrthoQuad
-        key = JmeAsset::TextureKey.new(@filename, false)
+        key = Jme::Asset::TextureKey.new(@filename, false)
         key.generateMips = true
         begin
           # Temporarily register filesystem root so we can load textures
           # from anywhere
-          mixer.asset_manager.registerLocator('/', JmeAssetPlugins::FileLocator.java_class)
+          mixer.asset_manager.registerLocator('/', Jme::Asset::Plugins::FileLocator.java_class)
           texture = mixer.asset_manager.loadTexture(key)
         ensure
-          mixer.asset_manager.unregisterLocator('/', JmeAssetPlugins::FileLocator.java_class)
+          mixer.asset_manager.unregisterLocator('/', Jme::Asset::Plugins::FileLocator.java_class)
         end
-        texture.magFilter = JmeTexture::Texture::MagFilter::Bilinear
+        texture.magFilter = Jme::Texture::Texture::MagFilter::Bilinear
         # This does mipmapping
-        texture.minFilter = JmeTexture::Texture::MinFilter::Trilinear
-        texture.wrap = JmeTexture::Texture::WrapMode::Clamp
+        texture.minFilter = Jme::Texture::Texture::MinFilter::Trilinear
+        texture.wrap = Jme::Texture::Texture::WrapMode::Clamp
 
         image = texture.image
         @quad = OrthoQuad.new(mixer.asset_manager, mixer.width, mixer.height,

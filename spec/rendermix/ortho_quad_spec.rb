@@ -29,8 +29,8 @@ module RenderMix
     it 'should be initialized to meet' do
       on_render_thread do
         ortho, quad = ortho_quad
-        quad.localTranslation.should eq(JmeMath::Vector3f.new(0, 60, 0))
-        quad.localScale.should eq(JmeMath::Vector3f.new(0.5, 0.5, 1.0))
+        quad.localTranslation.should eq(Jme::Math::Vector3f.new(0, 60, 0))
+        quad.localScale.should eq(Jme::Math::Vector3f.new(0.5, 0.5, 1.0))
       end
     end
 
@@ -42,8 +42,8 @@ module RenderMix
         scale = @app.mixer.height / image_height.to_f
         tx = -(scale * image_width - @app.mixer.width) / 2.0
 
-        quad.localTranslation.should eq(JmeMath::Vector3f.new(tx, 0, 0))
-        quad.localScale.should eq(JmeMath::Vector3f.new(scale, scale, 1))
+        quad.localTranslation.should eq(Jme::Math::Vector3f.new(tx, 0, 0))
+        quad.localScale.should eq(Jme::Math::Vector3f.new(scale, scale, 1))
       end
     end
 
@@ -51,8 +51,8 @@ module RenderMix
       on_render_thread do
         ortho, quad = ortho_quad
         ortho.panzoom(2, 0.5, 0.2)
-        quad.localTranslation.should eq(JmeMath::Vector3f.new(0, -24, 0))
-        quad.localScale.should eq(JmeMath::Vector3f.new(1, 1, 1))
+        quad.localTranslation.should eq(Jme::Math::Vector3f.new(0, -24, 0))
+        quad.localScale.should eq(Jme::Math::Vector3f.new(1, 1, 1))
       end
     end
   end

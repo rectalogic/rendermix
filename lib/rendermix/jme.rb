@@ -2,43 +2,45 @@
 # Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 
 module RenderMix
-  module JmeApp
-    include_package 'com.jme3.app'
-  end
-  module JmeAppState
-    include_package 'com.jme3.app.state'
-  end
-  module JmeAsset
-    include_package 'com.jme3.asset'
-  end
-  module JmeAssetPlugins
-    include_package 'com.jme3.asset.plugins'
-  end
-  module JmeMaterial
-    include_package 'com.jme3.material'
-  end
-  module JmeMath
-    include_package 'com.jme3.math'
-  end
-  module JmeRenderer
-    include_package 'com.jme3.renderer'
-  end
-  module JmeRendererQueue
-    include_package 'com.jme3.renderer.queue'
-  end
-  module JmeScene
-    include_package 'com.jme3.scene'
-  end
-  module JmeShader
-    include_package 'com.jme3.shader'
-  end
-  module JmeShape
-    include_package 'com.jme3.scene.shape'
-  end
-  module JmeSystem
-    include_package 'com.jme3.system'
-  end
-  module JmeTexture
-    include_package 'com.jme3.texture'
+  module Jme
+    module App
+      include_package 'com.jme3.app'
+      module State
+        include_package 'com.jme3.app.state'
+      end
+    end
+    module Asset
+      include_package 'com.jme3.asset'
+      module Plugins
+        include_package 'com.jme3.asset.plugins'
+      end
+    end
+    module Material
+      include_package 'com.jme3.material'
+    end
+    module Math
+      include_package 'com.jme3.math'
+    end
+    module Renderer
+      include_package 'com.jme3.renderer'
+      module Queue
+        include_package 'com.jme3.renderer.queue'
+      end
+    end
+    module Scene
+      include_package 'com.jme3.scene'
+    end
+    module Shader
+      include_package 'com.jme3.shader'
+    end
+    module Shape
+      include_package 'com.jme3.scene.shape'
+    end
+    module System
+      include_package 'com.jme3.system'
+    end
+    module Texture
+      include_package 'com.jme3.texture'
+    end
   end
 end

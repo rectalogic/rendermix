@@ -56,7 +56,7 @@ module RenderMix
     end
 
     # Renders this context and returns the texture
-    # @return [JmeTexture::Texture2D]
+    # @return [Jme::Texture::Texture2D]
     def prepare_texture
       @rootnode.updateLogicalState(@tpf)
       @rootnode.updateGeometricState
@@ -66,12 +66,12 @@ module RenderMix
     end
 
     @@buckets = {
-      :gui => JmeRendererQueue::RenderQueue::Bucket::Gui,
-      :inherit => JmeRendererQueue::RenderQueue::Bucket::Inherit,
-      :opaque => JmeRendererQueue::RenderQueue::Bucket::Opaque,
-      :sky => JmeRendererQueue::RenderQueue::Bucket::Sky,
-      :translucent => JmeRendererQueue::RenderQueue::Bucket::Translucent,
-      :transparent => JmeRendererQueue::RenderQueue::Bucket::Transparent
+      :gui => Jme::Renderer::Queue::RenderQueue::Bucket::Gui,
+      :inherit => Jme::Renderer::Queue::RenderQueue::Bucket::Inherit,
+      :opaque => Jme::Renderer::Queue::RenderQueue::Bucket::Opaque,
+      :sky => Jme::Renderer::Queue::RenderQueue::Bucket::Sky,
+      :translucent => Jme::Renderer::Queue::RenderQueue::Bucket::Translucent,
+      :transparent => Jme::Renderer::Queue::RenderQueue::Bucket::Transparent
     }
   end
 end

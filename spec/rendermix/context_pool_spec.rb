@@ -52,7 +52,7 @@ module RenderMix
           bucket = context.render_bucket
           context.render_bucket = :gui
 
-          node = JmeScene::Node.new('test')
+          node = Jme::Scene::Node.new('test')
           context.attach_child(node)
 
           pool.release_context(context)

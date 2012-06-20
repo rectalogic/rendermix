@@ -3,7 +3,7 @@
 
 module RenderMix
   MSAA_SAMPLES = 4
-  DEPTH_FORMAT = JmeTexture::Image::Format::Depth24
+  DEPTH_FORMAT = Jme::Texture::Image::Format::Depth24
 
   class Mixer
     attr_reader :width
@@ -51,20 +51,20 @@ module RenderMix
     end
   end
 
-  class MixerApplication < JmeApp::SimpleApplication
+  class MixerApplication < Jme::App::SimpleApplication
     field_reader :settings
 
     def initialize(mixer)
       super(nil)
       @mixer = mixer
       # Use consistent natives directory, instead of process working dir
-      JmeSystem::Natives.extractionDir = File.expand_path('../../../natives', __FILE__)
+      Jme::System::Natives.extractionDir = File.expand_path('../../../natives', __FILE__)
       self.timer = Timer.new(mixer.framerate)
       self.showSettings = false
       self.pauseOnLostFocus = false
 
-      settings = JmeSystem::AppSettings.new(false)
-      settings.renderer = JmeSystem::AppSettings::LWJGL_OPENGL3
+      settings = Jme::System::AppSettings.new(false)
+      settings.renderer = Jme::System::AppSettings::LWJGL_OPENGL3
       settings.setResolution(mixer.width, mixer.height)
       settings.setSamples(MSAA_SAMPLES)
       settings.setDepthBits(DEPTH_FORMAT.bitsPerPixel)
@@ -95,8 +95,8 @@ module RenderMix
       @error = nil
       @mutex.synchronize do
         self.start(@encoder ?
-                   JmeSystem::JmeContext::Type::OffscreenSurface :
-                   JmeSystem::JmeContext::Type::Display)
+                   Jme::System::JmeContext::Type::OffscreenSurface :
+                   Jme::System::JmeContext::Type::Display)
         @condvar.wait(@mutex)
       end
       raise @error if @error
@@ -104,7 +104,7 @@ module RenderMix
 
     def simpleInitApp
       asset_root = File.expand_path('../../../assets', __FILE__)
-      self.assetManager.registerLocator(asset_root, JmeAssetPlugins::FileLocator.java_class)
+      self.assetManager.registerLocator(asset_root, Jme::Asset::Plugins::FileLocator.java_class)
 
       audio_context = AudioContext.new(@mixer.rawmedia_session.audio_framebuffer_size)
       @audio_context_manager = AudioContextManager.new(@mixer.rawmedia_session.audio_framebuffer_size, audio_context)

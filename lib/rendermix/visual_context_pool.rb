@@ -29,19 +29,19 @@ module RenderMix
     end
 
     def create_context
-      camera = JmeRenderer::Camera.new(@width, @height)
-      viewport = JmeRenderer::ViewPort.new("viewport", camera)
+      camera = Jme::Renderer::Camera.new(@width, @height)
+      viewport = Jme::Renderer::ViewPort.new("viewport", camera)
       viewport.setClearFlags(true, true, true)
       # We don't multisample any except the root context
-      fbo = JmeTexture::FrameBuffer.new(@width, @height, 1)
+      fbo = Jme::Texture::FrameBuffer.new(@width, @height, 1)
       fbo.setDepthBuffer(DEPTH_FORMAT)
       #XXX is this the best image format?
-      texture = JmeTexture::Texture2D.new(@width, @height,
-                                          JmeTexture::Image::Format::ABGR8)
+      texture = Jme::Texture::Texture2D.new(@width, @height,
+                                            Jme::Texture::Image::Format::ABGR8)
       fbo.colorTexture = texture
       viewport.outputFrameBuffer = fbo
 
-      rootnode = JmeScene::Node.new("Root")
+      rootnode = Jme::Scene::Node.new("Root")
       viewport.attachScene(rootnode)
 
       VisualContext.new(@render_manager, @tpf, viewport, rootnode, texture)

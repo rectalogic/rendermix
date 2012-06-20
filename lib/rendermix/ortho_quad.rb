@@ -9,7 +9,7 @@ module RenderMix
     # @param [Hash] opts
     # @option opts [Boolean] :flip_y rrue if image should be flipped vertically. Default true.
     # @option opts [Array<Boolean>] :clear_flags array of boolean [color, depth, stencil]. Default [true,false,false]
-    # @option opts [JmeMaterial::Material] :material material to use.
+    # @option opts [Jme  Material::Material] :material material to use.
     #  A default material will be used if not set.
     #  The default has a Texture param named 'Texture'
     # @option opts [String] :name debug name for geometry
@@ -23,15 +23,15 @@ module RenderMix
       @clear_flags = opts.fetch(:clear_flags, [true, false, false])
 
       flip_y = opts.fetch(:flip_y, true)
-      quad = JmeShape::Quad.new(@image_width, @image_height, flip_y)
-      @quad = JmeScene::Geometry.new(opts.fetch(:name, "quad"), quad)
-      @quad.cullHint = JmeScene::Spatial::CullHint::Never
+      quad = Jme::Shape::Quad.new(@image_width, @image_height, flip_y)
+      @quad = Jme::Scene::Geometry.new(opts.fetch(:name, "quad"), quad)
+      @quad.cullHint = Jme::Scene::Spatial::CullHint::Never
       
       @material = opts[:material]
       unless @material
-        @material = JmeMaterial::Material.new(asset_manager,
-                                              'Common/MatDefs/Gui/Gui.j3md')
-        @material.setColor('Color', JmeMath::ColorRGBA::White)
+        @material = Jme::Material::Material.new(asset_manager,
+                                                'Common/MatDefs/Gui/Gui.j3md')
+        @material.setColor('Color', Jme::Math::ColorRGBA::White)
       end
       @material.additionalRenderState.depthTest = false
       @material.additionalRenderState.depthWrite = false

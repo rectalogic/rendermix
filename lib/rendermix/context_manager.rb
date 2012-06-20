@@ -85,7 +85,7 @@ module RenderMix
   end
 
   class VisualContextManager < ContextManager
-    # @return [JmeRenderer::RenderManager]
+    # @return [Jme::Renderer::RenderManager]
     attr_reader :render_manager
 
     def initialize(render_manager, width, height, tpf, initial_context=nil)

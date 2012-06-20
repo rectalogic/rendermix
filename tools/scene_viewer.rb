@@ -1,14 +1,14 @@
 require_relative '../lib/rendermix'
 
-class SceneViewer < RenderMix::JmeApp::SimpleApplication
+class SceneViewer < RenderMix::Jme::App::SimpleApplication
   WIDTH = 640
   HEIGHT = 480
 
   def initialize(scene_file)
-    super([RenderMix::JmeApp::FlyCamAppState.new].to_java(RenderMix::JmeAppState::AppState))
+    super([RenderMix::Jme::App::FlyCamAppState.new].to_java(RenderMix::Jme::AppState::AppState))
     self.showSettings = false
-    settings = RenderMix::JmeSystem::AppSettings.new(false)
-    settings.renderer = RenderMix::JmeSystem::AppSettings::LWJGL_OPENGL3
+    settings = RenderMix::Jme::System::AppSettings.new(false)
+    settings.renderer = RenderMix::Jme::System::AppSettings::LWJGL_OPENGL3
     settings.setResolution(WIDTH, HEIGHT)
     settings.setSamples(4) # MSAA
     settings.useInput = true
@@ -20,7 +20,7 @@ class SceneViewer < RenderMix::JmeApp::SimpleApplication
 
   def simpleInitApp
     self.flyByCamera.dragToRotate = true
-    asset_manager.registerLocator('/', RenderMix::JmeAssetPlugins::FileLocator.java_class)
+    asset_manager.registerLocator('/', RenderMix::Jme::Asset::Plugins::FileLocator.java_class)
     scene = asset_manager.loadModel(@scene_file)
     rootNode.attachChild(scene)
   end
