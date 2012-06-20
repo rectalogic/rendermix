@@ -14,14 +14,16 @@ end
 class SceneViewer < RenderMix::ApplicationBase
   WIDTH = 640
   HEIGHT = 480
+  CAMERA_DISTANCE = 10
+
   include RenderMix::Jme::Input::Controls::ActionListener
 
   def initialize(scene_file)
     super([RenderMix::Jme::App::FlyCamAppState.new, RenderMix::Jme::App::DebugKeysAppState.new].to_java(RenderMix::Jme::App::State::AppState))
-    settings = default_settings
-    settings.setResolution(WIDTH, HEIGHT)
-    settings.useInput = true
-    self.settings = settings
+    configure_settings do |settings|
+      settings.setResolution(WIDTH, HEIGHT)
+      settings.useInput = true
+    end
     @scene_file = scene_file
   end
 
@@ -51,22 +53,22 @@ class SceneViewer < RenderMix::ApplicationBase
     puts name
     case name
     when "CameraPosX"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_X.mult(10)
+      location = RenderMix::Jme::Math::Vector3f::UNIT_X.mult(CAMERA_DISTANCE)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Y
     when "CameraNegX"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_X.mult(-10)
+      location = RenderMix::Jme::Math::Vector3f::UNIT_X.mult(-CAMERA_DISTANCE)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Y
     when "CameraPosY"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_Y.mult(10)
+      location = RenderMix::Jme::Math::Vector3f::UNIT_Y.mult(CAMERA_DISTANCE)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Z
     when "CameraNegY"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_Y.mult(-10)
+      location = RenderMix::Jme::Math::Vector3f::UNIT_Y.mult(-CAMERA_DISTANCE)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Z
     when "CameraPosZ"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_Z.mult(10)
+      location = RenderMix::Jme::Math::Vector3f::UNIT_Z.mult(CAMERA_DISTANCE)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Y
     when "CameraNegZ"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_Z.mult(-10)
+      location = RenderMix::Jme::Math::Vector3f::UNIT_Z.mult(-CAMERA_DISTANCE)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Y
     end
     self.camera.setLocation(location)

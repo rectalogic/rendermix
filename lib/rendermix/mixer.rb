@@ -60,7 +60,7 @@ module RenderMix
       self.pauseOnLostFocus = false
     end
 
-    def default_settings
+    def configure_settings
       settings = Jme::System::AppSettings.new(false)
       settings.renderer = Jme::System::AppSettings::LWJGL_OPENGL3
       settings.setSamples(MSAA_SAMPLES)
@@ -68,7 +68,8 @@ module RenderMix
       settings.useInput = false
       settings.useJoysticks = false
       settings.audioRenderer = nil
-      settings
+      yield settings if block_given?
+      self.settings = settings
     end
   end
 
@@ -78,9 +79,9 @@ module RenderMix
       @mixer = mixer
       self.timer = Timer.new(mixer.framerate)
 
-      settings = default_settings
-      settings.setResolution(mixer.width, mixer.height)
-      self.settings = settings
+      configure_settings do |settings|
+        settings.setResolution(mixer.width, mixer.height)
+      end
 
       @mutex = Mutex.new
       @condvar = ConditionVariable.new
