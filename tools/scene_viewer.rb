@@ -51,32 +51,26 @@ class SceneViewer < RenderMix::ApplicationBase
     puts name
     case name
     when "CameraPosX"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_X.multLocal(10)
-      direction = RenderMix::Jme::Math::Vector3f::UNIT_X.negateLocal
+      location = RenderMix::Jme::Math::Vector3f::UNIT_X.mult(10)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Y
     when "CameraNegX"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_X.multLocal(-10)
-      direction = RenderMix::Jme::Math::Vector3f::UNIT_X
+      location = RenderMix::Jme::Math::Vector3f::UNIT_X.mult(-10)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Y
     when "CameraPosY"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_Y.multLocal(10)
-      direction = RenderMix::Jme::Math::Vector3f::UNIT_Y.negateLocal
+      location = RenderMix::Jme::Math::Vector3f::UNIT_Y.mult(10)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Z
     when "CameraNegY"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_Y.multLocal(-10)
-      direction = RenderMix::Jme::Math::Vector3f::UNIT_Y
+      location = RenderMix::Jme::Math::Vector3f::UNIT_Y.mult(-10)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Z
     when "CameraPosZ"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_Z.multLocal(10)
-      direction = RenderMix::Jme::Math::Vector3f::UNIT_Z.negateLocal
+      location = RenderMix::Jme::Math::Vector3f::UNIT_Z.mult(10)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Y
     when "CameraNegZ"
-      location = RenderMix::Jme::Math::Vector3f::UNIT_Z.multLocal(-10)
-      direction = RenderMix::Jme::Math::Vector3f::UNIT_Z
+      location = RenderMix::Jme::Math::Vector3f::UNIT_Z.mult(-10)
       up = RenderMix::Jme::Math::Vector3f::UNIT_Y
     end
     self.camera.setLocation(location)
-    self.camera.lookAtDirection(direction, up)
+    self.camera.lookAt(RenderMix::Jme::Math::Vector3f::ZERO, up)
   end
 
 #  def simpleUpdate(tpf)
