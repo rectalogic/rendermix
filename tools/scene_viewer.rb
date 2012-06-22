@@ -17,6 +17,7 @@ class SceneViewer < RenderMix::ApplicationBase
   CAMERA_DISTANCE = 10
 
   include RenderMix::Jme::Input::Controls::ActionListener
+  include RenderMix::Jme::Scene::SceneGraphVisitor
 
   def initialize(scene_file)
     super([RenderMix::Jme::App::FlyCamAppState.new, RenderMix::Jme::App::DebugKeysAppState.new].to_java(RenderMix::Jme::App::State::AppState))
@@ -33,6 +34,15 @@ class SceneViewer < RenderMix::ApplicationBase
     scene = asset_manager.loadModel(@scene_file)
     rootNode.attachChild(scene)
     init_keys
+
+    # Dump scene graph
+    puts "Dumping scene graph"
+    scene.depthFirstTraversal(self)
+  end
+
+  # Implements Jme::Scene::SceneGraphVisitor
+  def visit(spatial)
+    puts "#{spatial.name} #{spatial.java_class.name}"
   end
 
   def init_keys
@@ -48,6 +58,7 @@ class SceneViewer < RenderMix::ApplicationBase
                              "CameraNegZ")
   end
 
+  # Implements Jme::Input::Controls::ActionListener
   def onAction(name, is_pressed, tpf)
     return if is_pressed
     puts name
@@ -79,5 +90,7 @@ class SceneViewer < RenderMix::ApplicationBase
 #  end
 end
 
-sv = SceneViewer.new(ARGV.first)
-sv.start
+if __FILE__== $0
+  sv = SceneViewer.new(ARGV.first)
+  sv.start
+end
