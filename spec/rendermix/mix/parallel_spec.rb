@@ -10,6 +10,28 @@ module RenderMix
           par.append(Blank.new(mixer, 10))
           par
         end
+
+        let(:tracks) do
+          Array.new(5).fill do
+            Blank.new(mixer, 10)
+          end
+        end
+        let!(:par) do
+          par = Parallel.new(mixer)
+          tracks.each do |track|
+            par.append(track)
+          end
+          par
+        end
+
+        it 'should have a track for each child' do
+          par.tracks.length.should be 5
+          par.tracks.should eq tracks
+        end
+
+        it 'should have the duration of the max of its children' do
+          par.duration.should eq 10
+        end
       end
     end
   end
