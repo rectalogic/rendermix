@@ -46,14 +46,14 @@ module RenderMix
         @tracks ||= [self].freeze
       end
 
-      def audio_render(context_manager)
-        @audio_render_manager.render(context_manager)
-      end
-
       # Prepare for rendering audio. Called once before first call to #audio_render
       # Subclass can implement.
       # @param [AudioContextManager] context_manager
       def audio_rendering_prepare(context_manager)
+      end
+
+      def audio_render(context_manager)
+        @audio_render_manager.render(context_manager)
       end
 
       # Subclass should override to render audio.

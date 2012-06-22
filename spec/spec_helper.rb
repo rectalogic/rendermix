@@ -12,3 +12,5 @@ RenderMix::JavaLog::LogManager.getLogManager().reset
 handler = RenderMix::JavaLog::FileHandler.new(File.expand_path("../../log/test.log", __FILE__))
 handler.formatter = RenderMix::JavaLog::SimpleFormatter.new
 RenderMix::JavaLog::Logger.getLogger('').addHandler(handler)
+
+FIXTURES = File.expand_path('../fixtures', __FILE__)

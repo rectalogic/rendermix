@@ -25,24 +25,21 @@ shared_examples 'a render manager' do |av_rendering_prepare, on_render_av, av_re
     end
   end
 
-  it 'should not reentrantly render effects' do
 =begin
-XXX need to flesh out effects more
+  it 'should not reentrantly render effects' do
     on_render_thread do
       context_manager = double('context manager')
       mix_element = double('mix_element')
       tracks = [ mix_element ]
       mix_element.should_receive(:tracks).and_return tracks
-      mix_element.should_receive(on_render_av).with(context_manager, 0, tracks).once
+      mix_element.should_receive(on_render_av).with(context_manager, 0).once
       manager = described_class.new(mix_element)
-      delegate = double('delegate')
-      delegate.should_receive(av_rendering_prepare).with(context_manager).once
-      #XXXdelegate.should_receive(on_render_av).with(context_manager).once
-      manager.add_effect(delegate, [0], 0, 1)
+      effect = double('effect', in_frame: , out_frame:)
+      manager.apply_effect(effect, 0, 1)
       manager.render(context_manager)
     end
-=end
   end
+=end
 
   it 'should prepare and render the mix element' do
     on_render_thread do

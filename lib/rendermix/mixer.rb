@@ -11,7 +11,7 @@ module RenderMix
     attr_reader :framerate
     attr_reader :rawmedia_session
 
-    def initialize(width, height, framerate)
+    def initialize(width, height, framerate=Rational(30))
       @width = width
       @height = height
       @framerate = framerate
