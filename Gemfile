@@ -1,6 +1,7 @@
 source "http://rubygems.org"
 
 gem 'rawmedia', '~> 0.0.1'
+gem 'json', '~> 1.7.3'
 
 group :test, :development do
   gem 'rake', '~> 0.9.0'

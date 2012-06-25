@@ -10,6 +10,7 @@ require 'thread'
 require 'bundler'
 Bundler.setup(:default)
 
+require 'json'
 require 'rawmedia'
 require_relative '../jme3/jMonkeyEngine3.jar'
 
@@ -34,6 +35,11 @@ require 'rendermix/effect/audio_base'
 require 'rendermix/effect/visual_base'
 require 'rendermix/effect/audio_mixer'
 require 'rendermix/effect/image_processor'
+
+require 'rendermix/effect/animation/bezier_segment'
+require 'rendermix/effect/animation/bezier_curve_interpolator'
+require 'rendermix/effect/animation/constant_value_interpolator'
+require 'rendermix/effect/animation/animator'
 
 require 'rendermix/mix/effect_manager'
 require 'rendermix/mix/render_manager'
