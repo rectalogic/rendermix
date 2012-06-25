@@ -5,10 +5,8 @@ module RenderMix
   module Effect
     module Animation
       class Animator
-        # @return [Jme::Math::Quaternion] animation rotation
-        attr_reader :rotation
-        # @return [Jme::Math::Vector3f] animation translation
-        attr_reader :translation
+        # @return [Jme::Math::Transform] animation current transformation
+        attr_reader :transform
 
         def initialize(animation_data)
           @begin_x, @end_x = animation_data['range']
@@ -24,8 +22,7 @@ module RenderMix
           #XXX expose this
           @horizontal_fov = animation_data['horizontalFOV']
 
-          @rotation = Jme::Math::Quaternion.new
-          @translation = Jme::Math::Vector3f.new
+          @transform = Jme::Math::Transform.new
         end
 
         def create_interpolator(interpolator_data)
@@ -43,15 +40,13 @@ module RenderMix
 
         # Evaluate for x which must be in the animations range
         # After evaluating, translation and rotation attributes will be updated.
-        # Rotation are Blender Euler angles of order XYZ - but Blender XYZ
-        # is really ZYX order.
         def evaluate(x)
-          @rotation.fromAngles(@rotation_x.evaluate(x),
-                               @rotation_y.evaluate(x),
-                               @rotation_z.evaluate(x))
-          @translation.set(@location_x.evaluate(x),
-                           @location_y.evaluate(x),
-                           @location_z.evaluate(x))
+          update_rotation(@rotation_x.evaluate(x),
+                          @rotation_y.evaluate(x),
+                          @rotation_z.evaluate(x))
+          @transform.translation.set(@location_x.evaluate(x),
+                                     @location_y.evaluate(x),
+                                     @location_z.evaluate(x))
         end
 
         # @param [Float] time normalized time, 0..1
@@ -59,6 +54,31 @@ module RenderMix
           # Evaluate x corresponding to time
           evaluate(@begin_x + time * (@end_x - @begin_x + 1))
         end
+
+        # Update quaternion rotation from Euler XYZ
+        # Rotation are Blender Euler angles of order XYZ - but Blender XYZ
+        # is really ZYX order.
+        def update_rotation(x, y, z)
+          angle = x*0.5
+          cx = Math.cos(angle)
+          sx = Math.sin(angle)
+          angle = y*0.5
+          cy = Math.cos(angle)
+          sy = Math.sin(angle)
+          angle = z*0.5
+          cz = Math.cos(angle)
+          sz = Math.sin(angle)
+          cxcz = cx*cz
+          cxsz = cx*sz
+          sxcz = sx*cz
+          sxsz = sx*sz
+          w = cy*cxcz + sy*sxsz
+          x = cy*sxcz - sy*cxsz
+          y = cy*sxsz + sy*cxcz
+          z = cy*cxsz - sy*sxcz
+          @transform.rotation.set(x, y, z, w).normalizeLocal
+        end
+        private :update_rotation
       end
     end
   end
