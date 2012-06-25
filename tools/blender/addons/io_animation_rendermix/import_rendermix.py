@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import bpy
-from io_anim_webvfx import KeyframeGroup, CurveNames, CoordNames, reportError
+from io_animation_rendermix import KeyframeGroup, CurveNames, CoordNames, reportError
 import numbers
 import json
 

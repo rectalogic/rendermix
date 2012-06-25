@@ -9,13 +9,13 @@ import mathutils
 
 
 bl_info = {
-    "name": "WebVfx Camera Animation",
-    "description": "Set of tools to help create camera animation for WebVfx.",
+    "name": "RenderMix Camera Animation",
+    "description": "Set of tools to help create camera animation for RenderMix.",
     "author": "Andrew Wason <rectalogic@rectalogic.com>",
     "version": (1, 0),
     "blender": (2, 5, 8),
     "api": 38205,
-    "location": "View3D > ToolShelf > WebVfx Camera Animation",
+    "location": "View3D > ToolShelf > RenderMix Camera Animation",
     "warning": '', # used for warning icon and text in addons panel
     "wiki_url": '',
     "tracker_url": '',
@@ -23,7 +23,7 @@ bl_info = {
 }
 
 '''
-Adds a tool panel (WebVfx Camera Animation) to the Tool Shelf
+Adds a tool panel (RenderMix Camera Animation) to the Tool Shelf
 in the 3D view (type T to show the shelf).
 
 Select an object whose face you want to align to the camera,
@@ -39,10 +39,7 @@ Now you reposition the timeline and add additional camera keyframes.
 Change the Timeline view to FCurve view to edit the animation curves.
 
 When a complete camera animation timeline has been constructed,
-use the export addon to export WebVfx JSON.
-
-Click Dump Camera QML to generate the camera fieldOfView
-and other parameters. This also dumps the QML for the current camera position.
+use the export addon to export RenderMix JSON.
 
 The Aspect Ratio buttons can be used to change the camera viewport
 aspect ratio. If using the same animation with both 4:3 and 16:9 faces,
@@ -58,73 +55,8 @@ to determine the aspect ratio of a quad that will render text.
 KeyframeGroup = "LocRot"
 
 
-class Eye:
-    def __init__(self, matrix):
-        # up vector can just be read out of the matrix (y axis)
-        self.upVector = getUpVector(matrix)
-        # eye position can just be read out of the matrix
-        w = matrix[3][3]
-        eye = (matrix[3][0] / w, matrix[3][1] / w, matrix[3][2] / w)
-        self.eyeVector = eye
-        # get the direction vector (camera looking down z)
-        direction = (matrix[2][0], matrix[2][1], matrix[2][2])
-        # lookat is just the eye position - the direction
-        self.lookAtVector = (eye[0] - direction[0], eye[1] - direction[1], eye[2] - direction[2])
-
-def getUpVector(matrix):
-    # up vector can just be read out of the matrix (y axis)
-    return (matrix[1][0], matrix[1][1], matrix[1][2])
-
-def dumpText(operator, context, title, msg):
-    text = bpy.data.texts.new(title)
-    text.from_string(msg)
-    # If an editor is open, switch it to our text
-    for area in context.screen.areas:
-        if area.type == "TEXT_EDITOR":
-            area.spaces.active.text = text
-            break
-    operator.report({'INFO'}, "Output in %s" % text.name)
-
 def reportError(op, msg):
     op.report({'ERROR'}, msg)
-
-class GenerateCameraQml(bpy.types.Operator):
-    '''Generate QtQuick3D QML camera declaration into a text block.'''
-    bl_idname = "view3d.generate_camera_qml"
-    bl_label = "Dump QML Camera"
-    bl_description = "Generate QtQuick3D QML markup for the active camera"
-
-    def generateCameraQml(self, context):
-        scene = context.scene
-        render = scene.render
-        camera = scene.camera
-        matrix = camera.matrix_world
-
-        eye = Eye(matrix)
-
-        # Blender fov is horizontal, QtQuick3D is vertical.
-        # Precompute part factor to convert at runtime based on viewport size.
-        fovFactor = math.tan(camera.data.angle / 2)
-
-        nearPlane = camera.data.clip_start
-        farPlane = camera.data.clip_end
-
-        return ("Viewport {\n"
-                "    camera: Camera {\n"
-                "        nearPlane: %f\n"
-                "        farPlane: %f\n"
-                "        fieldOfView: (2 * Math.atan(%f / (width / height))) * 180 / Math.PI\n"
-                "\n"
-                "        upVector: Qt.vector3d%s\n"
-                "        center: Qt.vector3d%s\n"
-                "        eye: Qt.vector3d%s\n"
-                "    }\n"
-                "}\n" % (nearPlane, farPlane, fovFactor, eye.upVector, eye.lookAtVector, eye.eyeVector))
-
-    def execute(self, context):
-        dumpText(self, context, 'QML Camera', self.generateCameraQml(context))
-        return {'FINISHED'}
-
 
 class SetAspectRatio(bpy.types.Operator):
     '''Set camera aspect ratio.'''
@@ -163,7 +95,7 @@ class FitViewToFace(bpy.types.Operator):
         return context.area.type == 'VIEW_3D' and context.active_object and context.active_object.type == 'MESH'
 
     def convertCameraFOV(self, context, camera):
-        '''Blender uses horizontal fov, convert to vertical for QtQuick3D'''
+        '''Blender uses horizontal fov, convert to vertical'''
         render = context.scene.render
         viewportWidth = render.resolution_x * render.pixel_aspect_x
         viewportHeight = render.resolution_y * render.pixel_aspect_y
@@ -186,7 +118,10 @@ class FitViewToFace(bpy.types.Operator):
             return
 
         # Get views up vector
-        up = mathutils.Vector(getUpVector(region_3d.view_matrix))
+        # up vector can just be read out of the matrix (y axis)
+        up = mathutils.Vector((region_3d.view_matrix[1][0],
+                               region_3d.view_matrix[1][1],
+                               region_3d.view_matrix[1][2]))
 
         # Get transformed face vertices
         vertices = []
@@ -275,7 +210,7 @@ class RemoveCameraKeyframe(bpy.types.Operator):
 
 class OBJECT_PT_camera_face_align(bpy.types.Panel):
     '''This functionality can be accessed via the "Tools" panel in 3D View ([T] key).'''
-    bl_label = "WebVfx Camera Animation"
+    bl_label = "RenderMix Camera Animation"
     bl_space_type = "VIEW_3D"
     bl_region_type = "TOOLS"
 
@@ -304,8 +239,6 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
         row = col.row()
         row.operator("anim.insert_camera_keyframe", text="Insert")
         row.operator("anim.remove_camera_keyframe", text="Remove")
-
-        layout.operator("view3d.generate_camera_qml", text="Dump Camera QML")
 
 # Utility for finding region_3d in console
 # def r3d():

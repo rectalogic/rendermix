@@ -5,7 +5,7 @@
 import bpy
 import math
 import json
-from io_anim_webvfx import CurveNames, CoordNames
+from io_animation_rendermix import CurveNames, CoordNames
 
 # Adjust control points so the total length of the "handles"
 # is not more than the horizontal distance between the keyframe points.

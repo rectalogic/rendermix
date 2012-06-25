@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 bl_info = {
-    "name": "WebVfx Object Animation JSON Format",
-    "description": "Import/export object animation data in JSON for use with WebVfx",
+    "name": "RenderMix Object Animation JSON Format",
+    "description": "Import/export object animation data in JSON for use with RenderMix",
     "author": "Andrew Wason <rectalogic@rectalogic.com>",
     "version": (1, 0),
     "blender": (2, 5, 8),
@@ -19,10 +19,10 @@ bl_info = {
 # To support reload properly, try to access a package var, if it's there, reload everything
 if "bpy" in locals():
     import imp
-    if "import_webvfx" in locals():
-        imp.reload(import_webvfx)
-    if "export_webvfx" in locals():
-        imp.reload(export_webvfx)
+    if "import_rendermix" in locals():
+        imp.reload(import_rendermix)
+    if "export_rendermix" in locals():
+        imp.reload(export_rendermix)
 
 import bpy
 from bpy.props import BoolProperty, StringProperty
@@ -34,10 +34,10 @@ CoordNames = ['X', 'Y', 'Z']
 CurveNames = { 'location': 'location', 'rotation_euler': 'rotation'}
 
 
-class ImportWebVfx(bpy.types.Operator, ImportHelper):
-    '''Load WebVfx animation JSON file, replacing animation of the selected object'''
-    bl_idname = "import_anim.webvfx"
-    bl_label = "Import WebVfx JSON"
+class ImportRenderMix(bpy.types.Operator, ImportHelper):
+    '''Load RenderMix animation JSON file, replacing animation of the selected object'''
+    bl_idname = "import_anim.rendermix"
+    bl_label = "Import RenderMix JSON"
     bl_options = {'REGISTER', 'UNDO'}
 
     filename_ext = '.js'
@@ -48,14 +48,14 @@ class ImportWebVfx(bpy.types.Operator, ImportHelper):
         return context.object
 
     def execute(self, context):
-        from . import import_webvfx
-        return import_webvfx.load(self, context, **self.as_keywords(ignore=("filter_glob",)))
+        from . import import_rendermix
+        return import_rendermix.load(self, context, **self.as_keywords(ignore=("filter_glob",)))
 
 
-class ExportWebVfx(bpy.types.Operator, ExportHelper):
-    '''Save WebVfx animation JSON file for the selected object(s)'''
-    bl_idname = "export_anim.webvfx"
-    bl_label = "Export WebVfx JSON"
+class ExportRenderMix(bpy.types.Operator, ExportHelper):
+    '''Save RenderMix animation JSON file for the selected object(s)'''
+    bl_idname = "export_anim.rendermix"
+    bl_label = "Export RenderMix JSON"
 
     filename_ext = '.js'
     filter_glob = StringProperty(default="*.js", options={'HIDDEN'})
@@ -68,8 +68,8 @@ class ExportWebVfx(bpy.types.Operator, ExportHelper):
         return context.object and context.object.animation_data
 
     def execute(self, context):
-        from . import export_webvfx
-        return export_webvfx.save(self, context, **self.as_keywords(ignore=("check_existing", "filter_glob")))
+        from . import export_rendermix
+        return export_rendermix.save(self, context, **self.as_keywords(ignore=("check_existing", "filter_glob")))
 
     def draw(self, context):
         layout = self.layout
@@ -77,11 +77,11 @@ class ExportWebVfx(bpy.types.Operator, ExportHelper):
         layout.prop(self.properties, "option_varname")
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportWebVfx.bl_idname, text="WebVfx Animation JSON (.js)")
+    self.layout.operator(ImportRenderMix.bl_idname, text="RenderMix Animation JSON (.js)")
 
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportWebVfx.bl_idname, text="WebVfx Animation JSON (.js)")
+    self.layout.operator(ExportRenderMix.bl_idname, text="RenderMix Animation JSON (.js)")
 
 def register():
     bpy.utils.register_module(__name__)
