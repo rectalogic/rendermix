@@ -1,31 +1,21 @@
 shared_context 'requires render thread' do
   before(:all) do
     # We can't use rspec mocks in before(:all)
-    class MixerMock
-      attr_reader :width
-      attr_reader :height
-      attr_reader :framerate
-      attr_reader :tpf
-      def initialize(width, height, framerate)
-        @width = width
-        @height = height
-        @framerate = framerate
-        @tpf = framerate.denominator / framerate.numerator.to_f
-      end
-    end
 
     # Subclass MixerApplication to noop some methods.
     # Also make start() wait until render thread is actually started
     class MixerApplicationMock < RenderMix::MixerApplication
       attr_reader :mixer
+      attr_reader :root_visual_context
+      attr_reader :visual_context_manager
+      attr_reader :root_audio_context
+      attr_reader :audio_context_manager
 
       def initialize(mixer)
         super
-        @mixer = mixer
-        @mutex = Mutex.new
-        @condvar = ConditionVariable.new
       end
       def simpleInitApp
+        super
         @mutex.synchronize { @condvar.signal }
       end
       def simpleUpdate(tpf); end
@@ -36,8 +26,20 @@ shared_context 'requires render thread' do
       end
     end
 
+    class MixerMock < RenderMix::Mixer
+      attr_reader :app
+      attr_reader :tpf
+      def initialize(width, height, framerate)
+        super
+        @tpf = framerate.denominator / framerate.numerator.to_f
+      end
+      def create_mixer_application
+        MixerApplicationMock.new(self)
+      end
+    end
+
     mixer = MixerMock.new(640, 480, Rational(30))
-    @app = MixerApplicationMock.new(mixer)
+    @app = mixer.app
     @app.start
   end
 

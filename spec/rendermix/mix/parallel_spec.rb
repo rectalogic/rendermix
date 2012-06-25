@@ -6,18 +6,18 @@ module RenderMix
     describe Parallel do 
       it_should_behave_like 'a mix element' do
         let!(:mix_element) do
-          par = Parallel.new(mixer)
-          par.append(Blank.new(mixer, 10))
+          par = @app.mixer.new_parallel
+          par.append(@app.mixer.new_blank(10))
           par
         end
 
         let(:tracks) do
           Array.new(5).fill do
-            Blank.new(mixer, 10)
+            @app.mixer.new_blank(10)
           end
         end
         let!(:par) do
-          par = Parallel.new(mixer)
+          par = @app.mixer.new_parallel
           tracks.each do |track|
             par.append(track)
           end

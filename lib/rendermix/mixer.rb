@@ -16,7 +16,7 @@ module RenderMix
       @height = height
       @framerate = framerate
       @rawmedia_session = RawMedia::Session.new(framerate)
-      @app = MixerApplication.new(self)
+      @app = create_mixer_application
     end
 
     def asset_manager
@@ -49,9 +49,17 @@ module RenderMix
       mix.add(self)
       @app.mix(mix, filename)
     end
+
+    def create_mixer_application
+      MixerApplication.new(self)
+    end
+    protected :create_mixer_application
   end
 
   class ApplicationBase < Jme::App::SimpleApplication
+    field_reader :settings
+    protected :settings
+
     def initialize(app_states=nil)
       super(app_states)
       # Use consistent natives directory, instead of process working dir
@@ -116,13 +124,13 @@ module RenderMix
       asset_root = File.expand_path('../../../assets', __FILE__)
       self.assetManager.registerLocator(asset_root, Jme::Asset::Plugins::FileLocator.java_class)
 
-      audio_context = AudioContext.new(@mixer.rawmedia_session.audio_framebuffer_size)
-      @audio_context_manager = AudioContextManager.new(@mixer.rawmedia_session.audio_framebuffer_size, audio_context)
+      @root_audio_context = AudioContext.new(@mixer.rawmedia_session.audio_framebuffer_size)
+      @audio_context_manager = AudioContextManager.new(@mixer.rawmedia_session.audio_framebuffer_size, @root_audio_context)
 
       tpf = self.timer.timePerFrame
-      visual_context = VisualContext.new(self.renderManager, tpf, self.viewPort, self.rootNode)
+      @root_visual_context = VisualContext.new(self.renderManager, tpf, self.viewPort, self.rootNode)
       @visual_context_manager =
-        VisualContextManager.new(self.renderManager, @mixer.width, @mixer.height, tpf, visual_context)
+        VisualContextManager.new(self.renderManager, @mixer.width, @mixer.height, tpf, @root_visual_context)
     end
     private :simpleInitApp
 

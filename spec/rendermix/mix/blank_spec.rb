@@ -6,7 +6,7 @@ module RenderMix
     describe Blank do 
       it_should_behave_like 'a mix element' do
         let!(:mix_element) do
-          Blank.new(mixer, 10)
+          @app.mixer.new_blank(10)
         end
       end
     end

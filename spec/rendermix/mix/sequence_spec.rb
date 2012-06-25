@@ -6,18 +6,18 @@ module RenderMix
     describe Sequence do 
       it_should_behave_like 'a mix element' do
         let!(:mix_element) do
-          seq = Sequence.new(mixer)
-          seq.append(Blank.new(mixer, 10))
+          seq = @app.mixer.new_sequence
+          seq.append(@app.mixer.new_blank(10))
           seq
         end
 
         let(:tracks) do
           Array.new(5).fill do
-            Blank.new(mixer, 10)
+            @app.mixer.new_blank(10)
           end
         end
         let!(:seq) do
-          seq = Sequence.new(mixer)
+          seq = @app.mixer.new_sequence
           tracks.each do |track|
             seq.append(track)
           end
@@ -31,6 +31,11 @@ module RenderMix
 
         it 'should have the duration of all its children' do
           seq.duration.should eq 5*10
+        end
+
+
+        it 'should render only one child' do
+          #XXX add to shared examples - need audio/visual CM and render
         end
       end
     end
