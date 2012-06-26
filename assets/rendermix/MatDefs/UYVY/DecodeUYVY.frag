@@ -5,9 +5,6 @@ varying vec2 texCoord;
 
 uniform sampler2D m_Texture;
 
-//XXX sample shaders https://code.fluendo.com/pigment/trac/browser/trunk/plugins/opengl/pgmrendergl1window.c?rev=239#L408
-//XXX uses fract() to figure out which pixel to choose
-
 const int Y = 0;
 const int Cb = 1;
 const int Cr = 2;
@@ -18,7 +15,7 @@ const mat3 BT601 = mat3(1.1640,  0.0000,  1.5960,
                         1.1640, -0.3920, -0.8130,
                         1.1640,  2.0170,  0.0000);
 
-void main(){
+void main() {
     float texWidth = float(textureSize2D(m_Texture, 0).x);
     vec4 macropixel = texture2D(m_Texture, texCoord);
     vec3 color;
