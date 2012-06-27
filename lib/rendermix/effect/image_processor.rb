@@ -7,25 +7,25 @@ module RenderMix
       # Materials that need timing should accept a uniform with this name
       TIME_UNIFORM = 'time'
 
-      # @param [String] matdef_name path to j3md material definition in asset
-      # @param [Array<String>] texture_names array of texture uniform names
-      #  in the material. These are in track order (i.e. the first texture
+      # @param [String] material_name path to j3m material file in asset
+      # @param [Array<String>] texture_names array of material uniform names
+      #  for each texture. These are in track order (i.e. the first texture
       #  name will be used for the first track etc.)
-      def initialize(matdef_name, texture_names)
+      def initialize(material_name, texture_names)
         super()
-        @matdef_name = matdef_name
+        @material_name = material_name
         @texture_names = texture_names
       end
 
       def on_rendering_prepare(context_manager, tracks)
-        raise(InvalidMixError, "Material #@matdef_name does not have as many textures as tracks") unless tracks.length == @texture_names.length
+        raise(InvalidMixError, "Material #@material_name does not have as many textures as tracks") unless tracks.length == @texture_names.length
 
-        @material = Jme::Material::Material.new(mixer.asset_manager, @matdef_name)
+        @material = mixer.asset_manager.loadMaterial(@material_name)
         matdef = @material.materialDef
         @texture_names.each do |name|
           param = matdef.getMaterialParam(name)
           if not param or param.varType != Jme::Shader::VarType::Texture2D
-            raise(InvalidMixError, "Material #@matdef_name missing texture uniform #{name}")
+            raise(InvalidMixError, "Material #@material_name missing texture uniform #{name}")
           end
         end
 
