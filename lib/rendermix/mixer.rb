@@ -170,14 +170,19 @@ module RenderMix
       # Update frame and quit if mix completed
       @current_frame += 1
       if @current_frame > @mix.out_frame
-        @mutex.synchronize do
-          stop
-          @encoder.destroy if @encoder
-          @condvar.signal
-        end
+        @encoder.destroy if @encoder
+        stop
       end
     end
     private :simpleRender
+
+    def destroy
+      super
+      @mutex.synchronize do
+        @condvar.signal
+      end
+    end
+    private :destroy
 
     def handleError(msg, ex)
       @mutex.synchronize do
