@@ -1,0 +1,16 @@
+MaterialDef RGB2UYVY {
+
+    MaterialParameters {
+        Texture2D Texture
+    }
+
+    Technique {
+        VertexShader GLSL100:   rendermix/MatDefs/Common/Quad.vert
+        FragmentShader GLSL100: rendermix/MatDefs/UYVY/RGB2UYVY.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+        }
+
+    }
+}
