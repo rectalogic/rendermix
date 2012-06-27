@@ -8,6 +8,8 @@ module RenderMix
         # @return [Jme::Math::Transform] animation current transformation
         attr_reader :transform
 
+        # @param [Hash] animation_data data loaded from Blender JSON export
+        #  using the io_animation_rendermix addon.
         def initialize(animation_data)
           @begin_x, @end_x = animation_data['range']
 
