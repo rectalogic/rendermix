@@ -44,7 +44,7 @@ module RenderMix
 
         # Create UYVY decoding material
         @material = Jme::Material::Material.new(mixer.asset_manager,
-                                                'rendermix/MatDefs/UYVY/DecodeUYVY.j3md')
+                                                'rendermix/MatDefs/UYVY/UYVY2RGB.j3md')
         @material.setTexture('Texture', @texture)
       end
 
