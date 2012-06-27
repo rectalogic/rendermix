@@ -7,27 +7,18 @@ module RenderMix
       # Materials that need timing should accept a uniform with this name
       TIME_UNIFORM = 'time'
 
-      # @param [String] asset_location filesystem path to asset
-      #  root directory or zip file
       # @param [String] matdef_name path to j3md material definition in asset
       # @param [Array<String>] texture_names array of texture uniform names
       #  in the material. These are in track order (i.e. the first texture
       #  name will be used for the first track etc.)
-      def initialize(asset_location, matdef_name, texture_names)
+      def initialize(matdef_name, texture_names)
         super()
-        raise(InvalidMixError, "Effect asset location does not exist") unless File.exist?(asset_location)
-        @asset_location = asset_location
         @matdef_name = matdef_name
         @texture_names = texture_names
       end
 
       def on_rendering_prepare(context_manager, tracks)
         raise(InvalidMixError, "Material #@matdef_name does not have as many textures as tracks") unless tracks.length == @texture_names.length
-
-        locator_class = File.directory?(@asset_location) ?
-          Jme::Asset::Plugins::FileLocator.java_class :
-          Jme::Asset::Plugins::ZipLocator.java_class
-        mixer.asset_manager.registerLocator(@asset_location, locator_class)
 
         @material = Jme::Material::Material.new(mixer.asset_manager, @matdef_name)
         matdef = @material.materialDef
@@ -38,9 +29,6 @@ module RenderMix
           end
         end
 
-        # Preload before we unregister our locator
-        @material.preload(context_manager.render_manager)
-
         @needs_time = !!matdef.getMaterialParam(TIME_UNIFORM)
 
         @quad = OrthoQuad.new(mixer.asset_manager,
@@ -49,8 +37,6 @@ module RenderMix
                               material: @material, flip_y: false,
                               name: 'ImageProcessor')
         @configure_context = true
-      ensure
-        mixer.asset_manager.unregisterLocator(@asset_location, locator_class)
       end
 
       def on_visual_render(visual_context, track_visual_contexts, current_frame)

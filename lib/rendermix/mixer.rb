@@ -16,11 +16,20 @@ module RenderMix
       @height = height
       @framerate = framerate
       @rawmedia_session = RawMedia::Session.new(framerate)
-      @app = create_mixer_application
+      @asset_locations = []
     end
 
+    # @return [Jme::Asset::AssetManager] application asset manager.
+    #  Only valid when called from the mixing thread.
     def asset_manager
       @app.assetManager
+    end
+
+    # @param [String] location filesystem path to an asset root.
+    #  Root directory or zip file.
+    def register_asset_location(location)
+      raise(InvalidMixError, "Asset location does not exist") unless File.exist?(location)
+      @asset_locations.push(location) unless @asset_locations.include?(location)
     end
 
     def new_blank(duration)
@@ -45,13 +54,16 @@ module RenderMix
       Mix::Media.new(self, filename, opts)
     end
 
+    # @param [Mix::Base] mix root element of the mix
+    # @param [String] filename the output video filename to encode into
     def mix(mix, filename=nil)
       mix.add(self)
+      @app = create_mixer_application
       @app.mix(mix, filename)
     end
 
     def create_mixer_application
-      MixerApplication.new(self)
+      MixerApplication.new(self, @asset_locations)
     end
     protected :create_mixer_application
   end
@@ -82,9 +94,10 @@ module RenderMix
   end
 
   class MixerApplication < ApplicationBase
-    def initialize(mixer)
+    def initialize(mixer, asset_locations)
       super(nil)
       @mixer = mixer
+      @asset_locations = asset_locations
       self.timer = Timer.new(mixer.framerate)
 
       configure_settings do |settings|
@@ -123,6 +136,13 @@ module RenderMix
     def simpleInitApp
       asset_root = File.expand_path('../../../assets', __FILE__)
       self.assetManager.registerLocator(asset_root, Jme::Asset::Plugins::FileLocator.java_class)
+
+      @asset_locations.each do |location|
+        locator_class = File.directory?(location) ?
+          Jme::Asset::Plugins::FileLocator.java_class :
+          Jme::Asset::Plugins::ZipLocator.java_class
+        self.assetManager.registerLocator(location, locator_class)
+      end
 
       @root_audio_context = AudioContext.new(@mixer.rawmedia_session.audio_framebuffer_size)
       @audio_context_manager = AudioContextManager.new(@mixer.rawmedia_session.audio_framebuffer_size, @root_audio_context)

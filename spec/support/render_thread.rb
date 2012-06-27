@@ -11,7 +11,7 @@ shared_context 'requires render thread' do
       attr_reader :root_audio_context
       attr_reader :audio_context_manager
 
-      def initialize(mixer)
+      def initialize(mixer, asset_locations)
         super
       end
       def simpleInitApp
@@ -32,9 +32,10 @@ shared_context 'requires render thread' do
       def initialize(width, height, framerate)
         super
         @tpf = framerate.denominator / framerate.numerator.to_f
+        @app = create_mixer_application
       end
       def create_mixer_application
-        MixerApplicationMock.new(self)
+        MixerApplicationMock.new(self, @asset_locations)
       end
     end
 
