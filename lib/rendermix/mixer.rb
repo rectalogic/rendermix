@@ -176,6 +176,11 @@ module RenderMix
     end
     private :simpleRender
 
+    # Override and return nil - we don't need this and slows startup
+    def loadGuiFont
+    end
+    private :loadGuiFont
+
     def destroy
       super
       @mutex.synchronize do
