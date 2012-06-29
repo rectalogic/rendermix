@@ -11,14 +11,14 @@ module RenderMix
         # @param [Hash] animation_data data loaded from Blender JSON export
         #  using the io_animation_rendermix addon.
         def initialize(animation_data)
-          @begin_x, @end_x = animation_data['range']
+          @begin_x, @end_x = animation_data.fetch('range')
 
-          @location_x = create_interpolator(animation_data['locationX'])
-          @location_y = create_interpolator(animation_data['locationY'])
-          @location_z = create_interpolator(animation_data['locationZ'])
-          @rotation_x = create_interpolator(animation_data['rotationX'])
-          @rotation_y = create_interpolator(animation_data['rotationY'])
-          @rotation_z = create_interpolator(animation_data['rotationZ'])
+          @location_x = create_interpolator(animation_data.fetch('locationX'))
+          @location_y = create_interpolator(animation_data.fetch('locationY'))
+          @location_z = create_interpolator(animation_data.fetch('locationZ'))
+          @rotation_x = create_interpolator(animation_data.fetch('rotationX'))
+          @rotation_y = create_interpolator(animation_data.fetch('rotationY'))
+          @rotation_z = create_interpolator(animation_data.fetch('rotationZ'))
 
           # Horizontal field of view in radians (optional)
           #XXX expose this
@@ -32,8 +32,8 @@ module RenderMix
             return ConstantValueInterpolator.new(interpolator_data)
           else
             segments = interpolator_data.collect do |segment_data|
-              BezierSegment.new(*segment_data['range'],
-                                segment_data['bezierPoints'])
+              BezierSegment.new(*segment_data.fetch('range'),
+                                segment_data.fetch('bezierPoints'))
             end
             BezierCurveInterpolator.new(segments)
           end
