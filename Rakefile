@@ -9,6 +9,7 @@ require 'rspec/core/rake_task'
 require 'rawmedia/rake/video_fixture_task'
 require 'rendermix/rake/image_fixture_task'
 require 'yard'
+require 'kramdown'
 
 fixture_video_320x240_30fps = 'spec/fixtures/320x240-30fps.mov'
 fixture_image_640x480 = 'spec/fixtures/640x480.png'
