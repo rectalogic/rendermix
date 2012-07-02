@@ -21,8 +21,14 @@ shared_context 'requires render thread' do
       def simpleUpdate(tpf); end
       def simpleRender(render_manager); end
       def start
-        super
+        super(RenderMix::Jme::System::JmeContext::Type::OffscreenSurface)
         @mutex.synchronize { @condvar.wait(@mutex) }
+      end
+      def shutdown
+        @mutex.synchronize do
+          stop
+          @condvar.wait(@mutex)
+        end
       end
     end
 
@@ -56,6 +62,6 @@ shared_context 'requires render thread' do
 
   after(:all) do
     # Stop and wait for the app to finish
-    @app.stop(true)
+    @app.shutdown
   end
 end
