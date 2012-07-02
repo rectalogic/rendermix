@@ -46,8 +46,11 @@ module RenderMix
           rendered = @effect_manager.render(context_manager, @current_frame)
           @skip_effects = nil
         end
-        on_render(context_manager, @current_frame) unless rendered
-        @current_frame += 1
+
+        unless rendered
+          on_render(context_manager, @current_frame)
+          @current_frame += 1
+        end
       end
     end
 
