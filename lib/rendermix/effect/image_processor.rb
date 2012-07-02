@@ -14,15 +14,13 @@ module RenderMix
       # @param [Array<String>] texture_names array of material uniform names
       #   for each texture. These are in track order (i.e. the first texture
       #   name will be used for the first track etc.)
-      def initialize(material_asset, texture_names)
+      def initialize(material_asset, texture_names=[])
         super()
         @material_asset = material_asset
         @texture_names = texture_names
       end
 
       def on_rendering_prepare(context_manager, tracks)
-        raise(InvalidMixError, "ImageProcessor for #@material_asset does not have as many textures as tracks") unless tracks.length == @texture_names.length
-
         @material = mixer.asset_manager.loadMaterial(@material_asset)
         matdef = @material.materialDef
         @texture_names.each do |name|
