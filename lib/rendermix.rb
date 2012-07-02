@@ -37,6 +37,7 @@ require 'rendermix/effect/audio_base'
 require 'rendermix/effect/visual_base'
 require 'rendermix/effect/audio_mixer'
 require 'rendermix/effect/image_processor'
+require 'rendermix/effect/cinematic'
 
 require 'rendermix/effect/animation/bezier_segment'
 require 'rendermix/effect/animation/bezier_curve_interpolator'
