@@ -7,6 +7,8 @@ module RenderMix
       class Animator
         # @return [Jme::Math::Transform] animation current transformation
         attr_reader :transform
+        # @return [Animation::CameraData] camera data, or nil
+        attr_reader :camera
 
         # @param [Hash] animation_data data loaded from Blender JSON export
         #  using the io_animation_rendermix addon.
@@ -20,9 +22,13 @@ module RenderMix
           @rotation_y = create_interpolator(animation_data.fetch('rotationY'))
           @rotation_z = create_interpolator(animation_data.fetch('rotationZ'))
 
-          # Horizontal field of view in radians (optional)
-          #XXX expose this
-          @horizontal_fov = animation_data['horizontalFOV']
+          # Optional camera data
+          if animation_data.has_key?('camera')
+            camera_data = animation_data['camera']
+            @camera = CameraData.new(camera_data.fetch('horizontalFOV'),
+                                     camera_data.fetch('near'),
+                                     camera_data.fetch('far'))
+          end
 
           @transform = Jme::Math::Transform.new
         end

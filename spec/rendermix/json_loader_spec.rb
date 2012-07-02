@@ -8,7 +8,8 @@ module RenderMix
       on_render_thread do
         @app.mixer.asset_manager.registerLocator(FIXTURES, Jme::Asset::Plugins::FileLocator.java_class)
         anim = @app.mixer.asset_manager.loadAsset("animation/animation.json")
-        anim["horizontalFOV"].should == 0.6833110451698303
+        anim.has_key?('camera').should be_true
+        anim['camera']["horizontalFOV"].should == 0.6833110451698303
       end
     end
   end

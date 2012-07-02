@@ -37,7 +37,11 @@ def buildAnimation(animObject):
     animation = {'name': animObject.name, 'range': frame_range}
     # Save FOV if object is a Camera
     if animObject.type == 'CAMERA':
-        animation['horizontalFOV'] = animObject.data.angle
+        animation['camera'] = {
+            'horizontalFOV': animObject.data.angle,
+            'near': animObject.data.clip_start,
+            'far': animObject.data.clip_end
+        }
 
     for f in fcurves:
         name = (CurveNames[f.data_path] + CoordNames[f.array_index])
@@ -63,7 +67,7 @@ def buildAnimation(animObject):
 
     return animation
 
-def save(operator, context, option_compact, option_varname, filepath=""):
+def save(operator, context, option_compact, filepath=""):
     if len(context.selected_objects) > 1:
         animation = []
         for obj in context.selected_objects:
@@ -73,8 +77,6 @@ def save(operator, context, option_compact, option_varname, filepath=""):
         animation = buildAnimation(context.object)
 
     animationJS = ""
-    if option_varname:
-        animationJS = "var %s =\n" % option_varname
 
     if option_compact:
         animationJS += json.dumps(animation, sort_keys=True,

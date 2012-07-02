@@ -15,8 +15,11 @@ def importAnimation(animObject, animation):
     action.groups.new(KeyframeGroup)
 
     # Restore camera FOV
-    if animObject.type == 'CAMERA' and 'horizontalFOV' in animation:
-        animObject.data.angle = animation['horizontalFOV']
+    if animObject.type == 'CAMERA' and 'camera' in animation:
+        camera = animation['camera']
+        animObject.data.angle = camera['horizontalFOV']
+        animObject.data.clip_start = camera['near']
+        animObject.data.clip_end = camera['far']
 
     animRange = animation['range']
 
@@ -43,12 +46,7 @@ def importAnimation(animObject, animation):
 
 def load(operator, context, filepath=""):
     with open(filepath, "r") as file:
-        animationJS = file.read()
-        # Deal with variable declaration
-        var = animationJS.find("=")
-        if var >= 0:
-            animationJS = animationJS[var+1:]
-        animation = json.loads(animationJS)
+        animation = json.loads(file.read())
 
     if isinstance(animation, list):
         for anim in animation:

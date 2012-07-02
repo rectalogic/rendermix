@@ -42,6 +42,7 @@ require 'rendermix/effect/animation/bezier_segment'
 require 'rendermix/effect/animation/bezier_curve_interpolator'
 require 'rendermix/effect/animation/constant_value_interpolator'
 require 'rendermix/effect/animation/animator'
+require 'rendermix/effect/animation/camera_data'
 
 require 'rendermix/mix/effect_manager'
 require 'rendermix/mix/render_manager'

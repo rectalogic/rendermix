@@ -6,7 +6,7 @@ bl_info = {
     "name": "RenderMix Object Animation JSON Format",
     "description": "Import/export object animation data in JSON for use with RenderMix",
     "author": "Andrew Wason <rectalogic@rectalogic.com>",
-    "version": (1, 0),
+    "version": (1, 1),
     "blender": (2, 5, 8),
     "api": 38205,
     "location": "File > Import-Export",
@@ -40,8 +40,8 @@ class ImportRenderMix(bpy.types.Operator, ImportHelper):
     bl_label = "Import RenderMix JSON"
     bl_options = {'REGISTER', 'UNDO'}
 
-    filename_ext = '.js'
-    filter_glob = StringProperty(default="*.js", options={'HIDDEN'})
+    filename_ext = '.json'
+    filter_glob = StringProperty(default="*.json", options={'HIDDEN'})
 
     @classmethod
     def poll(cls, context):
@@ -57,11 +57,10 @@ class ExportRenderMix(bpy.types.Operator, ExportHelper):
     bl_idname = "export_anim.rendermix"
     bl_label = "Export RenderMix JSON"
 
-    filename_ext = '.js'
-    filter_glob = StringProperty(default="*.js", options={'HIDDEN'})
+    filename_ext = '.json'
+    filter_glob = StringProperty(default="*.json", options={'HIDDEN'})
 
     option_compact = BoolProperty(name="Compact", description="Compact JSON", default=True)
-    option_varname = StringProperty(name="var Name", description="JavaScript variable name")
 
     @classmethod
     def poll(cls, context):
@@ -74,14 +73,13 @@ class ExportRenderMix(bpy.types.Operator, ExportHelper):
     def draw(self, context):
         layout = self.layout
         layout.prop(self.properties, "option_compact")
-        layout.prop(self.properties, "option_varname")
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportRenderMix.bl_idname, text="RenderMix Animation JSON (.js)")
+    self.layout.operator(ImportRenderMix.bl_idname, text="RenderMix Animation JSON (.json)")
 
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportRenderMix.bl_idname, text="RenderMix Animation JSON (.js)")
+    self.layout.operator(ExportRenderMix.bl_idname, text="RenderMix Animation JSON (.json)")
 
 def register():
     bpy.utils.register_module(__name__)
