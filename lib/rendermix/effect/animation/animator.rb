@@ -84,7 +84,17 @@ module RenderMix
           x = cy*sxcz - sy*cxsz
           y = cy*sxsz + sy*cxcz
           z = cy*cxsz - sy*sxcz
-          @transform.rotation.set(x, y, z, w).normalizeLocal
+
+          # Incorporate an additional rotation around Y by PI.
+          # This flips the camera to face the other direction,
+          # converting from Blender coordinate system to JME3.
+          # Rotation quat from:
+          #  Quaternion.fromAngleNormalAxis(Math::PI, Vector3f::UNIT_Y)
+          # is (x,y,z,w)=(0, 1, 0, Math.cos(Math::PI/2))
+          # and cos(PI/2)==0
+          # We then mult() that quat with the one we are building,
+          # optimizing out the zero and 1 multiplications.
+          @transform.rotation.set(-z, w, x, -y).normalizeLocal
         end
         private :update_rotation
       end
