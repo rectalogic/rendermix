@@ -13,7 +13,7 @@ module RenderMix
 
         it 'should evaluate to correct transform' do
           on_render_thread do
-            animator = File.open(File.join(FIXTURES, 'animation', 'animation.json'), 'r') do |f|
+            animator = File.open(File.join(FIXTURES, 'assets', 'animation', 'animation.json'), 'r') do |f|
               Animator.new(JSON.load(f))
             end
 

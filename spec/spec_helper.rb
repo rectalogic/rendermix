@@ -14,3 +14,9 @@ handler.formatter = RenderMix::JavaLog::SimpleFormatter.new
 RenderMix::JavaLog::Logger.getLogger('').addHandler(handler)
 
 FIXTURES = File.expand_path('../fixtures', __FILE__)
+
+# Must be called from on_render_thread
+def register_test_assets
+  @app.mixer.asset_manager.registerLocator(File.join(FIXTURES, 'assets'),
+                                           RenderMix::Jme::Asset::Plugins::FileLocator.java_class)
+end
