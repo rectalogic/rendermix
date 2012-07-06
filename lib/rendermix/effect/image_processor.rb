@@ -8,7 +8,7 @@ module RenderMix
     # texture tracks.
     class ImageProcessor < VisualBase
       # Materials that need timing should accept a uniform with this name
-      TIME_UNIFORM = 'time'
+      TIME_UNIFORM = 'Time'
 
       # @param [String] material_asset asset path to j3m material file
       # @param [Array<String>] texture_names array of material uniform names
