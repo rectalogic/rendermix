@@ -76,7 +76,7 @@ module RenderMix
       end
       private :uniform_materials
 
-      def on_visual_render(visual_context, track_visual_contexts, current_frame)
+      def on_visual_render(visual_context, track_visual_contexts)
         if @configure_context
           visual_context.attach_child(@root_node)
           @camera_animation.visual_context = visual_context

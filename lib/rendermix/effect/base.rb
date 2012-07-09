@@ -11,6 +11,11 @@ module RenderMix
       # @return [Fixnum] ending frame of this effect in parents timeline
       attr_reader :out_frame
       attr_reader :duration
+      attr_reader :current_frame
+
+      def initialize
+        @current_frame = 0
+      end
 
       # @param [Mixer] mixer
       # @param [Array<Mix::Base>] tracks array of mix elements this effect applies to
@@ -32,10 +37,10 @@ module RenderMix
 
       # Acquires the effects context, and renders effect tracks into their
       # context managers.
-      # Returns the effects acquired context, and an array of contexts
+      # Yields the effects acquired context, and an array of contexts
       # for each track.
-      # @return [VisualContext, Array<VisualContext>] if context_manager is VisualContextManager
-      # @return [AudioContext, Array<AudioContext>] if context_manager is AudioContextManager
+      # @yieldparam [AudioContext, VisualContext] context
+      # @yieldparam [Array<AudioContext>, Array<VisualContext>] current_contexts
       def render(context_manager)
         # Acquire context first, before rendering tracks.
         # So if any track was using this context, it will lose it first.
@@ -45,7 +50,8 @@ module RenderMix
           cm.render(@tracks[i])
           cm.current_context
         end
-        return context, current_contexts
+        yield context, current_contexts
+        @current_frame += 1
       end
       protected :render
 

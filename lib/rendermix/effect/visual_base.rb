@@ -4,25 +4,20 @@
 module RenderMix
   module Effect
     class VisualBase < Base
-      def initialize
-        @current_frame = 0
-      end
-
       # @param [VisualContextManager] context_manager
       # @param [Array<Mix::Base>] tracks effect tracks
       def on_rendering_prepare(context_manager, tracks)
       end
 
       def visual_render(context_manager)
-        context, track_contexts = render(context_manager)
-        on_visual_render(context, track_contexts, @current_frame)
-        @current_frame += 1
+        render(context_manager) do |context, track_contexts|
+          on_visual_render(context, track_contexts)
+        end
       end
 
       # @param [VisualContext] visual_context
       # @param [Array<VisualContext>] track_visual_contexts contexts for each track
-      # @param [Fixnum] current_frame
-      def on_visual_render(visual_context, track_visual_contexts, current_frame)
+      def on_visual_render(visual_context, track_visual_contexts)
       end
 
       def visual_context_released(context)

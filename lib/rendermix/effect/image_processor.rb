@@ -40,7 +40,7 @@ module RenderMix
         @configure_context = true
       end
 
-      def on_visual_render(visual_context, track_visual_contexts, current_frame)
+      def on_visual_render(visual_context, track_visual_contexts)
         if @configure_context
           @quad.configure_context(visual_context)
           @configure_context = false

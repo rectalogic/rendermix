@@ -8,7 +8,7 @@ module RenderMix
         @audio_mixer = mixer.rawmedia_session.create_audio_mixer
       end
 
-      def on_audio_render(audio_context, track_audio_contexts, current_frame)
+      def on_audio_render(audio_context, track_audio_contexts)
         buffers = track_audio_contexts.collect do |context|
           context.buffer if context
         end

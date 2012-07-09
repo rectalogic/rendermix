@@ -4,25 +4,20 @@
 module RenderMix
   module Effect
     class AudioBase < Base
-      def initialize
-        @current_frame = 0
-      end
-
       # @param [AudioContextManager] context_manager
       # @param [Array<Mix::Base>] tracks effect tracks
       def on_rendering_prepare(context_manager, tracks)
       end
 
       def audio_render(context_manager)
-        context, track_contexts = render(context_manager)
-        on_audio_render(context, track_contexts, @current_frame)
-        @current_frame += 1
+        render(context_manager) do |context, track_contexts|
+          on_audio_render(context, track_contexts)
+        end
       end
 
       # @param [AudioContext] audio_context
       # @param [Array<AudioContext>] track_audio_contexts contexts for each track
-      # @param [Fixnum] current_frame
-      def on_audio_render(audio_context, track_audio_contexts, current_frame)
+      def on_audio_render(audio_context, track_audio_contexts)
       end
 
       def audio_context_released(context)
