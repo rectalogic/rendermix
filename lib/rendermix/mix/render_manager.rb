@@ -38,19 +38,20 @@ module RenderMix
           return
         end
 
-        if @effect_manager and not @skip_effects
-          # In the case where the mix is its own track (Sequence, Media etc.),
-          # we need to guard against reentrant rendering. The Effect may
-          # render us, and we don't want to render the Effect again when it does.
-          @skip_effects = true
-          rendered = @effect_manager.render(context_manager, @current_frame)
-          @skip_effects = nil
+        # Set a flag so we can detect when we are reentrantly rendering
+        # (the case where the mix element is its own track (Sequence, Media etc.)
+        # The Effect will render us and we don't want to render the Effect
+        # again when it does.
+        if @effect_manager and not @rendering_effect
+          @rendering_effect = true
+          effect_rendered = @effect_manager.render(context_manager, @current_frame)
+          @rendering_effect = nil
         end
 
-        unless rendered
-          on_render(context_manager, @current_frame)
-          @current_frame += 1
-        end
+        # Do not render if we just rendered an effect on ourself
+        on_render(context_manager, @current_frame) unless effect_rendered
+        # Do not increment frame when rendering an effect
+        @current_frame += 1 unless @rendering_effect
       end
     end
 
