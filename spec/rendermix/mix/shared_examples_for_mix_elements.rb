@@ -2,6 +2,7 @@ require 'spec_helper'
 
 shared_examples 'a mix element' do
   include_context 'requires render thread'
+  include_context 'should receive invoke'
 
   it 'should not add to a different mixer' do
     mixer2 = double('mixer')
@@ -23,22 +24,26 @@ shared_examples 'a mix element' do
   end
 
   it 'should render audio' do
-    on_render_thread do
-      original_method = mix_element.method(:on_audio_render)
-      mix_element.should_receive(:on_audio_render).exactly(1).times do |*args|
-        original_method.call(*args)
+    duration = mix_element.duration
+    mix_element.should_receive_invoke(:audio_rendering_prepare).once
+    mix_element.should_receive_invoke(:on_audio_render).exactly(duration).times
+    mix_element.should_receive_invoke(:audio_rendering_finished).once
+    (duration + 1).times do
+      on_render_thread do
+        @app.audio_context_manager.render(mix_element)
       end
-      @app.audio_context_manager.render(mix_element)
     end
   end
 
   it 'should render visual' do
-    on_render_thread do
-      original_method = mix_element.method(:on_visual_render)
-      mix_element.should_receive(:on_visual_render).exactly(1).times do |*args|
-        original_method.call(*args)
+    duration = mix_element.duration
+    mix_element.should_receive_invoke(:visual_rendering_prepare).once
+    mix_element.should_receive_invoke(:on_visual_render).exactly(duration).times
+    mix_element.should_receive_invoke(:visual_rendering_finished).once
+    (duration + 1).times do
+      on_render_thread do
+        @app.visual_context_manager.render(mix_element)
       end
-      @app.visual_context_manager.render(mix_element)
     end
   end
 end

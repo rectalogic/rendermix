@@ -1,0 +1,22 @@
+MaterialDef ImageProcessor {
+
+    MaterialParameters {
+        Texture2D SourceTex
+        Texture2D TargetTex
+        Float Time
+    }
+
+    Technique {
+        VertexShader GLSL100:   rendermix/MatDefs/Common/Quad.vert
+        FragmentShader GLSL100: TestEffects/ImageProcessor/ImageProcessor.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+        }
+
+        Defines {
+            SOURCE_TEX : SourceTex
+            TARGET_TEX : TargetTex
+        }
+    }
+}

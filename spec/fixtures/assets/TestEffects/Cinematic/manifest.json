@@ -1,0 +1,8 @@
+{
+    "scenes" : [ "TestEffects/Cinematic/model/cube.obj" ],
+    "textures" : {
+        "SourceVideo" : { "cube-geom-0" : "DiffuseMap" },
+        "TargetVideo" : { "cube-geom-0" : "DiffuseMap" }
+    },
+    "camera" : "animation/animation.json"
+}

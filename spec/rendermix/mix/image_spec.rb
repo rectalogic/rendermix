@@ -6,7 +6,7 @@ module RenderMix
     describe Image do 
       it_should_behave_like 'a mix element' do
         let!(:mix_element) do
-          @app.mixer.new_image(File.join(FIXTURES, '640x480.png'), 10)
+          @app.mixer.new_image(FIXTURE_IMAGE, 10)
         end
       end
     end
