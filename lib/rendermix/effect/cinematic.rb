@@ -88,7 +88,7 @@ module RenderMix
           uniform_material.apply(texture)
         end
 
-        @camera_animation.animate(current_frame.to_f / duration)
+        @camera_animation.animate(current_time)
       end
 
       def visual_context_released(context)

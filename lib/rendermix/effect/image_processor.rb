@@ -47,7 +47,7 @@ module RenderMix
         end
 
         if @needs_time
-          @material.setFloat(TIME_UNIFORM, current_frame.to_f / duration)
+          @material.setFloat(TIME_UNIFORM, current_time)
         end
 
         @texture_names.each_with_index do |name, i|

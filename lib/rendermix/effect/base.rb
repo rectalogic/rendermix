@@ -28,6 +28,10 @@ module RenderMix
         @duration = out_frame - in_frame + 1
       end
 
+      def current_time
+        current_frame.to_f / duration
+      end
+
       def rendering_prepare(context_manager)
         # Clone context manager for each track
         @context_managers = Array.new(@tracks.length)
