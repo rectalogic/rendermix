@@ -5,23 +5,18 @@ module RenderMix
   module Mix
     class Sequence < Base
       # @param [Mixer] mixer
-      def initialize(mixer)
-        super(mixer, 0)
-        @audio_mix_elements = []
-        @visual_mix_elements = []
-      end
-
-      # @param [Mix::Base] mix_element
-      def append(mix_element)
-        raise(InvalidMixError, 'Sequence cannot be modified after Effects applied') if has_effects?
-        raise(InvalidMixError, 'Sequence cannot be modified after it has been added') if in_frame || out_frame
-
-        mix_element.add(mixer)
-        @audio_mix_elements << mix_element
-        @visual_mix_elements << mix_element
-        mix_element.in_frame = self.duration
-        mix_element.out_frame = self.duration + mix_element.duration - 1
-        self.duration += mix_element.duration
+      # @param [Array<Mix::Base>] mix_elements
+      def initialize(mixer, mix_elements)
+        duration = 0
+        mix_elements.each do |mix_element|
+          mix_element.validate(mixer)
+          mix_element.in_frame = duration
+          mix_element.out_frame = duration + mix_element.duration - 1
+          duration += mix_element.duration
+        end
+        super(mixer, duration)
+        @audio_mix_elements = mix_elements.dup
+        @visual_mix_elements = mix_elements.dup
       end
 
       def on_audio_render(context_manager, current_frame)

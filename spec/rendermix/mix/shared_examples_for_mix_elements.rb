@@ -4,9 +4,9 @@ shared_examples 'a mix element' do
   include_context 'requires render thread'
   include_context 'should receive invoke'
 
-  it 'should not add to a different mixer' do
+  it 'should not validate to a different mixer' do
     mixer2 = double('mixer')
-    expect { mix_element.add(mixer2) }.to raise_error(RenderMix::InvalidMixError)
+    expect { mix_element.validate(mixer2) }.to raise_error(RenderMix::InvalidMixError)
   end
 
   it 'should apply audio effects' do

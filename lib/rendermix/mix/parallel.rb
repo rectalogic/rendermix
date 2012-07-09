@@ -4,21 +4,18 @@
 module RenderMix
   module Mix
     class Parallel < Base
-      def initialize(mixer)
-        super(mixer, 0)
-        @mix_elements = []
-      end
-
-      def append(mix_element)
-        raise(InvalidMixError, 'Parallel cannot be modified after Effects applied') if has_effects?
-        raise(InvalidMixError, 'Parallel cannot be modified after it has been added') if in_frame || out_frame
-        mix_element.add(mixer)
-        @mix_elements << mix_element
-        mix_element.in_frame = 0
-        mix_element.out_frame = mix_element.duration - 1
-        if mix_element.duration > self.duration
-          self.duration = mix_element.duration
+      # @param [Mixer] mixer
+      # @param [Array<Mix::Base>] mix_elements
+      def initialize(mixer, mix_elements)
+        duration = 0
+        mix_elements.each do |mix_element|
+          mix_element.validate(mixer)
+          mix_element.in_frame = 0
+          mix_element.out_frame = mix_element.duration - 1
+          duration = mix_element.duration if mix_element.duration > duration
         end
+        super(mixer, duration)
+        @mix_elements = mix_elements.dup
       end
 
       def tracks

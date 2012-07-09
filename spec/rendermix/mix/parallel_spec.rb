@@ -6,9 +6,7 @@ module RenderMix
     describe Parallel do 
       it_should_behave_like 'a mix element' do
         let!(:mix_element) do
-          par = @app.mixer.new_parallel
-          par.append(@app.mixer.new_blank(10))
-          par
+          @app.mixer.new_parallel(@app.mixer.new_blank(10))
         end
 
         let(:tracks) do
@@ -17,11 +15,7 @@ module RenderMix
           end
         end
         let!(:par) do
-          par = @app.mixer.new_parallel
-          tracks.each do |track|
-            par.append(track)
-          end
-          par
+          @app.mixer.new_parallel(tracks)
         end
 
         it 'should have a track for each child' do

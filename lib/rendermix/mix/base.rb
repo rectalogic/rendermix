@@ -21,7 +21,7 @@ module RenderMix
         @visual_render_manager = VisualRenderManager.new(self)
       end
 
-      def add(mixer)
+      def validate(mixer)
         raise(InvalidMixError, 'Mix element does not belong to this Mixer') if mixer != self.mixer
         raise(InvalidMixError, 'Mix element already added') if in_frame || out_frame
       end

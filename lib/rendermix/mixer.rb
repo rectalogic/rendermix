@@ -36,12 +36,14 @@ module RenderMix
       Mix::Blank.new(self, duration)
     end
 
-    def new_sequence
-      Mix::Sequence.new(self)
+    # @param [Array<Mix::Base>] mix_elements
+    def new_sequence(*mix_elements)
+      Mix::Sequence.new(self, mix_elements.flatten)
     end
 
-    def new_parallel
-      Mix::Parallel.new(self)
+    # @param [Array<Mix::Base>] mix_elements
+    def new_parallel(*mix_elements)
+      Mix::Parallel.new(self, mix_elements.flatten)
     end
 
     def new_image(filename, duration)
@@ -57,7 +59,7 @@ module RenderMix
     # @param [Mix::Base] mix root element of the mix
     # @param [String] filename the output video filename to encode into
     def mix(mix, filename=nil)
-      mix.add(self)
+      mix.validate(self)
       @app = create_mixer_application
       @app.mix(mix, filename)
     end

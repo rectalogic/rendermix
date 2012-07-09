@@ -6,9 +6,7 @@ module RenderMix
     describe Sequence do 
       it_should_behave_like 'a mix element' do
         let!(:mix_element) do
-          seq = @app.mixer.new_sequence
-          seq.append(@app.mixer.new_blank(10))
-          seq
+          @app.mixer.new_sequence(@app.mixer.new_blank(10))
         end
 
         let(:tracks) do
@@ -17,11 +15,7 @@ module RenderMix
           end
         end
         let!(:seq) do
-          seq = @app.mixer.new_sequence
-          tracks.each do |track|
-            seq.append(track)
-          end
-          seq
+          @app.mixer.new_sequence(tracks)
         end
 
         it 'should have a single track' do
