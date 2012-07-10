@@ -80,10 +80,9 @@ shared_examples 'a filter effect' do
   include_context 'requires render thread'
   include_context 'should receive invoke'
 
-  it 'should apply as a filter to Media' do
+  def filter_media(effect_start)
     media = @app.mixer.new_media(FIXTURE_MEDIA, duration: 5*4)
 
-    effect_start = 5*1
     media.method(sym("apply_%s_effect")).call(effect, effect_start, media.duration - 1)
 
     media.should_receive_invoke(sym("%s_rendering_prepare")).once
@@ -95,7 +94,7 @@ shared_examples 'a filter effect' do
     effect.should_receive_invoke(sym("on_rendering_prepare")).once
     effect.should_receive_invoke(sym("on_%s_render")).exactly(effect.duration).times
     effect.should_receive_invoke(sym("%s_context_released")).once
-    effect.should_not_receive(sym("on_rendering_finished"))
+    effect.should_receive_invoke(sym("on_rendering_finished")).once
 
     context_manager = nil
     on_render_thread do
@@ -107,6 +106,14 @@ shared_examples 'a filter effect' do
         context_manager.render(media)
       end
     end
+  end
+
+  it 'should apply as a filter with no offset on Media' do
+    filter_media(0)
+  end
+
+  it 'should apply as a filter offset on Media' do
+    filter_media(5*1)
   end
 
   it 'should apply as a filter to Sequence' do
@@ -127,7 +134,7 @@ shared_examples 'a filter effect' do
     effect.should_receive_invoke(sym("on_rendering_prepare")).once
     effect.should_receive_invoke(sym("on_%s_render")).exactly(effect.duration).times
     effect.should_receive_invoke(sym("%s_context_released")).once
-    effect.should_not_receive(sym("on_rendering_finished"))
+    effect.should_receive_invoke(sym("on_rendering_finished")).once
 
     context_manager = nil
     on_render_thread do

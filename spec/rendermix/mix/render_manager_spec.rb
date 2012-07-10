@@ -44,7 +44,7 @@ shared_examples 'a render manager' do |av_rendering_prepare, on_render_av, av_re
   it 'should prepare and render the mix element' do
     on_render_thread do
       context_manager = double('context manager')
-      mix_element = double('mix element')
+      mix_element = double('mix element', duration: 2)
       tracks = [ mix_element ]
       mix_element.should_receive(av_rendering_prepare).with(context_manager).once
       mix_element.should_receive(on_render_av).with(context_manager, 0).once

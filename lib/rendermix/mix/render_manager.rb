@@ -31,25 +31,31 @@ module RenderMix
 
       # @param [AudioContextManager, VisualContextManager] context_manager
       def render(context_manager)
-        if @current_frame == 0
-          rendering_prepare(context_manager)
-        elsif @current_frame >= @mix_element.duration
-          rendering_finished
-          return
-        end
+        return if @current_frame > @mix_element.duration
 
-        # Set a flag so we can detect when we are reentrantly rendering
-        # (the case where the mix element is its own track (Sequence, Media etc.)
-        # The Effect will render us and we don't want to render the Effect
-        # again when it does.
-        if @effect_manager and not @rendering_effect
-          @rendering_effect = true
-          effect_rendered = @effect_manager.render(context_manager, @current_frame)
-          @rendering_effect = nil
+        if not @rendering_effect
+          rendering_prepare(context_manager) if @current_frame == 0
+
+          # Set a flag so we can detect when we are reentrantly rendering
+          # (the case where the mix element is its own track
+          # (Sequence, Media etc.)
+          # The Effect will render us and we don't want to render the Effect
+          # again when it does.
+          if @effect_manager
+            @rendering_effect = true
+            effect_rendered = @effect_manager.render(context_manager, @current_frame)
+            @rendering_effect = nil
+          end
+
+          if @current_frame == @mix_element.duration
+            rendering_finished
+            return
+          end
         end
 
         # Do not render if we just rendered an effect on ourself
         on_render(context_manager, @current_frame) unless effect_rendered
+
         # Do not increment frame when rendering an effect
         @current_frame += 1 unless @rendering_effect
       end

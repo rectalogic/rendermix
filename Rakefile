@@ -24,7 +24,6 @@ task :spec => [fixture_video_320x240_30fps, fixture_image_640x480]
 # rcov 0.9.11 does, but not in 1.9 mode
 desc 'Run RSpec code examples with simplecov'
 RSpec::Core::RakeTask.new(:coverage) do |task|
-  task.rspec_opts = %{--color --format progress}
   task.rcov = true
   task.rcov_path = 'rspec'
   task.rcov_opts = '--require simplecov_start'
