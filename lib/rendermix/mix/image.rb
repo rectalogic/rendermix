@@ -7,17 +7,17 @@ module RenderMix
       #XXX we should store the actual "rendered area" coords on VisualContext - i.e. for an image that is scaled to "meet", we can store its visible region
       #XXX this can be used in some effects to extract and UV map only the visible portion of the texture - avoiding black/transparent border regions
 
-      #XXX add panzoom keyframe interpolation support via OrthoQuad to this and Media
-
       # @param [Mixer] mixer
       # @param [String] filename the image file
       # @param [Hash] opts options
       # @option opts [Fixnum] :duration set image duration (required)
+      # @option opts [PanZoom::Timeline] :panzoom panzoom timeline (optional)
       def initialize(mixer, filename, opts={})
-        opts.assert_valid_keys(:duration)
+        opts.assert_valid_keys(:duration, :panzoom)
         duration = opts.fetch(:duration) rescue raise(InvalidMixError, "Image requires duration")
         super(mixer, duration)
         @filename = filename
+        @panzoom = opts[:panzoom]
       end
 
       def visual_rendering_prepare(context_manager)
@@ -50,6 +50,7 @@ module RenderMix
           @quad.configure_context(visual_context)
           @configure_context = false
         end
+        @panzoom.panzoom(current_time(current_frame), @quad) if @panzoom
       end
 
       def visual_context_released(context)

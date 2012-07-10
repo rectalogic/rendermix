@@ -4,7 +4,7 @@
 module RenderMix
   module Mix
     class Media < Base
-      #XXX need to deal with "freezing" and panzoom
+      #XXX need to deal with "freezing"
 
       # @param [Mixer] mixer
       # @param [String] filename the media file to decode
@@ -12,8 +12,9 @@ module RenderMix
       # @option opts [Float] :volume exponential volume to decode audio, 0..1, default 1.0
       # @option opts [Fixnum] :start_frame starting video frame, default 0
       # @option opts [Fixnum] :duration override intrinsic media duration
+      # @option opts [PanZoom::Timeline] :panzoom panzoom timeline (optional)
       def initialize(mixer, filename, opts={})
-        opts.assert_valid_keys(:volume, :start_frame, :duration)
+        opts.assert_valid_keys(:volume, :start_frame, :duration, :panzoom)
         volume = opts.fetch(:volume, 1.0)
         start_frame = opts.fetch(:start_frame, 0.0)
         @decoder = RawMedia::Decoder.new(filename, mixer.rawmedia_session,
@@ -21,6 +22,7 @@ module RenderMix
                                          volume: volume,
                                          start_frame: start_frame)
         super(mixer, opts.fetch(:duration, @decoder.duration))
+        @panzoom = opts[:panzoom]
       end
 
       def on_audio_render(context_manager, current_frame)
@@ -73,6 +75,8 @@ module RenderMix
                                           @decoder.video_byte_buffer)
           @texture.setImage(image)
         end
+
+        @panzoom.panzoom(current_time(current_frame), @quad) if @panzoom
       end
 
       def visual_context_released(context)

@@ -11,7 +11,7 @@ module RenderMix
       @app.mixer.height * 1.5
     end
 
-    def ortho_quad
+    def ortho_quad(opts={})
       context = @app.root_visual_context
       quad = nil
       # Capture and return the Quad node that is created
@@ -21,7 +21,7 @@ module RenderMix
         attach_child.call(q)
       end.once
       ortho = OrthoQuad.new(@app.assetManager, context.width, context.height,
-                            image_width, image_height)
+                            image_width, image_height, opts)
       ortho.configure_context(context)
       return ortho, quad
     end
@@ -36,8 +36,8 @@ module RenderMix
 
     it 'should support panzoom fill' do
       on_render_thread do
-        ortho, quad = ortho_quad
-        ortho.panzoom(1, 0, 0, :fill)
+        ortho, quad = ortho_quad(fit: :fill)
+        ortho.panzoom(1, 0, 0)
 
         scale = @app.mixer.height / image_height.to_f
         tx = -(scale * image_width - @app.mixer.width) / 2.0

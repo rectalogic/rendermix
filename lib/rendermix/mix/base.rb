@@ -26,6 +26,12 @@ module RenderMix
         raise(InvalidMixError, 'Mix element already added') if in_frame || out_frame
       end
 
+      # @param [Fixnum] frame frame number
+      # @return [Float] normalized time (0..1)
+      def current_time(frame)
+        frame / duration.to_f
+      end
+
       # @param [Effect::Audio] audio_effect
       def apply_audio_effect(audio_effect, in_frame, out_frame)
         @audio_render_manager.apply_effect(audio_effect, in_frame, out_frame)

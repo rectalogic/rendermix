@@ -32,6 +32,12 @@ require 'rendermix/visual_context_pool'
 require 'rendermix/context_manager'
 require 'rendermix/ortho_quad'
 
+require 'rendermix/pan_zoom/timeline'
+require 'rendermix/pan_zoom/keyframe'
+require 'rendermix/pan_zoom/interpolator'
+require 'rendermix/pan_zoom/linear'
+require 'rendermix/pan_zoom/catmull_rom'
+
 require 'rendermix/effect/base'
 require 'rendermix/effect/audio_base'
 require 'rendermix/effect/visual_base'

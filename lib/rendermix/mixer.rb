@@ -46,8 +46,10 @@ module RenderMix
       Mix::Parallel.new(self, mix_elements.flatten)
     end
 
-    def new_image(filename, duration)
-      Mix::Image.new(self, filename, duration)
+    # @param [String] filename
+    # @param [Hash] opts (see Mix::Image#initialize)
+    def new_image(filename, opts={})
+      Mix::Image.new(self, filename, opts)
     end
 
     # @param [String] filename
