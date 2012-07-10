@@ -20,8 +20,7 @@ module RenderMix
                                          mixer.width, mixer.height,
                                          volume: volume,
                                          start_frame: start_frame)
-        duration = opts[:duration] || @decoder.duration
-        super(mixer, duration)
+        super(mixer, opts.fetch(:duration, @decoder.duration))
       end
 
       def on_audio_render(context_manager, current_frame)

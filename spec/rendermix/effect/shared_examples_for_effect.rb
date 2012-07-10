@@ -10,7 +10,7 @@ shared_examples 'a transition effect' do
 
   it 'should apply to overlapping Sequences in Parallel' do
     seq1_dur = 5*4
-    seq1 = @app.mixer.new_sequence(@app.mixer.new_image(FIXTURE_IMAGE, seq1_dur))
+    seq1 = @app.mixer.new_sequence(@app.mixer.new_image(FIXTURE_IMAGE, duration: seq1_dur))
 
     seq2_start = 5*2
     seq2 = @app.mixer.new_sequence(@app.mixer.new_blank(seq2_start),
@@ -43,7 +43,7 @@ shared_examples 'a transition effect' do
   end
 
   it 'should apply to Sequence overlapping Image in Parallel' do
-    image = @app.mixer.new_image(FIXTURE_IMAGE, 5*4)
+    image = @app.mixer.new_image(FIXTURE_IMAGE, duration: 5*4)
 
     seq_start = 5*2
     seq = @app.mixer.new_sequence(@app.mixer.new_blank(seq_start),

@@ -9,7 +9,13 @@ module RenderMix
 
       #XXX add panzoom keyframe interpolation support via OrthoQuad to this and Media
 
-      def initialize(mixer, filename, duration)
+      # @param [Mixer] mixer
+      # @param [String] filename the image file
+      # @param [Hash] opts options
+      # @option opts [Fixnum] :duration set image duration (required)
+      def initialize(mixer, filename, opts={})
+        opts.assert_valid_keys(:duration)
+        duration = opts.fetch(:duration) rescue raise(InvalidMixError, "Image requires duration")
         super(mixer, duration)
         @filename = filename
       end
