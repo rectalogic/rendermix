@@ -11,6 +11,9 @@ module RenderMix
     end
     module Asset
       include_package 'com.jme3.asset'
+      module Cache
+        include_package 'com.jme3.asset.cache'
+      end
       module Plugins
         include_package 'com.jme3.asset.plugins'
       end

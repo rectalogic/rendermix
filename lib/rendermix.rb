@@ -24,13 +24,16 @@ require 'rendermix/log'
 require 'rendermix/mixer'
 require 'rendermix/command'
 
-require 'rendermix/json_loader'
 require 'rendermix/audio_context'
 require 'rendermix/audio_context_pool'
 require 'rendermix/visual_context'
 require 'rendermix/visual_context_pool'
 require 'rendermix/context_manager'
 require 'rendermix/ortho_quad'
+
+require 'rendermix/asset/font_loader'
+require 'rendermix/asset/json_loader'
+require 'rendermix/asset/weak_cached_asset_key'
 
 require 'rendermix/pan_zoom/timeline'
 require 'rendermix/pan_zoom/keyframe'

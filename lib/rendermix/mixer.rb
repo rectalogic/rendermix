@@ -140,7 +140,8 @@ module RenderMix
     def simpleInitApp
       asset_root = File.expand_path('../../../assets', __FILE__)
       self.assetManager.registerLocator(asset_root, Jme::Asset::Plugins::FileLocator.java_class)
-      self.assetManager.registerLoader(JSONLoader.become_java!, "js", "json")
+      Asset::JSONLoader.register(self.assetManager)
+      Asset::FontLoader.register(self.assetManager)
 
       @asset_locations.each do |location|
         locator_class = File.directory?(location) ?

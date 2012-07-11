@@ -38,20 +38,23 @@ module RenderMix
         raise(InvalidMixError, "Cinematic for #@manifest_asset does not have as many textures as tracks") unless tracks.length == @texture_names.length
 
         # Load manifest JSON
-        manifest = mixer.asset_manager.loadAsset(@manifest_asset)
+        manifest = Asset::JSONLoader.load(mixer.asset_manager, @manifest_asset)
         manifest.assert_valid_keys("scenes", "textures", "camera")
 
         # Attach all model files to root node
         @root_node = Jme::Scene::Node.new("Cinematic")
-        manifest["scenes"].each do |scene|
+        scenes = manifest.fetch('scenes') rescue raise(InvalidMixError, "Missing scenes key for #@manifest_asset")
+        scenes.each do |scene|
           model = mixer.asset_manager.loadModel(scene)
           @root_node.attachChild(model)
         end
 
-        @uniform_materials = uniform_materials(manifest["textures"])
-  
-        animation = mixer.asset_manager.loadAsset(manifest["camera"])
-        @camera_animation = CameraAnimation.new(animation, mixer.width / mixer.height.to_f) rescue raise(InvalidMixError, "Camera animation corrupt #{manifest['camera']}")
+        textures = manifest.fetch('textures') rescue raise(InvalidMixError, "Missing textures key for #@manifest_asset")
+        @uniform_materials = uniform_materials(textures)
+
+        camera_asset = manifest.fetch('camera') rescue raise(InvalidMixError, "Missing camera animation for #@manifest_asset")
+        animation = Asset::JSONLoader.load(mixer.asset_manager, camera_asset)
+        @camera_animation = CameraAnimation.new(animation, mixer.width / mixer.height.to_f) rescue raise(InvalidMixError, "Camera animation corrupt #{camera_asset}")
 
         @configure_context = true
       end

@@ -8,4 +8,7 @@ module RenderMix
   module JavaNIO
     include_package 'java.nio'
   end
+  module JavaAWT
+    include_package 'java.awt'
+  end
 end
