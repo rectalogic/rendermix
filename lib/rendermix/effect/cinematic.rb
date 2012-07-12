@@ -39,7 +39,7 @@ module RenderMix
 
         # Load manifest JSON
         manifest = Asset::JSONLoader.load(mixer.asset_manager, @manifest_asset)
-        manifest.assert_valid_keys("scenes", "textures", "camera")
+        manifest.validate_keys("scenes", "textures", "camera")
 
         # Attach all model files to root node
         @root_node = Jme::Scene::Node.new("Cinematic")

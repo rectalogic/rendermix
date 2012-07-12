@@ -7,7 +7,7 @@ module RenderMix
       attr_reader :opts
       def initialize(name, opts={})
         super(name)
-        opts.assert_valid_keys(:symbolize_names)
+        opts.validate_keys(:symbolize_names)
         @opts = opts
       end
 

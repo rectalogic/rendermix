@@ -19,7 +19,7 @@ module RenderMix
     #   :fill prescale to fully fill visual context (may be scaled larger),
     #   :auto choose :meet or :fill whichever is a closer fit
     def initialize(asset_manager, quad_width, quad_height, image_width, image_height, opts={})
-      opts.assert_valid_keys(:flip_y, :clear_flags, :material, :name, :fit)
+      opts.validate_keys(:flip_y, :clear_flags, :material, :name, :fit)
       @image_width = image_width
       @image_height = image_height
       @quad_width = quad_width

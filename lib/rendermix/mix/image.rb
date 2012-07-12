@@ -13,7 +13,7 @@ module RenderMix
       # @option opts [Fixnum] :duration set image duration (required)
       # @option opts [PanZoom::Timeline] :panzoom panzoom timeline (optional)
       def initialize(mixer, filename, opts={})
-        opts.assert_valid_keys(:duration, :panzoom)
+        opts.validate_keys(:duration, :panzoom)
         duration = opts.fetch(:duration) rescue raise(InvalidMixError, "Image requires duration")
         super(mixer, duration)
         @filename = filename
