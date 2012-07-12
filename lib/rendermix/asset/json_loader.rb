@@ -10,15 +10,17 @@ module RenderMix
         asset_manager.registerLoader(JSONLoader.become_java!, "js", "json")
       end
 
-      def self.load(asset_manager, name)
-        asset_manager.loadAsset(WeakCachedAssetKey.new(name))
+      # @param [Hash] opts
+      # @option opts [Boolean] :symbolize_names if true, symbolize key names
+      def self.load(asset_manager, name, opts={})
+        asset_manager.loadAsset(JSONAssetKey.new(name, opts))
       end
 
       # @param [Jme::Asset::AssetInfo] asset_info
       # @return [Hash] JSON
       def load(asset_info)
         is = asset_info.openStream
-        JSON.load(is)
+        JSON.parse(is.to_io.read, asset_info.key.opts)
       ensure
         is.close
       end

@@ -33,7 +33,7 @@ require 'rendermix/ortho_quad'
 
 require 'rendermix/asset/font_loader'
 require 'rendermix/asset/json_loader'
-require 'rendermix/asset/weak_cached_asset_key'
+require 'rendermix/asset/json_asset_key'
 
 require 'rendermix/pan_zoom/timeline'
 require 'rendermix/pan_zoom/keyframe'
