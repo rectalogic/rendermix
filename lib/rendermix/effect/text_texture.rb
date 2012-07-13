@@ -29,8 +29,10 @@ module RenderMix
       #   one of "left", "right" or "center". Default "center".
       # @option opts [String] :text_baseline vertical text alignment of
       #   baseline, one of "top", "middle" or "bottom". Default "middle".
+      # @option opts [Boolean] :flip_y true if image should be flipped
+      #   vertically.
       def create_text_texture(text, opts)
-        opts.validate_keys(:width, :aspect_ratio, :font_name, :font_asset, :font_size, :text_color, :background_color, :margin, :text_align, :text_baseline)
+        opts.validate_keys(:width, :aspect_ratio, :font_name, :font_asset, :font_size, :text_color, :background_color, :margin, :text_align, :text_baseline, :flip_y)
 
         width = opts.fetch(:width).to_f rescue raise(InvalidMixError, "Missing text width key")
         aspect_ratio = Rational(opts.fetch(:aspect_ratio)).to_f rescue raise(InvalidMixError, "Missing text aspect_ratio key")
@@ -87,10 +89,13 @@ module RenderMix
         text_bounds = layout.bounds
 
         scale = [box_width / text_bounds.width, box_height / text_bounds.height].min
+        scale = scale > 1 ? 1 : scale
 
+        y_scale = opts[:flip_y] ? -scale : scale
         position_scale = 1.0
-        if scale < 1
-          g2d.scale(scale, scale)
+        if y_scale < 1
+          g2d.translate(0, image_height) if y_scale < 0
+          g2d.scale(scale, y_scale)
           position_scale = 1.0 / scale
           text_bounds.x *= scale
           text_bounds.y *= scale
