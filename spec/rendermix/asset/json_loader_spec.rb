@@ -22,6 +22,15 @@ module RenderMix
           anim[:camera][:horizontalFOV].should == 0.6833110451698303
         end
       end
+
+      it 'should load recursively frozen JSON' do
+        on_render_thread do
+          register_test_assets
+          anim = JSONLoader.load(@app.mixer.asset_manager, "animation/animation.json")
+          expect { anim.delete('camera') }.to raise_error(RuntimeError)
+          expect { anim['camera'].delete('horizontalFOV') }.to raise_error(RuntimeError)
+        end
+      end
     end
   end
 end

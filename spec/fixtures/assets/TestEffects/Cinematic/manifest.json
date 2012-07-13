@@ -2,7 +2,22 @@
     "scenes" : [ "TestEffects/Cinematic/model/cube.obj" ],
     "textures" : {
         "SourceVideo" : { "cube-geom-0" : "DiffuseMap" },
-        "TargetVideo" : { "cube-geom-0" : "DiffuseMap" }
+        "TargetVideo" : { "cube-geom-0" : "LightMap" },
+        "TitleText" : { "cube-geom-0" : "GlowMap" }
+    },
+    "texts": {
+        "Title": {
+            "texture": "TitleText",
+            "width": 0.5,
+            "aspect_ratio": "15/4",
+            "font_asset": "fonts/MarkerSD.ttf",
+            "font_size": 0.8,
+            "text_color": [1, 0, 0, 1],
+            "background_color": [1, 1, 1, 1],
+            "margin": [0, 0],
+            "text_align": "left",
+            "text_baseline": "middle"
+        }
     },
     "camera" : "animation/animation.json"
 }

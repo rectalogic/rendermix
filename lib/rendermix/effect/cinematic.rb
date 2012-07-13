@@ -16,30 +16,43 @@ module RenderMix
       #   {
       #       "scenes" : [ "<asset-path-to-j3o>", ... ],
       #       "textures" : {
-      #           "<TextureName>" : { "<GeometryName>" : "<UniformName>" }, ... 
+      #           "<TextureName>" : { "<GeometryName>" : "<UniformName>" },
+      #           ...
+      #       },
+      #       "texts": {
+      #           "<TextName>": {
+      #               "texture": "<TextureName>",
+      #               <TextParameters>
+      #           },
+      #           ...
       #       },
       #       "camera" : "<asset-path-to-camera-animation-json>"
       #   }
       #
       # "UniformName" is the name of a texture uniform on the
       # Jme::Material::Material associated with the Jme::Scene::Geometry
-      # named "GeomtryName"
+      # named "GeometryName"
+      # "TextParameters" are additional text configuration paramaters,
+      # see {TextTexture#create_text_texture}
       # @param [String] manifest_asset asset path to manifest JSON
-      # @param [Array<String>] texture_names array of texture names
+      # @param [Array<String>] track_textures array of "TextureName"s
       #   from the manifest. These are in track order (i.e. the first texture
       #   name will be used for the first track etc.)
-      def initialize(manifest_asset, texture_names)
+      # @param [Hash] text_values hash mapping text "TextName" keys to
+      #   String text values.
+      def initialize(manifest_asset, track_textures=[], text_values={})
         super()
         @manifest_asset = manifest_asset
-        @texture_names = texture_names
+        @track_textures = track_textures
+        @text_values = text_values
       end
 
       def on_rendering_prepare(context_manager, tracks)
-        raise(InvalidMixError, "Cinematic for #@manifest_asset does not have as many textures as tracks") unless tracks.length == @texture_names.length
+        raise(InvalidMixError, "Cinematic for #@manifest_asset does not have as many textures as tracks") unless tracks.length == @track_textures.length
 
         # Load manifest JSON
         manifest = Asset::JSONLoader.load(mixer.asset_manager, @manifest_asset)
-        manifest.validate_keys("scenes", "textures", "camera")
+        manifest.validate_keys("scenes", "textures", "texts", "camera")
 
         # Attach all model files to root node
         @root_node = Jme::Scene::Node.new("Cinematic")
@@ -49,8 +62,11 @@ module RenderMix
           @root_node.attachChild(model)
         end
 
-        textures = manifest.fetch('textures') rescue raise(InvalidMixError, "Missing textures key for #@manifest_asset")
-        @uniform_materials = uniform_materials(textures)
+        manifest_textures = manifest.fetch('textures', {})
+        @track_materials = create_track_materials(manifest_textures)
+
+        manifest_texts = manifest.fetch('texts', {})
+        apply_text_textures(manifest_texts, manifest_textures)
 
         camera_asset = manifest.fetch('camera') rescue raise(InvalidMixError, "Missing camera animation for #@manifest_asset")
         animation = Asset::JSONLoader.load(mixer.asset_manager, camera_asset)
@@ -59,25 +75,42 @@ module RenderMix
         @configure_context = true
       end
 
-      # Map each texture name to its Material and Uniform.
-      # @return [Array<UniformMaterial>] build an array of UniformMaterial
-      def uniform_materials(manifest_textures)
-        @texture_names.collect do |texture_name|
-          map = manifest_textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for Cinematic #@manifest_asset")
-          geometry_name = map.keys.first
-          geometry = @root_node.getChild(geometry_name)
-          raise(InvalidMixError, "Child geometry #{geometry_name} not found for Cinematic #@manifest_asset}") unless geometry
-          material = geometry.material rescue raise(InvalidMixError, "Geometry #{geometry_name} has no material for Cinematic #@manifest_asset}")
-          # Validate the uniform name
-          uniform_name = map[geometry_name]
-          param = material.materialDef.getMaterialParam(uniform_name)
-          if not param or param.varType != Jme::Shader::VarType::Texture2D
-            raise(InvalidMixError, "Material for geometry #{geometry_name} does not have texture uniform #{uniform_name} for Cinematic #@manifest_asset")
-          end
-          UniformMaterial.new(uniform_name, material)
+      def apply_text_textures(manifest_texts, manifest_textures)
+        @text_values.each_pair do |text_name, text|
+          # Symbolize keys dups
+          text_options = manifest_texts.fetch(text_name).symbolize_keys rescue raise(InvalidMixError, "Invalid text #{text_name} for Cinematic #@manifest_asset")
+          texture_name = text_options.delete(:texture)
+          raise(InvalidMixError, "Missing texture key for text #{text_name} in Cinematic #@manifest_asset") unless texture_name
+          texture_map = manifest_textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for text #{text_name} in Cinematic #@manifest_asset")
+          texture = create_text_texture(text, text_options)
+          create_uniform_material(texture_map).apply(texture)
         end
       end
-      private :uniform_materials
+      private :apply_text_textures
+
+      def create_track_materials(manifest_textures)
+        @track_textures.collect do |texture_name|
+          texture_map = manifest_textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for Cinematic #@manifest_asset")
+          create_uniform_material(texture_map)
+        end
+      end
+      private :create_track_materials
+
+      # @return [UniformMaterial] mapping uniform name to Jme::Material::Material
+      def create_uniform_material(texture_map)
+        geometry_name = texture_map.keys.first
+        geometry = @root_node.getChild(geometry_name)
+        raise(InvalidMixError, "Child geometry #{geometry_name} not found for Cinematic #@manifest_asset}") unless geometry
+        material = geometry.material rescue raise(InvalidMixError, "Geometry #{geometry_name} has no material for Cinematic #@manifest_asset}")
+        # Validate the uniform name
+        uniform_name = texture_map[geometry_name]
+        param = material.materialDef.getMaterialParam(uniform_name)
+        if not param or param.varType != Jme::Shader::VarType::Texture2D
+          raise(InvalidMixError, "Material for geometry #{geometry_name} does not have texture uniform #{uniform_name} for Cinematic #@manifest_asset")
+        end
+        UniformMaterial.new(uniform_name, material)
+      end
+      private :create_uniform_material
 
       def on_visual_render(visual_context, track_visual_contexts)
         if @configure_context
@@ -86,7 +119,7 @@ module RenderMix
           @configure_context = false
         end
 
-        @uniform_materials.each_with_index do |uniform_material, i|
+        @track_materials.each_with_index do |uniform_material, i|
           texture = track_visual_contexts[i] && track_visual_contexts[i].prepare_texture
           uniform_material.apply(texture)
         end
@@ -101,7 +134,7 @@ module RenderMix
 
       def on_rendering_finished
         @root_node = nil
-        @uniform_materials = nil
+        @track_materials = nil
       end
 
       class UniformMaterial

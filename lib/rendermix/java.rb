@@ -10,5 +10,11 @@ module RenderMix
   end
   module JavaAWT
     include_package 'java.awt'
+    module Image
+      include_package 'java.awt.image'
+    end
+    module Fonts
+      include_package 'java.awt.font'
+    end
   end
 end

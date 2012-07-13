@@ -18,6 +18,8 @@ module RenderMix
       # @param [Jme::Asset::AssetInfo] asset_info
       # @return [JavaAWT::Font] font
       def load(asset_info)
+        # Creating a Font from a stream creates a temporary file from the stream
+        # XXX any way to optimize this in the case where the asset is a simple file?
         is = asset_info.openStream
         JavaAWT::Font.createFont(JavaAWT::Font::TRUETYPE_FONT, is)
       ensure

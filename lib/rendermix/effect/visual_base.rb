@@ -4,6 +4,8 @@
 module RenderMix
   module Effect
     class VisualBase < Base
+      include TextTexture
+
       # @param [VisualContextManager] context_manager
       # @param [Array<Mix::Base>] tracks effect tracks
       def on_rendering_prepare(context_manager, tracks)

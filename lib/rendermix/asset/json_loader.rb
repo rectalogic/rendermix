@@ -20,7 +20,8 @@ module RenderMix
       # @return [Hash] JSON
       def load(asset_info)
         is = asset_info.openStream
-        JSON.parse(is.to_io.read, asset_info.key.opts)
+        # Freeze since it's cached
+        JSON.parse(is.to_io.read, asset_info.key.opts).deep_freeze
       ensure
         is.close
       end
