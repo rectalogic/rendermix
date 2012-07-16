@@ -29,7 +29,7 @@ module RenderMix
       # @param [Fixnum] frame frame number
       # @return [Float] normalized time (0..1)
       def current_time(frame)
-        frame / duration.to_f
+        frame / (duration - 1).to_f
       end
 
       # @param [Effect::Audio] audio_effect

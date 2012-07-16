@@ -29,7 +29,7 @@ module RenderMix
       end
 
       def current_time
-        current_frame.to_f / duration
+        current_frame / (duration - 1).to_f
       end
 
       def rendering_prepare(context_manager)
