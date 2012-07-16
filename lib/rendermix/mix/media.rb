@@ -38,15 +38,19 @@ module RenderMix
 
       def visual_rendering_prepare(context_manager)
         return unless @decoder.has_video?
-        @texture = Jme::Texture::Texture2D.new
-        @texture.magFilter = Jme::Texture::Texture::MagFilter::Nearest
-        @texture.minFilter = Jme::Texture::Texture::MinFilter::NearestNoMipMaps
-        @texture.wrap = Jme::Texture::Texture::WrapMode::Clamp
+        texture = Jme::Texture::Texture2D.new
+        texture.magFilter = Jme::Texture::Texture::MagFilter::Nearest
+        texture.minFilter = Jme::Texture::Texture::MinFilter::NearestNoMipMaps
+        texture.wrap = Jme::Texture::Texture::WrapMode::Clamp
+
+        @image = Jme::Texture::Image.new
+        @image.format = Jme::Texture::Image::Format::RGBA8
+        texture.setImage(@image)
 
         # Create UYVY decoding material
         @material = Jme::Material::Material.new(mixer.asset_manager,
                                                 'rendermix/MatDefs/UYVY/UYVY2RGB.j3md')
-        @material.setTexture('Texture', @texture)
+        @material.setTexture('Texture', texture)
       end
 
       def on_visual_render(context_manager, current_frame)
@@ -70,10 +74,9 @@ module RenderMix
         # Only reset the texture if something new decoded
         if result > 0
           # Image is half width since we are stuffing UYVY in RGBA
-          image = Jme::Texture::Image.new(Jme::Texture::Image::Format::RGBA8,
-                                          @decoder.width / 2, @decoder.height,
-                                          @decoder.video_byte_buffer)
-          @texture.setImage(image)
+          @image.width = @decoder.width / 2
+          @image.height = @decoder.height
+          @image.data = @decoder.video_byte_buffer
         end
 
         @panzoom.panzoom(current_time(current_frame), @quad) if @panzoom
@@ -84,7 +87,7 @@ module RenderMix
       end
 
       def visual_rendering_finished
-        @texture = nil
+        @image = nil
         @material = nil
         @quad = nil
 
