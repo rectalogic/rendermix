@@ -4,6 +4,8 @@
 module RenderMix
   module Mix
     class Base
+      include FrameTime
+
       # @return [Mixer] parent mixer
       attr_reader :mixer
 
@@ -24,12 +26,6 @@ module RenderMix
       def validate(mixer)
         raise(InvalidMixError, 'Mix element does not belong to this Mixer') if mixer != self.mixer
         raise(InvalidMixError, 'Mix element already added') if in_frame || out_frame
-      end
-
-      # @param [Fixnum] frame frame number
-      # @return [Float] normalized time (0..1)
-      def current_time(frame)
-        frame / (duration - 1).to_f
       end
 
       # @param [Effect::Audio] audio_effect

@@ -11,13 +11,24 @@ module RenderMix
       # @param [String] filename the image file
       # @param [Hash] opts options
       # @option opts [Fixnum] :duration set image duration (required)
+      # @option opts [Fixnum] :pre_freeze freeze the initial frame for this
+      #   many frames. The effective duration is increased by this amount.
+      #   Default 0.
+      # @option opts [Fixnum] :post_freeze freeze the final frame for this
+      #   many frames. The effective duration is increased by this amount.
+      #   Default 0.
       # @option opts [PanZoom::Timeline] :panzoom panzoom timeline (optional)
       def initialize(mixer, filename, opts={})
-        opts.validate_keys(:duration, :panzoom)
-        duration = opts.fetch(:duration) rescue raise(InvalidMixError, "Image requires duration")
-        super(mixer, duration)
+        opts.validate_keys(:duration, :pre_freeze, :post_freeze, :panzoom)
+        @image_duration = opts.fetch(:duration) rescue raise(InvalidMixError, "Image requires duration")
+        pre_freeze = opts.fetch(:pre_freeze, 0)
+        post_freeze = opts.fetch(:post_freeze, 0)
+        super(mixer, pre_freeze + @image_duration + post_freeze)
         @filename = filename
         @panzoom = opts[:panzoom]
+        if pre_freeze > 0 or post_freeze > 0
+          @freezer = Freezer.new(pre_freeze, post_freeze, @image_duration)
+        end
       end
 
       def visual_rendering_prepare(context_manager)
@@ -50,7 +61,11 @@ module RenderMix
           @quad.configure_context(visual_context)
           @configure_context = false
         end
-        @panzoom.panzoom(current_time(current_frame), @quad) if @panzoom
+
+        if (@panzoom and (not @freezer or @freezer.render?(current_frame)))
+          time = @freezer ? @freezer.current_time : frame_to_time(current_frame, @image_duration)
+          @panzoom.panzoom(time, @quad)
+        end
       end
 
       def visual_context_released(context)

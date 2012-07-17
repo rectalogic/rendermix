@@ -4,29 +4,40 @@
 module RenderMix
   module Mix
     class Media < Base
-      #XXX need to deal with "freezing"
-
       # @param [Mixer] mixer
       # @param [String] filename the media file to decode
       # @param [Hash] opts decoding options
       # @option opts [Float] :volume exponential volume to decode audio, 0..1, default 1.0
       # @option opts [Fixnum] :start_frame starting video frame, default 0
       # @option opts [Fixnum] :duration override intrinsic media duration
+      # @option opts [Fixnum] :pre_freeze freeze the initial frame for this
+      #   many frames. The effective duration is increased by this amount.
+      #   Default 0.
+      # @option opts [Fixnum] :post_freeze freeze the final frame for this
+      #   many frames. The effective duration is increased by this amount.
+      #   Default 0.
       # @option opts [PanZoom::Timeline] :panzoom panzoom timeline (optional)
       def initialize(mixer, filename, opts={})
-        opts.validate_keys(:volume, :start_frame, :duration, :panzoom)
+        opts.validate_keys(:volume, :start_frame, :duration, :pre_freeze, :post_freeze, :panzoom)
         volume = opts.fetch(:volume, 1.0)
         start_frame = opts.fetch(:start_frame, 0.0)
         @decoder = RawMedia::Decoder.new(filename, mixer.rawmedia_session,
                                          mixer.width, mixer.height,
                                          volume: volume,
                                          start_frame: start_frame)
-        super(mixer, opts.fetch(:duration, @decoder.duration))
+        pre_freeze = opts.fetch(:pre_freeze, 0)
+        post_freeze = opts.fetch(:post_freeze, 0)
+        media_duration = opts.fetch(:duration, @decoder.duration)
+        media_duration = @decoder.duration if media_duration > @decoder.duration
+        super(mixer, pre_freeze + media_duration + post_freeze)
         @panzoom = opts[:panzoom]
+        if pre_freeze > 0 or post_freeze > 0
+          @freezer = Freezer.new(pre_freeze, post_freeze, media_duration)
+        end
       end
 
       def on_audio_render(context_manager, current_frame)
-        return unless @decoder.has_audio?
+        return unless (@decoder.has_audio? and (not @freezer or not @freezer.freezing?(current_frame)))
         audio_context = context_manager.acquire_context(self)
         @decoder.decode_audio(audio_context.buffer)
       end
@@ -56,7 +67,10 @@ module RenderMix
       def on_visual_render(context_manager, current_frame)
         return unless @decoder.has_video?
         visual_context = context_manager.acquire_context(self)
-        result = @decoder.decode_video
+
+        should_render = (not @freezer or @freezer.render?(current_frame))
+
+        result = should_render ? @decoder.decode_video : 0
 
         unless @quad
           @quad = OrthoQuad.new(mixer.asset_manager,
@@ -79,7 +93,10 @@ module RenderMix
           @image.data = @decoder.video_byte_buffer
         end
 
-        @panzoom.panzoom(current_time(current_frame), @quad) if @panzoom
+        if @panzoom and should_render
+          time = @freezer ? @freezer.current_time : frame_to_time(current_frame, @decoder.duration)
+          @panzoom.panzoom(time, @quad)
+        end
       end
 
       def visual_context_released(context)

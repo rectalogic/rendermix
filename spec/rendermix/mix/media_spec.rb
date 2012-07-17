@@ -9,6 +9,7 @@ module RenderMix
           @app.mixer.new_media(FIXTURE_MEDIA)
         end
       end
+      it_should_behave_like 'an image/media element'
     end
   end
 end

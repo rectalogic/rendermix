@@ -4,6 +4,8 @@
 module RenderMix
   module Effect
     class Base
+      include FrameTime
+
       # @return [Mixer]
       attr_reader :mixer
       # @return [Fixnum] starting frame of this effect in parents timeline
@@ -29,7 +31,7 @@ module RenderMix
       end
 
       def current_time
-        current_frame / (duration - 1).to_f
+        frame_to_time(current_frame, duration)
       end
 
       def rendering_prepare(context_manager)

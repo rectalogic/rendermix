@@ -5,8 +5,9 @@ module RenderMix
 
   class ContextManager
 
-    def initialize(context_pool, initial_context=nil)
+    def initialize(context_pool, name, initial_context=nil)
       @context_pool = context_pool
+      @name = name
       @initial_context = initial_context
       @context = initial_context
       @rendered = false
@@ -44,7 +45,7 @@ module RenderMix
 
     def acquire_context(renderer)
       # Someone already rendered for this frame
-      raise(InvalidMixError, "Frame already rendered for this context") if @rendered
+      raise(InvalidMixError, "#@name frame already rendered for this context") if @rendered
 
       release_context if renderer != @current_renderer
       @current_renderer = renderer
@@ -70,7 +71,7 @@ module RenderMix
 
   class AudioContextManager < ContextManager
     def initialize(audio_framebuffer_size, initial_context=nil)
-      super(AudioContextPool.new(audio_framebuffer_size), initial_context)
+      super(AudioContextPool.new(audio_framebuffer_size), 'Audio', initial_context)
     end
 
     def on_render(renderer)
@@ -89,7 +90,7 @@ module RenderMix
     attr_reader :render_manager
 
     def initialize(render_manager, width, height, tpf, initial_context=nil)
-      super(VisualContextPool.new(render_manager, width, height, tpf), initial_context)
+      super(VisualContextPool.new(render_manager, width, height, tpf), 'Visual', initial_context)
       @render_manager = render_manager
     end
 
