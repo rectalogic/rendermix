@@ -8,7 +8,7 @@ module RenderMix
     attr_reader :material
 
     # @param [Hash] opts
-    # @option opts [Boolean] :flip_y rrue if image should be flipped vertically. Default true.
+    # @option opts [Boolean] :flip_y true if image should be flipped vertically. Default true.
     # @option opts [Array<Boolean>] :clear_flags array of boolean [color, depth, stencil]. Default [true,false,false]
     # @option opts [Jme::Material::Material] :material material to use.
     #   A default material will be used if not set.

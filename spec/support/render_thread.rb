@@ -13,6 +13,9 @@ shared_context 'requires render thread' do
 
       def initialize(mixer, asset_locations)
         super
+        configure_settings do |settings|
+          settings.setResolution(mixer.width, mixer.height)
+        end
       end
       def simpleInitApp
         super

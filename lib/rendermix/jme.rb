@@ -24,6 +24,12 @@ module RenderMix
     module Math
       include_package 'com.jme3.math'
     end
+    module Post
+      include_package 'com.jme3.post'
+      module Filters
+        include_package 'com.jme3.post.filters'
+      end
+    end
     module Renderer
       include_package 'com.jme3.renderer'
       module Queue

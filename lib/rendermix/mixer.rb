@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 
 module RenderMix
-  MSAA_SAMPLES = 4
   DEPTH_FORMAT = Jme::Texture::Image::Format::Depth24
 
   class Mixer
@@ -87,7 +86,7 @@ module RenderMix
     def configure_settings
       settings = Jme::System::AppSettings.new(false)
       settings.renderer = Jme::System::AppSettings::LWJGL_OPENGL2
-      settings.setSamples(MSAA_SAMPLES)
+      settings.setSamples(1)
       settings.setDepthBits(DEPTH_FORMAT.bitsPerPixel)
       settings.useInput = false
       settings.useJoysticks = false
@@ -98,29 +97,30 @@ module RenderMix
   end
 
   class MixerApplication < ApplicationBase
+
     def initialize(mixer, asset_locations)
       super(nil)
       @mixer = mixer
       @asset_locations = asset_locations
       self.timer = Timer.new(mixer.framerate)
 
-      configure_settings do |settings|
-        settings.setResolution(mixer.width, mixer.height)
-      end
-
       @mutex = Mutex.new
       @condvar = ConditionVariable.new
     end
 
-    # _mix_ Root node of mix. Mix is destroyed as mixing proceeds.
-    # _filename_ Output filename to encode mix into, if nil then mix will be displayed in a window
+    # @param [Mix::Base] mix root node of mix. Mix is modified as mixing proceeds.
+    # @param [String] filename output filename to encode mix into,
+    #   if nil then mix will be displayed in a window.
     def mix(mix, filename=nil)
-      if filename
-        @encoder = RawMedia::Encoder.new(filename, @mixer.rawmedia_session,
-                                         @mixer.width, @mixer.height)
-      else
-        # If not encoding, limit framerate so stuff looks right
-        self.settings.frameRate = @mixer.framerate.to_i
+      configure_settings do |settings|
+        if filename
+          @encoder = Encoder.new(@mixer, filename)
+          @encoder.configure(settings)
+        else
+          # If not encoding, limit framerate so we play at correct speed
+          settings.frameRate = @mixer.framerate.to_i
+          settings.setResolution(@mixer.width, @mixer.height)
+        end
       end
 
       @mix = mix
@@ -154,6 +154,22 @@ module RenderMix
       @audio_context_manager = AudioContextManager.new(@mixer.rawmedia_session.audio_framebuffer_size, @root_audio_context)
 
       tpf = self.timer.timePerFrame
+
+      # Remove gui viewport, we don't use it
+      self.renderManager.removePostView(self.guiViewPort)
+
+      # Let encoder modify viewport
+      @encoder.prepare(self.renderManager, self.viewPort, tpf) if @encoder
+
+      # Install FXAA antialiasing filter on main viewport
+      fpp = Jme::Post::FilterPostProcessor.new(@mixer.asset_manager)
+      fxaa = Jme::Post::Filters::FXAAFilter.new
+      # Higher quality
+      fxaa.subPixelShift = 0
+      fxaa.reduceMul = 0
+      fpp.addFilter(fxaa)
+      self.viewPort.addProcessor(fpp)
+
       @root_visual_context = VisualContext.new(self.renderManager, tpf, self.viewPort, self.rootNode)
       @visual_context_manager =
         VisualContextManager.new(self.renderManager, @mixer.width, @mixer.height, tpf, @root_visual_context)
@@ -161,7 +177,6 @@ module RenderMix
     private :simpleInitApp
 
     def simpleUpdate(tpf)
-      #XXX deeper effects can create their own context e.g. to render each track into it's own audio buffer or scene node
       @audio_context_manager.render(@mix)
       @visual_context_manager.render(@mix)
     end
@@ -169,14 +184,14 @@ module RenderMix
 
     def simpleRender(render_manager)
       if @encoder
-        #XXX encode audio/video
-        #XXX also need to know if nothing rendered this frame and encode silence or black
+        @encoder.encode(@audio_context_manager.current_context,
+                        @visual_context_manager.current_context)
       end
 
       # Update frame and quit if mix completed
       @current_frame += 1
       if @current_frame > @mix.out_frame
-        @encoder.destroy if @encoder
+        @encoder.finish if @encoder
         stop
       end
     end

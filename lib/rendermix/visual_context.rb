@@ -13,6 +13,7 @@ module RenderMix
     # _texture_ JMETexture::Texture2D
     def initialize(render_manager, tpf, viewport, rootnode, texture=nil)
       @render_manager = render_manager
+      @renderer = render_manager.renderer
       @tpf = tpf
       @viewport = viewport
       @rootnode = rootnode
@@ -63,6 +64,11 @@ module RenderMix
 
       @render_manager.renderViewPort(@viewport, @tpf)
       @texture
+    end
+
+    # @param [JavaNIO::ByteBuffer] buffer
+    def read_framebuffer(buffer)
+      @renderer.readFrameBuffer(@viewport.outputFrameBuffer, buffer)
     end
 
     @@buckets = {
