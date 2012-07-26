@@ -12,8 +12,9 @@ module RenderMix
     end
 
     def ortho_quad(opts={})
-      context = @app.root_visual_context
       quad = nil
+      context = VisualContext.new(@app.renderManager, @app.mixer.tpf,
+                                  @app.viewPort, @app.rootNode)
       # Capture and return the Quad node that is created
       attach_child = context.method(:attach_child)
       context.should_receive(:attach_child) do |q|

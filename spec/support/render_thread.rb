@@ -6,9 +6,7 @@ shared_context 'requires render thread' do
     # Also make start() wait until render thread is actually started
     class MixerApplicationMock < RenderMix::MixerApplication
       attr_reader :mixer
-      attr_reader :root_visual_context
       attr_reader :visual_context_manager
-      attr_reader :root_audio_context
       attr_reader :audio_context_manager
 
       def initialize(mixer, asset_locations)

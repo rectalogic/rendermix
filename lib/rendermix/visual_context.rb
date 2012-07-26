@@ -6,11 +6,11 @@ module RenderMix
     attr_reader :width
     attr_reader :height
 
-    # _render_manager_ JMERenderer::RenderManager
-    # _tpf_ Float time per frame
-    # _viewport_ JMERenderer::ViewPort
-    # _rootnode_ JMEScene::Node
-    # _texture_ JMETexture::Texture2D
+    # @param [Jme::Renderer::RenderManager] render_manager
+    # @param [Float] tpf time per frame
+    # @param [Jme::Renderer::ViewPort] viewport
+    # @param [Jme::Scene::Node] rootnode
+    # @param [Jme::Texture::Texture2D] texture
     def initialize(render_manager, tpf, viewport, rootnode, texture=nil)
       @render_manager = render_manager
       @renderer = render_manager.renderer

@@ -150,8 +150,8 @@ module RenderMix
         self.assetManager.registerLocator(location, locator_class)
       end
 
-      @root_audio_context = AudioContext.new(@mixer.rawmedia_session.audio_framebuffer_size)
-      @audio_context_manager = AudioContextManager.new(@mixer.rawmedia_session.audio_framebuffer_size, @root_audio_context)
+      root_audio_context = AudioContext.new(@mixer.rawmedia_session.audio_framebuffer_size)
+      @audio_context_manager = AudioContextManager.new(@mixer.rawmedia_session.audio_framebuffer_size, root_audio_context)
 
       tpf = self.timer.timePerFrame
 
@@ -170,9 +170,9 @@ module RenderMix
       fpp.addFilter(fxaa)
       self.viewPort.addProcessor(fpp)
 
-      @root_visual_context = VisualContext.new(self.renderManager, tpf, self.viewPort, self.rootNode)
+      root_visual_context = VisualContext.new(self.renderManager, tpf, self.viewPort, self.rootNode)
       @visual_context_manager =
-        VisualContextManager.new(self.renderManager, @mixer.width, @mixer.height, tpf, @root_visual_context)
+        VisualContextManager.new(self.renderManager, @mixer.width, @mixer.height, tpf, root_visual_context)
     end
     private :simpleInitApp
 
