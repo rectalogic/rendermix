@@ -20,6 +20,7 @@ module RenderMix
       @rendered = false
       @context = nil
       @initial_context = nil
+      @antialias = nil
     end
 
     # @param [#visual_render, #visual_context_released,
@@ -66,6 +67,19 @@ module RenderMix
       elsif @initial_context
         @context_pool.reset_context(@initial_context)
       end
+    end
+
+    # Request global antialiasing via this ContextManager
+    def request_antialias
+      @antialias = true
+    end
+
+    # Reset antialias request
+    # @return [Boolean] true if antialias was requested
+    def reset_antialias
+      antialias = @antialias
+      @antialias = nil
+      antialias
     end
   end
 

@@ -112,7 +112,10 @@ module RenderMix
       end
       private :create_uniform_material
 
-      def on_visual_render(visual_context, track_visual_contexts)
+      def on_visual_render(context_manager, visual_context, track_visual_contexts)
+        # Cinematics want antialiasing
+        context_manager.request_antialias
+
         if @configure_context
           visual_context.attach_child(@root_node)
           @camera_animation.visual_context = visual_context

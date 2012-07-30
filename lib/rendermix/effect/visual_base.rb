@@ -13,13 +13,14 @@ module RenderMix
 
       def visual_render(context_manager)
         render(context_manager) do |context, track_contexts|
-          on_visual_render(context, track_contexts)
+          on_visual_render(context_manager, context, track_contexts)
         end
       end
 
+      # @param [VisualContextManager] context_manager
       # @param [VisualContext] visual_context
       # @param [Array<VisualContext>] track_visual_contexts contexts for each track
-      def on_visual_render(visual_context, track_visual_contexts)
+      def on_visual_render(context_manager, visual_context, track_visual_contexts)
       end
 
       def visual_context_released(context)

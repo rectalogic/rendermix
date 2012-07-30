@@ -38,12 +38,12 @@ module RenderMix
     end
     module Scene
       include_package 'com.jme3.scene'
+      module Shape
+        include_package 'com.jme3.scene.shape'
+      end
     end
     module Shader
       include_package 'com.jme3.shader'
-    end
-    module Shape
-      include_package 'com.jme3.scene.shape'
     end
     module System
       include_package 'com.jme3.system'

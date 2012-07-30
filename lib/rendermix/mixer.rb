@@ -161,15 +161,6 @@ module RenderMix
       # Let encoder modify viewport
       @encoder.prepare(self.renderManager, self.viewPort, tpf) if @encoder
 
-      # Install FXAA antialiasing filter on main viewport
-      fpp = Jme::Post::FilterPostProcessor.new(@mixer.asset_manager)
-      fxaa = Jme::Post::Filters::FXAAFilter.new
-      # Higher quality
-      fxaa.subPixelShift = 0
-      fxaa.reduceMul = 0
-      fpp.addFilter(fxaa)
-      self.viewPort.addProcessor(fpp)
-
       root_visual_context = VisualContext.new(self.renderManager, tpf, self.viewPort, self.rootNode)
       @visual_context_manager =
         VisualContextManager.new(self.renderManager, @mixer.width, @mixer.height, tpf, root_visual_context)
@@ -179,6 +170,13 @@ module RenderMix
     def simpleUpdate(tpf)
       @audio_context_manager.render(@mix)
       @visual_context_manager.render(@mix)
+
+      # Configure antialiasing for this frame
+      antialias = @visual_context_manager.reset_antialias
+      visual_context = @visual_context_manager.current_context
+      if visual_context
+        visual_context.set_antialias_processor(antialias ? antialias_processor : nil)
+      end
     end
     private :simpleUpdate
 
@@ -196,6 +194,19 @@ module RenderMix
       end
     end
     private :simpleRender
+
+    def antialias_processor
+      unless @antialias_processor
+        @antialias_processor = Jme::Post::FilterPostProcessor.new(@mixer.asset_manager)
+        fxaa = Jme::Post::Filters::FXAAFilter.new
+        # Higher quality, but blurrier
+        fxaa.subPixelShift = 0
+        fxaa.reduceMul = 0
+        @antialias_processor.addFilter(fxaa)
+      end
+      @antialias_processor
+    end
+    private :antialias_processor
 
     # Override and return nil - we don't need this and slows startup
     def loadGuiFont

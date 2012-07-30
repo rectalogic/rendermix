@@ -54,6 +54,8 @@ module RenderMix
         # Render each track into its context manager
         current_contexts = @context_managers.each_with_index.collect do |cm, i|
           cm.render(@tracks[i])
+          # Propagate antialias request
+          context_manager.request_antialias if cm.reset_antialias
           cm.current_context
         end
         yield context, current_contexts

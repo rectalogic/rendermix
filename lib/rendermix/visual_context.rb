@@ -40,6 +40,24 @@ module RenderMix
       @@buckets.invert.fetch(@rootnode.localQueueBucket)
     end
 
+    # Antialiasing (FXAA) processors should only be added to the root context
+    # via #set_antialias_processor
+    # @param [Jme::Post::SceneProcessor] processor
+    def add_scene_processor(processor)
+      @viewport.addProcessor(processor)
+    end
+
+    # @param [Jme::Post::FilterPostProcessor] processor with FXAA filter or nil
+    def set_antialias_processor(processor)
+      if processor and not @antialias_processor
+        @antialias_processor = processor
+        @viewport.addProcessor(processor)
+      elsif not processor and @antialias_processor
+        @viewport.removeProcessor(@antialias_processor)
+        @antialias_processor = nil
+      end
+    end
+
     def reset
       @rootnode.detachAllChildren
       # User may have set Texture properties (wrap etc.),
@@ -50,6 +68,13 @@ module RenderMix
       @viewport.camera.copyFrom(@camera_prototype)
       set_clear_flags(true, true, true)
       self.render_bucket = :inherit
+
+      # Do it this way to avoid java.util.ConcurrentModificationException
+      processors = @viewport.processors
+      (processors.length - 1).step(0, -1) do |i|
+        @viewport.removeProcessor(processors[i])
+      end
+      @antialias_processor = nil
     end
 
     def camera

@@ -28,7 +28,7 @@ module RenderMix
       @clear_flags = opts.fetch(:clear_flags, [true, false, false])
 
       flip_y = opts.fetch(:flip_y, true)
-      quad = Jme::Shape::Quad.new(@image_width, @image_height, flip_y)
+      quad = Jme::Scene::Shape::Quad.new(@image_width, @image_height, flip_y)
       @quad = Jme::Scene::Geometry.new(opts.fetch(:name, "quad"), quad)
       @quad.cullHint = Jme::Scene::Spatial::CullHint::Never
       
