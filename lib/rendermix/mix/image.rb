@@ -11,12 +11,12 @@ module RenderMix
       # @param [String] filename the image file
       # @param [Hash] opts options
       # @option opts [Fixnum] :duration set image duration (required)
-      # @option opts [Fixnum] :pre_freeze freeze the initial frame for this
-      #   many frames. The effective duration is increased by this amount.
-      #   Default 0.
-      # @option opts [Fixnum] :post_freeze freeze the final frame for this
-      #   many frames. The effective duration is increased by this amount.
-      #   Default 0.
+      # @option opts [Fixnum] :pre_freeze (0) freeze the initial frame for
+      #   this many frames. The effective duration is increased by this
+      #   amount.
+      # @option opts [Fixnum] :post_freeze (0) freeze the final frame for
+      #   this many frames. The effective duration is increased by this
+      #   amount.
       # @option opts [PanZoom::Timeline] :panzoom panzoom timeline (optional)
       def initialize(mixer, filename, opts={})
         opts.validate_keys(:duration, :pre_freeze, :post_freeze, :panzoom)

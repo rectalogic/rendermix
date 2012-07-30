@@ -13,24 +13,23 @@ module RenderMix
       #   (width:height). This should be the aspect ratio of the Mesh
       #   that will be textured to avoid distorting the image.
       #   Can be specified as a String (e.g. "4/3") or Float.
-      # @option opts [String] :font_name name of system font.
-      #   Ignored if :font_asset specified. Default "Dialog".
+      # @option opts [String] :font_name ("Dialog") name of system font.
+      #   Ignored if :font_asset specified.
       # @option opts [String] :font_asset asset path to a TrueType font file
-      # @option opts [Float] :font_size font size as a percentage of
+      # @option opts [Float] :font_size (0.8) font size as a percentage of
       #   image height (e.g. 0.8 would be 80% of image height).
-      #   Default 0.8.
-      # @option opts [Array<Float>] :text_color color of the text,
-      #   \[R,G,B,A\]. Defaults to black.
-      # @option opts [Array<Float>] :background_color background color,
-      #   \[R,G,B,A\]. Defaults to transparent.
-      # @option opts [Array<Float>] :margin space around text as a percentage
-      #   of width and height (0..1). Defaults to \[0,0\].
-      # @option opts [String] :text_align horizontal text alignment,
-      #   one of "left", "right" or "center". Default "center".
-      # @option opts [String] :text_baseline vertical text alignment of
-      #   baseline, one of "top", "middle" or "bottom". Default "middle".
-      # @option opts [Boolean] :flip_y true if image should be flipped
-      #   vertically.
+      # @option opts [Array<Float>] :text_color (\[0,0,0,1\]) color of the text,
+      #   \[R,G,B,A\].
+      # @option opts [Array<Float>] :background_color (\[0,0,0,0\])
+      #   background color, \[R,G,B,A\].
+      # @option opts [Array<Float>] :margin (\[0,0\]) space around text as
+      #   a percentage of width and height (0..1).
+      # @option opts [String] :text_align ("center") horizontal text
+      #   alignment, one of "left", "right" or "center".
+      # @option opts [String] :text_baseline ("middle") vertical text
+      #   alignment of baseline, one of "top", "middle" or "bottom".
+      # @option opts [Boolean] :flip_y (false) true if image should be
+      #   flipped vertically.
       def create_text_texture(text, opts)
         opts.validate_keys(:width, :aspect_ratio, :font_name, :font_asset, :font_size, :text_color, :background_color, :margin, :text_align, :text_baseline, :flip_y)
 

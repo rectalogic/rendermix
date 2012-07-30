@@ -10,12 +10,12 @@ module RenderMix
       # @option opts [Float] :volume exponential volume to decode audio, 0..1, default 1.0
       # @option opts [Fixnum] :start_frame starting video frame, default 0
       # @option opts [Fixnum] :duration override intrinsic media duration
-      # @option opts [Fixnum] :pre_freeze freeze the initial frame for this
-      #   many frames. The effective duration is increased by this amount.
-      #   Default 0.
-      # @option opts [Fixnum] :post_freeze freeze the final frame for this
-      #   many frames. The effective duration is increased by this amount.
-      #   Default 0.
+      # @option opts [Fixnum] :pre_freeze (0) freeze the initial frame for
+      #   this many frames. The effective duration is increased by this
+      #   amount.
+      # @option opts [Fixnum] :post_freeze (0) freeze the final frame for
+      #   this many frames. The effective duration is increased by this
+      #   amount.
       # @option opts [PanZoom::Timeline] :panzoom panzoom timeline (optional)
       def initialize(mixer, filename, opts={})
         opts.validate_keys(:volume, :start_frame, :duration, :pre_freeze, :post_freeze, :panzoom)
