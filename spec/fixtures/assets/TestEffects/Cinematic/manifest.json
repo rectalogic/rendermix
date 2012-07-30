@@ -1,9 +1,9 @@
 {
     "scenes" : [ "TestEffects/Cinematic/model/cube.obj" ],
     "textures" : {
-        "SourceVideo" : { "cube-geom-0" : "DiffuseMap" },
-        "TargetVideo" : { "cube-geom-0" : "LightMap" },
-        "TitleText" : { "cube-geom-0" : "GlowMap" }
+        "SourceVideo" : { "geometry": "cube-geom-0", "uniform": "DiffuseMap" },
+        "TargetVideo" : { "geometry": "cube-geom-0", "uniform": "LightMap" },
+        "TitleText" : { "geometry": "cube-geom-0", "uniform": "GlowMap" }
     },
     "texts": {
         "Title": {

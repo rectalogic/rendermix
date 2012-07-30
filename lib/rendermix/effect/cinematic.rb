@@ -16,7 +16,8 @@ module RenderMix
       #   {
       #       "scenes" : [ "<asset-path-to-j3o>", ... ],
       #       "textures" : {
-      #           "<TextureName>" : { "<GeometryName>" : "<UniformName>" },
+      #           "<TextureName>" : { "geometry": "<GeometryName>",
+      #                               "uniform": "<UniformName>" },
       #           ...
       #       },
       #       "texts": {
@@ -98,12 +99,13 @@ module RenderMix
 
       # @return [UniformMaterial] mapping uniform name to Jme::Material::Material
       def create_uniform_material(texture_map)
-        geometry_name = texture_map.keys.first
+        texture_map.validate_keys('geometry', 'uniform')
+        geometry_name = texture_map.fetch("geometry") rescue raise(InvalidMixerror, "Missing geometry key for Cinematic #@manifest_asset")
         geometry = @root_node.getChild(geometry_name)
         raise(InvalidMixError, "Child geometry #{geometry_name} not found for Cinematic #@manifest_asset}") unless geometry
         material = geometry.material rescue raise(InvalidMixError, "Geometry #{geometry_name} has no material for Cinematic #@manifest_asset}")
         # Validate the uniform name
-        uniform_name = texture_map[geometry_name]
+        uniform_name = texture_map.fetch("uniform") rescue raise(InvalidMixError, "Missing uniform key for Cinematic #@manifest_asset")
         param = material.materialDef.getMaterialParam(uniform_name)
         if not param or param.varType != Jme::Shader::VarType::Texture2D
           raise(InvalidMixError, "Material for geometry #{geometry_name} does not have texture uniform #{uniform_name} for Cinematic #@manifest_asset")
