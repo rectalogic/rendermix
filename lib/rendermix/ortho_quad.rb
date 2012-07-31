@@ -16,10 +16,10 @@ module RenderMix
     #   A default material will be used if not set.
     #   The default has a Texture param named 'Texture'
     # @option opts [String] :name debug name for geometry
-    # @option opts [Symbol] :fit panzoom fit semantics:
-    #   :meet prescale to fit within visual context,
-    #   :fill prescale to fully fill visual context (may be scaled larger),
-    #   :auto choose :meet or :fill whichever is a closer fit
+    # @option opts [String] :fit panzoom fit semantics:
+    #   "meet" prescale to fit within visual context,
+    #   "fill" prescale to fully fill visual context (may be scaled larger),
+    #   "auto" choose "meet" or "fill" whichever is a closer fit
     def initialize(asset_manager, quad_width, quad_height, image_width, image_height, opts={})
       opts.validate_keys(:flip_y, :clear_flags, :material, :name, :fit)
       @image_width = image_width
@@ -51,13 +51,13 @@ module RenderMix
       fill_scale = scales.max
       auto_scale = fill_scale >= 1.5 ? meet_scale : fill_scale
 
-      fit = opts.fetch(:fit, :meet)
+      fit = opts.fetch(:fit, "meet")
       case fit
-      when :meet
+      when "meet"
         @fit_scale = meet_scale
-      when :fill
+      when "fill"
         @fit_scale = fill_scale
-      when :auto
+      when "auto"
         @fit_scale = fill_scale >= 1.5 ? meet_scale : fill_scale
       else
         raise(InvalidMixError, "Invalid panzoom fit value #{fit}")

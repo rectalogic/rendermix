@@ -3,13 +3,12 @@ require 'spec_helper'
 module RenderMix
   module PanZoom
     describe Timeline do
-      def panzoom(interpolator_class, results)
-        keyframes = [ Keyframe.new(0, 2, 0, 0),
-                      Keyframe.new(0.5, 3, 0.5, 0.5),
-                      Keyframe.new(0.75, 3, 1, 0),
-                      Keyframe.new(1, 1, 0, 0) ]
-        interpolator = interpolator_class.new(keyframes)
-        timeline = Timeline.new(interpolator)
+      def panzoom(interpolator, results)
+        keyframes = [ Keyframe.new(time: 0, scale: 2, tx: 0, ty: 0),
+                      Keyframe.new(time: 0.5, scale: 3, tx: 0.5, ty: 0.5),
+                      Keyframe.new(time: 0.75, scale: 3, tx: 1, ty: 0),
+                      Keyframe.new(time: 1, scale: 1, tx: 0, ty: 0) ]
+        timeline = Timeline.new(keyframes, interpolator: interpolator)
 
         quad = double('quad')
         results.each do |result|
@@ -36,7 +35,7 @@ module RenderMix
                    { scale: 1.7999999523162842, tx: 0.3999999761581421, ty: 0.0 },
                    { scale: 1.0, tx: 0.0, ty: 0.0 },
                   ]
-        panzoom(Linear, results)
+        panzoom("linear", results)
       end
 
       it 'should perform catmull-rom interpolation' do
@@ -53,7 +52,7 @@ module RenderMix
                    { scale: 1.7519999742507935, tx: 0.3999999761581421, ty: -0.023999996483325958 },
                    { scale: 1.0, tx: 0.0, ty: 0.0 },
                   ]
-        panzoom(CatmullRom, results)
+        panzoom("catmull", results)
       end
     end
   end

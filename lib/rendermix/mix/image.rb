@@ -50,7 +50,8 @@ module RenderMix
 
         image = texture.image
         @quad = OrthoQuad.new(mixer.asset_manager, mixer.width, mixer.height,
-                              image.width, image.height, name: 'Image')
+                              image.width, image.height, name: 'Image',
+                              fit: @panzoom ? @panzoom.fit : "meet")
         @quad.material.setTexture('Texture', texture)
         @configure_context = true
       end

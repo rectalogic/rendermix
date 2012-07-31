@@ -37,7 +37,7 @@ module RenderMix
 
     it 'should support panzoom fill' do
       on_render_thread do
-        ortho, quad = ortho_quad(fit: :fill)
+        ortho, quad = ortho_quad(fit: "fill")
         ortho.panzoom(1, 0, 0)
 
         scale = @app.mixer.height / image_height.to_f

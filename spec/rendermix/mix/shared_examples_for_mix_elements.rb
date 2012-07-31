@@ -60,11 +60,11 @@ shared_examples 'an image/media element' do
     effect_in = (media1_dur + freeze_dur) - effect_dur
     effect_out = effect_in + effect_dur - 1
 
-    panzoom1 = double("panzoom1")
+    panzoom1 = double("panzoom1", fit: "meet")
     media1 = @app.mixer.new_media(FIXTURE_MEDIA, duration: media1_dur, post_freeze: freeze_dur, panzoom: panzoom1)
     seq1 = @app.mixer.new_sequence(media1)
 
-    panzoom2 = double("panzoom2")
+    panzoom2 = double("panzoom2", fit: "meet")
     media2 = @app.mixer.new_media(FIXTURE_MEDIA, duration: media2_dur, pre_freeze: freeze_dur, panzoom: panzoom2)
     seq2 = @app.mixer.new_sequence(@app.mixer.new_blank(duration: effect_in),
                                    media2)

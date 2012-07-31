@@ -76,7 +76,8 @@ module RenderMix
           @quad = OrthoQuad.new(mixer.asset_manager,
                                 mixer.width, mixer.height,
                                 @decoder.width, @decoder.height,
-                                material: @material, name: 'Media')
+                                material: @material, name: 'Media',
+                                fit: @panzoom ? @panzoom.fit : "meet")
           @configure_context = true
         end
 
