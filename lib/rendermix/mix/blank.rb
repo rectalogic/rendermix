@@ -4,8 +4,11 @@
 module RenderMix
   module Mix
     class Blank < Base
-      def initialize(mixer, duration)
-        super(mixer, duration)
+      # @param [Hash] opts options
+      # @option opts [Fixnum] :duration set blank duration (required)
+      def initialize(mixer, opts)
+        opts.validate_keys(:duration)
+        super(mixer, opts.fetch(:duration)) rescue raise(InvalidMixError, "Blank requires duration")
       end
     end
   end

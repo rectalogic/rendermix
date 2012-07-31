@@ -66,7 +66,7 @@ shared_examples 'an image/media element' do
 
     panzoom2 = double("panzoom2")
     media2 = @app.mixer.new_media(FIXTURE_MEDIA, duration: media2_dur, pre_freeze: freeze_dur, panzoom: panzoom2)
-    seq2 = @app.mixer.new_sequence(@app.mixer.new_blank(effect_in),
+    seq2 = @app.mixer.new_sequence(@app.mixer.new_blank(duration: effect_in),
                                    media2)
 
     par = @app.mixer.new_parallel(seq1, seq2)

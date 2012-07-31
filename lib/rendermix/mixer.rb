@@ -31,8 +31,9 @@ module RenderMix
       @asset_locations.push(location) unless @asset_locations.include?(location)
     end
 
-    def new_blank(duration)
-      Mix::Blank.new(self, duration)
+    # @param [Hash] opts (see Mix::Blank#initialize)
+    def new_blank(opts)
+      Mix::Blank.new(self, opts)
     end
 
     # @param [Array<Mix::Base>] mix_elements

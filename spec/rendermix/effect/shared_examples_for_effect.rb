@@ -13,7 +13,7 @@ shared_examples 'a transition effect' do
     seq1 = @app.mixer.new_sequence(@app.mixer.new_image(FIXTURE_IMAGE, duration: seq1_dur))
 
     seq2_start = 5*2
-    seq2 = @app.mixer.new_sequence(@app.mixer.new_blank(seq2_start),
+    seq2 = @app.mixer.new_sequence(@app.mixer.new_blank(duration: seq2_start),
                                    @app.mixer.new_media(FIXTURE_MEDIA, duration: 5*8))
 
     par = @app.mixer.new_parallel(seq1, seq2)
@@ -46,7 +46,7 @@ shared_examples 'a transition effect' do
     image = @app.mixer.new_image(FIXTURE_IMAGE, duration: 5*4)
 
     seq_start = 5*2
-    seq = @app.mixer.new_sequence(@app.mixer.new_blank(seq_start),
+    seq = @app.mixer.new_sequence(@app.mixer.new_blank(duration: seq_start),
                                   @app.mixer.new_media(FIXTURE_MEDIA, duration: 5*4))
 
     par = @app.mixer.new_parallel(image, seq)
