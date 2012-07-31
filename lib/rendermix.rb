@@ -12,6 +12,7 @@ require 'bundler'
 Bundler.setup(:default)
 
 require 'json'
+require 'yaml'
 require 'rawmedia'
 require_relative '../jme3/jMonkeyEngine3.jar'
 
@@ -25,6 +26,7 @@ require 'rendermix/log'
 require 'rendermix/frame_time'
 require 'rendermix/encoder'
 require 'rendermix/mixer'
+require 'rendermix/builder'
 require 'rendermix/command'
 
 require 'rendermix/audio_context'

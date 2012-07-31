@@ -4,7 +4,13 @@
 module RenderMix
   module Command
     def self.run(args)
-      #XXX
+      #XXX make size an option
+      mixer = Mixer.new(320, 240, Rational(30))
+      builder = Builder.new(mixer)
+      #XXX manifest option
+      mix = builder.load(args.first)
+      #XXX option to encode
+      mixer.mix(mix)
     end
   end
 end
