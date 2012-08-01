@@ -89,6 +89,7 @@ module RenderMix
       settings.renderer = Jme::System::AppSettings::LWJGL_OPENGL2
       settings.setSamples(1)
       settings.setDepthBits(DEPTH_FORMAT.bitsPerPixel)
+      settings.frameRate = -1
       settings.useInput = false
       settings.useJoysticks = false
       settings.audioRenderer = nil

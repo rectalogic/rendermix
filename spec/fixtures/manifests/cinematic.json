@@ -7,7 +7,13 @@
                 "type": "cinematic",
                 "manifest": "TestEffects/Cinematic/manifest.json",
                 "textures": [ "SourceVideo", "TargetVideo" ],
-                "texts": { "Title": "Hello testcase" },
+                "texts": { "Title": "Hello overlap" },
+                "in": 30,
+                "out": 449
+            }
+        ],
+        "audio_effects": [
+            {
                 "in": 30,
                 "out": 449
             }
@@ -19,8 +25,7 @@
                     {
                         "type": "media",
                         "filename": "../sample-media/media/red-4x3.mov",
-                        "duration": 240,
-                        "post_freeze": 210
+                        "duration": 450
                     }
                 ]
             },
@@ -34,9 +39,8 @@
                     {
                         "type": "media",
                         "filename": "../sample-media/media/blue-4x3.mov",
-                        "duration": 240,
-                        "start_frame": 300,
-                        "pre_freeze": 210
+                        "duration": 450,
+                        "start_frame": 300
                     }
                 ]
             }
