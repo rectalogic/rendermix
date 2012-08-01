@@ -43,8 +43,6 @@ module RenderMix
       end
 
       def on_rendering_prepare(context_manager, tracks)
-        raise(InvalidMixError, "Cinematic for #@manifest_asset does not have as many textures as tracks") unless tracks.length == @track_textures.length
-
         # Load manifest JSON
         manifest = Asset::JSONLoader.load(mixer.asset_manager, @manifest_asset)
         manifest.validate_keys("scenes", "textures", "texts", "camera")
