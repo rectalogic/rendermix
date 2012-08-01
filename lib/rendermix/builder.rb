@@ -211,7 +211,7 @@ module RenderMix
       panzoom.symbolize_keys!
       panzoom.validate_keys(:keyframes, :interpolator, :fit)
       keyframes = panzoom.fetch(:keyframes).collect do |k|
-        PanZoom::Keyframe.new(k)
+        PanZoom::Keyframe.new(k.symbolize_keys!)
       end
       panzoom.delete(:keyframes)
       element[:panzoom] = PanZoom::Timeline.new(keyframes, panzoom)
