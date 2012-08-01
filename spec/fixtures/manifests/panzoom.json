@@ -1,0 +1,16 @@
+{
+    "mix": {
+        "type": "image",
+        "filename": "../640x480.png",
+        "duration": 240,
+        "panzoom": {
+            "interpolator": "linear",
+            "keyframes": [
+                { "time": 0, "scale": 2 },
+                { "time": 0.5, "scale": 3, "tx": 0.5, "ty": 0.5 },
+                { "time": 0.75, "scale": 3, "tx": 1, "ty": 0 },
+                { "time": 1, "scale": 1 }
+            ]
+        }
+    }
+}

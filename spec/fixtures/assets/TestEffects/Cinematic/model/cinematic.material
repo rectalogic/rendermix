@@ -1,0 +1,176 @@
+
+material _missing_material_ 
+{
+    receive_shadows off
+    technique
+    {
+        pass
+        {
+            ambient 0.1 0.1 0.1 1.0
+            diffuse 0.8 0.0 0.0 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.3 0.3 0.3 1.0
+        }
+    }
+}
+
+
+// blender material: Text
+material Text 
+{
+    receive_shadows on
+    technique
+    {
+        pass Text
+        {
+            ambient 0.800000011920929 0.735186755657196 0.25172916054725647 1.0
+            diffuse 0.6400000190734865 0.5881494132898659 0.20138333143865061 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+        }
+    }
+}
+
+// blender material: TargetVideo
+material TargetVideo 
+{
+    receive_shadows on
+    technique
+    {
+        pass TargetVideo
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+        }
+    }
+}
+
+// blender material: SourceVideo
+material SourceVideo 
+{
+    receive_shadows on
+    technique
+    {
+        pass SourceVideo
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+        }
+    }
+}
+
+// blender material: GreenMaterial
+material GreenMaterial 
+{
+    receive_shadows on
+    technique
+    {
+        pass GreenMaterial
+        {
+            ambient 0.5227462649345398 0.800000011920929 0.45255470275878906 1.0
+            diffuse 0.4181970181792529 0.6400000190734865 0.3620437676019037 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+        }
+    }
+}
+
+// blender material: PurpleMaterial
+material PurpleMaterial 
+{
+    receive_shadows on
+    technique
+    {
+        pass PurpleMaterial
+        {
+            ambient 0.800000011920929 0.18465256690979004 0.7621554732322693 1.0
+            diffuse 0.6400000190734865 0.14772205572906216 0.6097243876714167 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+        }
+    }
+}

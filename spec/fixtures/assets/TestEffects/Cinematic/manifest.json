@@ -1,15 +1,15 @@
 {
-    "scenes" : [ "TestEffects/Cinematic/model/cube.obj" ],
+    "scenes" : [ "TestEffects/Cinematic/model/cinematic.j3o" ],
     "textures" : {
-        "SourceVideo" : { "geometry": "cube-geom-0", "uniform": "DiffuseMap" },
-        "TargetVideo" : { "geometry": "cube-geom-0", "uniform": "LightMap" },
-        "TitleText" : { "geometry": "cube-geom-0", "uniform": "GlowMap" }
+        "SourceVideo" : { "geometry": "SourceVideo", "uniform": "DiffuseMap" },
+        "TargetVideo" : { "geometry": "TargetVideo", "uniform": "DiffuseMap" },
+        "TitleText" : { "geometry": "Text", "uniform": "DiffuseMap" }
     },
     "texts": {
         "Title": {
             "texture": "TitleText",
             "width": 0.5,
-            "aspect_ratio": "15/4",
+            "aspect_ratio": "4470/848",
             "font_asset": "fonts/MarkerSD.ttf",
             "font_size": 0.8,
             "text_color": [1, 0, 0, 1],
@@ -19,5 +19,5 @@
             "text_baseline": "middle"
         }
     },
-    "camera" : "animation/animation.json"
+    "camera" : "TestEffects/Cinematic/camera.json"
 }

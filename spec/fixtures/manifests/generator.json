@@ -1,0 +1,15 @@
+{
+    "assets": [ "../assets" ],
+    "mix": {
+        "type": "blank",
+        "duration": 90,
+        "visual_effects": [
+            {
+                "type": "cinematic",
+                "manifest": "TestEffects/Cinematic/manifest.json",
+                "in": 0,
+                "out": 89
+            }
+        ]
+    }
+}
