@@ -13,6 +13,8 @@ Bundler.setup(:default)
 
 require 'json'
 require 'yaml'
+require 'optparse'
+require 'ostruct'
 require 'rawmedia'
 require_relative '../jme3/jMonkeyEngine3.jar'
 
