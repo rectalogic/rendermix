@@ -20,7 +20,8 @@ module RenderMix
       end
 
       def on_audio_render(context_manager, current_frame)
-        audio_mix_element = current_mix_element(@audio_mix_elements, current_frame)
+        audio_mix_element, prev_element = current_mix_element(@audio_mix_elements, current_frame)
+        prev_element.audio_rendering_finished if prev_element
         return unless audio_mix_element
         audio_mix_element.audio_render(context_manager)
       end
@@ -32,7 +33,8 @@ module RenderMix
       end
 
       def on_visual_render(context_manager, current_frame)
-        visual_mix_element = current_mix_element(@visual_mix_elements, current_frame)
+        visual_mix_element, prev_element = current_mix_element(@visual_mix_elements, current_frame)
+        prev_element.visual_rendering_finished if prev_element
         return unless visual_mix_element
         visual_mix_element.visual_render(context_manager)
       end
@@ -43,14 +45,16 @@ module RenderMix
         @visual_mix_elements.clear
       end
 
+      # @return [Array<Mix::Base>] current element and previous element if
+      #   we just changed elements (or nil)
       def current_mix_element(mix_elements, current_frame)
         mix = mix_elements.first
         return nil if mix.nil?
         if mix.in_frame <= current_frame and mix.out_frame >= current_frame
           return mix
         else
-          mix_elements.shift
-          return mix_elements.first
+          prev = mix_elements.shift
+          return mix_elements.first, prev
         end
       end
       private :current_mix_element

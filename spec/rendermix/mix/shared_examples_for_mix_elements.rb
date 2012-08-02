@@ -48,6 +48,34 @@ shared_examples 'a mix element' do
   end
 end
 
+shared_examples 'a container element' do
+  include_context 'requires render thread'
+  include_context 'should receive invoke'
+
+  it 'should finish each track' do
+    duration = mix_element.duration
+    mix_element.should_receive_invoke(:audio_rendering_prepare).once
+    mix_element.should_receive_invoke(:visual_rendering_prepare).once
+    mix_element.should_receive_invoke(:on_audio_render).exactly(duration).times
+    mix_element.should_receive_invoke(:on_visual_render).exactly(duration).times
+    mix_element.should_receive_invoke(:audio_rendering_finished).once
+    mix_element.should_receive_invoke(:visual_rendering_finished).once
+    tracks.each do |t|
+      t.should_receive_invoke(:audio_rendering_prepare).once
+      t.should_receive_invoke(:visual_rendering_prepare).once
+      t.should_receive_invoke(:audio_rendering_finished).once
+      t.should_receive_invoke(:visual_rendering_finished).once
+    end
+
+    (duration + 1).times do
+      on_render_thread do
+        @app.audio_context_manager.render(mix_element)
+        @app.visual_context_manager.render(mix_element)
+      end
+    end
+  end
+end
+
 shared_examples 'an image/media element' do
   include_context 'requires render thread'
   include_context 'should receive invoke'
