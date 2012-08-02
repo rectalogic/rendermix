@@ -31,7 +31,7 @@ module RenderMix
       @asset_locations.push(location) unless @asset_locations.include?(location)
     end
 
-    # @param [Hash] opts (see Mix::Blank#initialize)
+    # @param [Hash] opts (see {Mix::Blank#initialize})
     def new_blank(opts)
       Mix::Blank.new(self, opts)
     end
@@ -47,13 +47,13 @@ module RenderMix
     end
 
     # @param [String] filename
-    # @param [Hash] opts (see Mix::Image#initialize)
+    # @param [Hash] opts (see {Mix::Image#initialize})
     def new_image(filename, opts={})
       Mix::Image.new(self, filename, opts)
     end
 
     # @param [String] filename
-    # @param [Hash] opts (see Mix::Media#initialize)
+    # @param [Hash] opts (see {Mix::Media#initialize})
     def new_media(filename, opts={})
       Mix::Media.new(self, filename, opts)
     end
