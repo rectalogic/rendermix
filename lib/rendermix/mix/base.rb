@@ -14,7 +14,7 @@ module RenderMix
       # @return [Fixnum] ending frame of this element in parents timeline
       attr_accessor :out_frame
       # @return [Fixnum] total duration in frames of this element in parents timeline
-      attr_accessor :duration
+      attr_reader :duration
 
       def initialize(mixer, duration=0)
         @mixer = mixer

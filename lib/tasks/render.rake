@@ -30,12 +30,14 @@ namespace 'render' do
     crc = FileList.new("#{args[:crc_dir]}/*.crc")
     reference = FileList.new("#{args[:reference_dir]}/*.crc")
     missing = reference.pathmap('%f') - crc.pathmap('%f')
+    extra = crc.pathmap('%f') - reference.pathmap('%f')
     different = []
     reference.each do |ref|
       c = ref.pathmap("#{args[:crc_dir]}/%f")
       next unless File.exist?(c)
       different << c.pathmap('%f') unless FileUtils.compare_file(c, ref)
     end
+    warn "CRC files have no reference: #{extra.join(', ')}" unless extra.empty?
     msg = []
     msg << "Missing CRC files: #{missing.join(', ')}" unless missing.empty?
     msg << "CRC files not identical: #{different.join(', ')}" unless different.empty?

@@ -11,13 +11,11 @@ RawMedia::Rake::VideoFixtureTask.new(Fixtures::VIDEO_320x240_30fps) do |task|
   task.framerate = '30'
   task.size = '320x240'
 end
-task Fixtures::VIDEO_320x240_30fps => 'spec/fixtures'
 
 RenderMix::Rake::ImageFixtureTask.new(Fixtures::IMAGE_640x480) do |task|
   task.width = 640
   task.height = 480
 end
-task Fixtures::IMAGE_640x480 => 'spec/fixtures'
 
 desc "Generate all media fixtures"
 task :fixtures => [Fixtures::VIDEO_320x240_30fps, Fixtures::IMAGE_640x480]
