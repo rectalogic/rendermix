@@ -1,2 +1,4 @@
+#!/usr/bin/env jruby
+
 require_relative '../lib/rendermix'
 RenderMix::Command.run(ARGV)

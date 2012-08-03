@@ -8,7 +8,10 @@ module RenderMix
       mixer = Mixer.new(options.width, options.height, Rational(30))
       builder = Builder.new(mixer)
       mix = builder.load(options.manifest)
-      mixer.mix(mix, options.output)
+      if options.progress
+        progress = lambda {|p| puts p }
+      end
+      mixer.mix(mix, options.output, &progress)
     end
 
     def self.parse(args)
@@ -25,6 +28,9 @@ module RenderMix
         end
         opts.on("-o", "--output FILENAME", "File to encode") do |f|
           options.output = f
+        end
+        opts.on("-p", "--progress", "Report progress (frames rendered)") do |p|
+          options.progress = p
         end
         opts.on_tail("-h", "--help", "Show this message") do
           puts opts

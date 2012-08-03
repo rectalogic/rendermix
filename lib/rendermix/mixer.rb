@@ -60,10 +60,11 @@ module RenderMix
 
     # @param [Mix::Base] mix root element of the mix
     # @param [String] filename the output video filename to encode into
-    def mix(mix, filename=nil)
+    # @yieldparam [Fixnum] frame number being rendered
+    def mix(mix, filename=nil, &progress_block)
       mix.validate(self)
       @app = create_mixer_application
-      @app.mix(mix, filename)
+      @app.mix(mix, filename, &progress_block)
     end
 
     def create_mixer_application
@@ -113,7 +114,8 @@ module RenderMix
     # @param [Mix::Base] mix root node of mix. Mix is modified as mixing proceeds.
     # @param [String] filename output filename to encode mix into,
     #   if nil then mix will be displayed in a window.
-    def mix(mix, filename=nil)
+    # @yieldparam [Fixnum] frame number being rendered
+    def mix(mix, filename=nil, &progress_block)
       configure_settings do |settings|
         if filename
           @encoder = Encoder.new(@mixer, filename)
@@ -125,6 +127,7 @@ module RenderMix
         end
       end
 
+      @progress_block = progress_block
       @mix = mix
       @current_frame = 0
       @mix.in_frame = 0
@@ -187,6 +190,7 @@ module RenderMix
         @encoder.encode(@audio_context_manager.current_context,
                         @visual_context_manager.current_context)
       end
+      @progress_block.call(@current_frame) if @progress_block
 
       # Update frame and quit if mix completed
       @current_frame += 1
