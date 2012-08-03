@@ -7,8 +7,10 @@ module RenderMix
       # @param [Mixer] mixer
       # @param [String] filename the media file to decode
       # @param [Hash] opts decoding options
-      # @option opts [Float] :volume exponential volume to decode audio, 0..1, default 1.0
-      # @option opts [Fixnum] :start_frame starting video frame, default 0
+      # @option opts [Float] :volume (1.0) exponential volume to decode audio, 0..1
+      # @option opts [Fixnum] :start_frame (0) starting video frame
+      # @option opts [Boolean] :discard_audio (false) ignore media audio
+      # @option opts [Boolean] :discard_video (false) ignore media video
       # @option opts [Fixnum] :duration override intrinsic media duration
       # @option opts [Fixnum] :pre_freeze (0) freeze the initial frame for
       #   this many frames. The effective duration is increased by this
@@ -18,13 +20,15 @@ module RenderMix
       #   amount.
       # @option opts [PanZoom::Timeline] :panzoom panzoom timeline (optional)
       def initialize(mixer, filename, opts={})
-        opts.validate_keys(:volume, :start_frame, :duration, :pre_freeze, :post_freeze, :panzoom)
+        opts.validate_keys(:volume, :start_frame, :discard_audio, :discard_video, :duration, :pre_freeze, :post_freeze, :panzoom)
         volume = opts.fetch(:volume, 1.0)
         start_frame = opts.fetch(:start_frame, 0.0)
         @decoder = RawMedia::Decoder.new(filename, mixer.rawmedia_session,
                                          mixer.width, mixer.height,
                                          volume: volume,
-                                         start_frame: start_frame)
+                                         start_frame: start_frame,
+                                         discard_audio: opts[:discard_audio],
+                                         discard_video: opts[:discard_video])
         pre_freeze = opts.fetch(:pre_freeze, 0)
         post_freeze = opts.fetch(:post_freeze, 0)
         media_duration = opts.fetch(:duration, @decoder.duration)
