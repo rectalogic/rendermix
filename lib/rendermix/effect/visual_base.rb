@@ -7,8 +7,7 @@ module RenderMix
       include TextTexture
 
       # @param [VisualContextManager] context_manager
-      # @param [Array<Mix::Base>] tracks effect tracks
-      def on_rendering_prepare(context_manager, tracks)
+      def on_rendering_prepare(context_manager)
       end
 
       def visual_render(context_manager)

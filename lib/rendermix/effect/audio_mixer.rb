@@ -4,7 +4,7 @@
 module RenderMix
   module Effect
     class AudioMixer < AudioBase
-      def on_rendering_prepare(context_manager, tracks)
+      def on_rendering_prepare(context_manager)
         @audio_mixer = mixer.rawmedia_session.create_audio_mixer
       end
 

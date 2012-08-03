@@ -20,7 +20,7 @@ module RenderMix
         @texture_names = texture_names
       end
 
-      def on_rendering_prepare(context_manager, tracks)
+      def on_rendering_prepare(context_manager)
         @material = mixer.asset_manager.loadMaterial(@material_asset)
         matdef = @material.materialDef
         @texture_names.each do |name|

@@ -5,8 +5,7 @@ module RenderMix
   module Effect
     class AudioBase < Base
       # @param [AudioContextManager] context_manager
-      # @param [Array<Mix::Base>] tracks effect tracks
-      def on_rendering_prepare(context_manager, tracks)
+      def on_rendering_prepare(context_manager)
       end
 
       def audio_render(context_manager)

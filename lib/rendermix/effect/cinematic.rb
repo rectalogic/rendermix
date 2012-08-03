@@ -42,7 +42,7 @@ module RenderMix
         @text_values = text_values
       end
 
-      def on_rendering_prepare(context_manager, tracks)
+      def on_rendering_prepare(context_manager)
         # Load manifest JSON
         manifest = Asset::JSONLoader.load(mixer.asset_manager, @manifest_asset)
         manifest.validate_keys("scenes", "textures", "texts", "camera")
