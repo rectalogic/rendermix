@@ -1,3 +1,5 @@
+#!/usr/bin/env jruby
+
 require_relative '../lib/rendermix'
 
 module RenderMix
@@ -7,6 +9,9 @@ module RenderMix
       module Controls
         include_package 'com.jme3.input.controls'
       end
+    end
+    module Animation
+      include_package 'com.jme3.animation'
     end
   end
 end
@@ -19,19 +24,19 @@ class SceneViewer < RenderMix::ApplicationBase
   include RenderMix::Jme::Input::Controls::ActionListener
   include RenderMix::Jme::Scene::SceneGraphVisitor
 
-  def initialize(scene_file)
+  def initialize(model_key)
     super([RenderMix::Jme::App::FlyCamAppState.new, RenderMix::Jme::App::DebugKeysAppState.new].to_java(RenderMix::Jme::App::State::AppState))
     configure_settings do |settings|
       settings.setResolution(WIDTH, HEIGHT)
       settings.useInput = true
     end
-    @scene_file = scene_file
+    @model_key = model_key
   end
 
   def simpleInitApp
     self.flyByCamera.dragToRotate = true
     asset_manager.registerLocator('/', RenderMix::Jme::Asset::Plugins::FileLocator.java_class)
-    scene = asset_manager.loadModel(@scene_file)
+    scene = asset_manager.loadModel(@model_key)
     rootNode.attachChild(scene)
     init_keys
 
@@ -43,6 +48,11 @@ class SceneViewer < RenderMix::ApplicationBase
   # Implements Jme::Scene::SceneGraphVisitor
   def visit(spatial)
     puts "#{spatial.name} #{spatial.java_class.name}"
+    control = spatial.getControl(RenderMix::Jme::Animation::AnimControl.java_class)
+    if control
+      names = control.getAnimationNames
+      puts "animations #{names}" unless names.isEmpty
+    end
   end
 
   def init_keys
@@ -91,6 +101,6 @@ class SceneViewer < RenderMix::ApplicationBase
 end
 
 if __FILE__== $0
-  sv = SceneViewer.new(ARGV.first)
+  sv = SceneViewer.new(RenderMix::Jme::Asset::ModelKey.new(ARGV.first))
   sv.start
 end
