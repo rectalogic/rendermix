@@ -86,7 +86,7 @@ module RenderMix
     end
 
     def configure_settings
-      settings = Jme::System::AppSettings.new(false)
+      settings = Jme::System::AppSettings.new(true)
       settings.renderer = Jme::System::AppSettings::LWJGL_OPENGL2
       settings.setSamples(1)
       settings.setDepthBits(DEPTH_FORMAT.bitsPerPixel)
