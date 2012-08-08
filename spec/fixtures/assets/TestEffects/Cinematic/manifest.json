@@ -1,9 +1,9 @@
 {
     "scenes" : [ "TestEffects/Cinematic/model/cinematic.j3o" ],
     "textures" : {
-        "SourceVideo" : { "geometry": "SourceVideo", "uniform": "DiffuseMap" },
-        "TargetVideo" : { "geometry": "TargetVideo", "uniform": "DiffuseMap" },
-        "TitleText" : { "geometry": "Text", "uniform": "DiffuseMap" }
+        "SourceVideo" : [ { "geometry": "SourceVideo", "uniform": "DiffuseMap" } ],
+        "TargetVideo" : [ { "geometry": "TargetVideo", "uniform": "DiffuseMap" } ],
+        "TitleText" : [ { "geometry": "Text", "uniform": "DiffuseMap" } ]
     },
     "texts": {
         "Title": {

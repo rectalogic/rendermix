@@ -1,0 +1,9 @@
+{
+    "scenes" : [ "TestEffects/Cinematic/model/cinematic.j3o" ],
+    "textures" : {
+        "SourceVideo" : [ { "geometry": "SourceVideo", "uniform": "DiffuseMap" },
+                          { "geometry": "TargetVideo", "uniform": "DiffuseMap" }
+                        ]
+    },
+    "camera" : "TestEffects/Cinematic/camera.json"
+}

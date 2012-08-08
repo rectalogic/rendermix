@@ -10,8 +10,10 @@ module RenderMix
       #   {
       #       "scenes" : [ "<asset-path-to-j3o>", ... ],
       #       "textures" : {
-      #           "<TextureName>" : { "geometry": "<GeometryName>",
-      #                               "uniform": "<UniformName>" },
+      #           "<TextureName>" : [ { "geometry": "<GeometryName>",
+      #                                 "uniform": "<UniformName>" },
+      #                               ...
+      #                             ],
       #           ...
       #       },
       #       "texts": {
@@ -74,17 +76,21 @@ module RenderMix
           text_options = manifest_texts.fetch(text_name).symbolize_keys rescue raise(InvalidMixError, "Invalid text #{text_name} for Cinematic #@manifest_asset")
           texture_name = text_options.delete(:texture)
           raise(InvalidMixError, "Missing texture key for text #{text_name} in Cinematic #@manifest_asset") unless texture_name
-          texture_map = manifest_textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for text #{text_name} in Cinematic #@manifest_asset")
+          texture_maps = manifest_textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for text #{text_name} in Cinematic #@manifest_asset")
           texture = create_text_texture(text, text_options)
-          create_uniform_material(texture_map).apply(texture)
+          texture_maps.each do |texture_map|
+            create_uniform_material(texture_map).apply(texture)
+          end
         end
       end
       private :apply_text_textures
 
       def create_track_materials(manifest_textures)
         @track_textures.collect do |texture_name|
-          texture_map = manifest_textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for Cinematic #@manifest_asset")
-          create_uniform_material(texture_map)
+          texture_maps = manifest_textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for Cinematic #@manifest_asset")
+          texture_maps.collect do |texture_map|
+            create_uniform_material(texture_map)
+          end
         end
       end
       private :create_track_materials
@@ -116,9 +122,11 @@ module RenderMix
           @configure_context = false
         end
 
-        @track_materials.each_with_index do |uniform_material, i|
+        @track_materials.each_with_index do |uniform_materials, i|
           texture = track_visual_contexts[i] && track_visual_contexts[i].prepare_texture
-          uniform_material.apply(texture)
+          uniform_materials.each do |uniform_material|
+              uniform_material.apply(texture)
+          end
         end
 
         @camera_animation.animate(current_time)
