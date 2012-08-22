@@ -69,11 +69,7 @@ module RenderMix
       set_clear_flags(true, true, true)
       self.render_bucket = :inherit
 
-      # Do it this way to avoid java.util.ConcurrentModificationException
-      processors = @viewport.processors
-      (processors.length - 1).step(0, -1) do |i|
-        @viewport.removeProcessor(processors[i])
-      end
+      @viewport.clearProcessors
       @antialias_processor = nil
     end
 
