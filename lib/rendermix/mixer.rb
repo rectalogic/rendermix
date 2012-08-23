@@ -160,8 +160,10 @@ module RenderMix
 
       tpf = self.timer.timePerFrame
 
-      # Remove gui viewport, we don't use it
-      self.renderManager.removePostView(self.guiViewPort)
+      # We don't use gui viewport.
+      # Removing/disabling it causes rendering issues when we have multiple
+      # SceneProcessors, so just remove the scenes.
+      self.guiViewPort.clearScenes
 
       # Let encoder modify viewport
       @encoder.prepare(self.renderManager, self.viewPort, tpf) if @encoder
