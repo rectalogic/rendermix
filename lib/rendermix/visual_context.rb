@@ -40,21 +40,29 @@ module RenderMix
       @@buckets.invert.fetch(@rootnode.localQueueBucket)
     end
 
-    # Antialiasing (FXAA) processors should only be added to the root context
-    # via #set_antialias_processor
     # @param [Jme::Post::SceneProcessor] processor
+    #   {Jme::Post::FilterPostProcessor} should not contain any FXAA filters,
+    #   and only one is supported.
     def add_scene_processor(processor)
+      if processor.kind_of?(Jme::Post::FilterPostProcessor)
+        raise(RuntimeError, 'FilterPostProcessor already set') if @fpp
+        @fpp = processor
+        @antialias_filter = nil
+      end
       @viewport.addProcessor(processor)
     end
 
-    # @param [Jme::Post::FilterPostProcessor] processor with FXAA filter or nil
-    def set_antialias_processor(processor)
-      if processor and not @antialias_processor
-        @antialias_processor = processor
-        @viewport.addProcessor(processor)
-      elsif not processor and @antialias_processor
-        @viewport.removeProcessor(@antialias_processor)
-        @antialias_processor = nil
+    # @param [Jme::Asset::AssetManager] asset_manager
+    # @param [Jme::Post::Filter] filter FXAA filter or nil
+    def set_antialias_filter(asset_manager, filter)
+      if filter and not @antialias_filter
+        @antialias_filter = filter
+        # If FPP is already set on us, use it, otherwise create one.
+        @fpp ||= Jme::Post::FilterPostProcessor.new(asset_manager)
+        @fpp.addFilter(@antialias_filter)
+      elsif not filter and @antialias_filter
+        @fpp.removeFilter(@antialias_filter)
+        @antialias_filter = nil
       end
     end
 
@@ -70,7 +78,12 @@ module RenderMix
       self.render_bucket = :inherit
 
       @viewport.clearProcessors
-      @antialias_processor = nil
+
+      if @fpp and @antialias_filter
+        @fpp.removeFilter(@antialias_filter)
+        @fpp = nil
+        @antialias_filter = nil
+      end
     end
 
     def camera

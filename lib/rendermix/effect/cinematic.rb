@@ -8,8 +8,9 @@ module RenderMix
     class Cinematic < VisualBase
       # @example Manifest JSON format:
       #   {
-      #       "scenes" : [ "<asset-path-to-j3o>", ... ],
-      #       "textures" : {
+      #       "scenes": [ "<asset-path-to-j3o>", ... ],
+      #       "filter": "<asset-path-to-j3f>",
+      #       "textures": {
       #           "<TextureName>" : [ { "geometry": "<GeometryName>",
       #                                 "uniform": "<UniformName>" },
       #                               ...
@@ -47,7 +48,7 @@ module RenderMix
       def on_rendering_prepare(context_manager)
         # Load manifest JSON
         manifest = Asset::JSONLoader.load(mixer.asset_manager, @manifest_asset)
-        manifest.validate_keys("scenes", "textures", "texts", "camera")
+        manifest.validate_keys("scenes", "filter", "textures", "texts", "camera")
 
         # Attach all model files to root node
         @root_node = Jme::Scene::Node.new("Cinematic")
@@ -66,6 +67,10 @@ module RenderMix
         camera_asset = manifest.fetch('camera') rescue raise(InvalidMixError, "Missing camera animation for #@manifest_asset")
         animation = Asset::JSONLoader.load(mixer.asset_manager, camera_asset)
         @camera_animation = CameraAnimation.new(animation, mixer.width / mixer.height.to_f) rescue raise(InvalidMixError, "Camera animation corrupt #{camera_asset}")
+
+        filter = manifest.fetch('filter', nil)
+        # This won't be cached
+        @fpp = mixer.asset_manager.loadFilter(filter) if filter
 
         @configure_context = true
       end
@@ -118,6 +123,7 @@ module RenderMix
 
         if @configure_context
           visual_context.attach_child(@root_node)
+          visual_context.add_scene_processor(@fpp) if @fpp
           @camera_animation.visual_context = visual_context
           @configure_context = false
         end

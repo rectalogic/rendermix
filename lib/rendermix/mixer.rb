@@ -182,7 +182,8 @@ module RenderMix
       antialias = @visual_context_manager.reset_antialias
       visual_context = @visual_context_manager.current_context
       if visual_context
-        visual_context.set_antialias_processor(antialias ? antialias_processor : nil)
+        visual_context.set_antialias_filter(@mixer.asset_manager,
+                                            antialias ? antialias_filter : nil)
       end
     end
     private :simpleUpdate
@@ -203,18 +204,16 @@ module RenderMix
     end
     private :simpleRender
 
-    def antialias_processor
-      unless @antialias_processor
-        @antialias_processor = Jme::Post::FilterPostProcessor.new(@mixer.asset_manager)
-        fxaa = Jme::Post::Filters::FXAAFilter.new
+    def antialias_filter
+      unless @antialias_filter
+        @antialias_filter = Jme::Post::Filters::FXAAFilter.new
         # Higher quality, but blurrier
-        fxaa.subPixelShift = 0
-        fxaa.reduceMul = 0
-        @antialias_processor.addFilter(fxaa)
+        @antialias_filter.subPixelShift = 0
+        @antialias_filter.reduceMul = 0
       end
-      @antialias_processor
+      @antialias_filter
     end
-    private :antialias_processor
+    private :antialias_filter
 
     # Override and return nil - we don't need this and slows startup
     def loadGuiFont
