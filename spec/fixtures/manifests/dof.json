@@ -1,0 +1,49 @@
+{
+    "assets": [ "../assets" ],
+    "mix": {
+        "type": "parallel",
+        "visual_effects": [
+            {
+                "type": "cinematic",
+                "manifest": "TestEffects/Cinematic/dof.json",
+                "textures": [ "SourceVideo", "TargetVideo" ],
+                "texts": { "Title": "Hello DOF" },
+                "in": 30,
+                "out": 449
+            }
+        ],
+        "audio_effects": [
+            {
+                "in": 30,
+                "out": 449
+            }
+        ],
+        "elements": [
+            {
+                "type": "sequence",
+                "elements": [
+                    {
+                        "type": "media",
+                        "filename": "../sample-media/media/red-4x3.mov",
+                        "duration": 450
+                    }
+                ]
+            },
+            {
+                "type": "sequence",
+                "elements": [
+                    {
+                        "type": "blank",
+                        "duration": 30
+                    },
+                    {
+                        "type": "media",
+                        "filename": "../sample-media/media/blue-4x3.mov",
+                        "duration": 450,
+                        "start_frame": 300
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "scenes": [ "TestEffects/Cinematic/model/cinematic.j3o" ],
+    "filter": "TestEffects/Cinematic/model/dof.j3f",
+    "textures": {
+        "SourceVideo": [ { "geometry": "SourceVideo", "uniform": "DiffuseMap" } ],
+        "TargetVideo": [ { "geometry": "TargetVideo", "uniform": "DiffuseMap" } ],
+        "TitleText": [ { "geometry": "Text", "uniform": "DiffuseMap" } ]
+    },
+    "texts": {
+        "Title": {
+            "texture": "TitleText",
+            "width": 0.5,
+            "aspect_ratio": "4470/848",
+            "font_asset": "fonts/MarkerSD.ttf",
+            "font_size": 0.8,
+            "text_color": [1, 0, 0, 1],
+            "background_color": [1, 1, 1, 1],
+            "margin": [0, 0],
+            "text_align": "left",
+            "text_baseline": "middle"
+        }
+    },
+    "camera" : "TestEffects/Cinematic/camera.json"
+}

@@ -58,7 +58,10 @@ module RenderMix
       if filter and not @antialias_filter
         @antialias_filter = filter
         # If FPP is already set on us, use it, otherwise create one.
-        @fpp ||= Jme::Post::FilterPostProcessor.new(asset_manager)
+        unless @fpp
+          @fpp = Jme::Post::FilterPostProcessor.new(asset_manager)
+          @viewport.addProcessor(@fpp)
+        end
         @fpp.addFilter(@antialias_filter)
       elsif not filter and @antialias_filter
         @fpp.removeFilter(@antialias_filter)
