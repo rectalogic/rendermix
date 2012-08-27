@@ -47,8 +47,9 @@ module RenderMix
             @rendering_effect = nil
           end
 
-          if @current_frame == @mix_element.duration
+          if (@current_frame == @mix_element.duration) and not @rendering_effect
             rendering_finished
+            @current_frame += 1
             return
           end
         end

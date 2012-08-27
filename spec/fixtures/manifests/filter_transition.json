@@ -1,0 +1,47 @@
+{
+    "assets": [ "../assets" ],
+    "mix": {
+        "type": "parallel",
+        "visual_effects": [
+            {
+                "type": "image_processor",
+                "material": "TestEffects/ImageProcessor/ImageProcessor.j3m",
+                "textures": [ "SourceTex", "TargetTex" ],
+                "in": 100,
+                "out": 149
+            }
+        ],
+        "elements": [
+            {
+                "type": "media",
+                "filename": "../sample-media/media/red-4x3.mov",
+                "duration": 150,
+                "discard_audio": true,
+                "visual_effects": [
+                    {
+                        "type": "cinematic",
+                        "manifest": "TestEffects/Cinematic/manifest.json",
+                        "textures": [ "TargetVideo" ],
+                        "in": 0,
+                        "out": 149
+                    }
+                ]
+            },
+            {
+                "type": "sequence",
+                "elements": [
+                    {
+                        "type": "blank",
+                        "duration": 100
+                    },
+                    {
+                        "type": "media",
+                        "filename": "../sample-media/media/blue-4x3.mov",
+                        "duration": 150,
+                        "discard_audio": true
+                    }
+                ]
+            }
+        ]
+    }
+}
