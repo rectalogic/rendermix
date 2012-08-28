@@ -4,9 +4,28 @@ require 'rendermix/mix/shared_examples_for_mix_elements'
 module RenderMix
   module Mix
     describe Parallel do 
+      include_context 'requires render thread'
+      include_context 'should receive invoke'
+
       let(:tracks) do
         Array.new(5).fill do
           @app.mixer.new_blank(duration: 10)
+        end
+      end
+
+      it 'should stop rendering the shortest track' do
+        duration = 10
+        media = @app.mixer.new_media(FIXTURE_MEDIA, duration: 5)
+        par = @app.mixer.new_parallel(@app.mixer.new_blank(duration: duration),
+                                      media)
+        par.duration.should eq duration
+        media.should_receive_invoke(:on_audio_render).exactly(media.duration).times
+        media.should_receive_invoke(:on_visual_render).exactly(media.duration).times
+        (duration + 1).times do
+          on_render_thread do
+            @app.audio_context_manager.render(par)
+            @app.visual_context_manager.render(par)
+          end
         end
       end
 

@@ -30,8 +30,9 @@ module RenderMix
       end
 
       # @param [AudioContextManager, VisualContextManager] context_manager
+      # @return false if rendering finished
       def render(context_manager)
-        return if @current_frame > @mix_element.duration
+        return false if @current_frame > @mix_element.duration
 
         if not @rendering_effect
           rendering_prepare(context_manager) if @current_frame == 0
@@ -50,7 +51,7 @@ module RenderMix
           if (@current_frame == @mix_element.duration) and not @rendering_effect
             rendering_finished
             @current_frame += 1
-            return
+            return false
           end
         end
 
@@ -59,6 +60,7 @@ module RenderMix
 
         # Do not increment frame when rendering an effect
         @current_frame += 1 unless @rendering_effect
+        return true
       end
     end
 

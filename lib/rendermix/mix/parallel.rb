@@ -23,28 +23,28 @@ module RenderMix
       end
 
       def on_audio_render(context_manager, current_frame)
-        @mix_elements.each do |track|
-          track.audio_render(context_manager)
+        @mix_elements.collect! do |track|
+          (track and track.audio_render(context_manager)) ? track : nil
         end
       end
 
       def audio_rendering_finished
-        @mix_elements.each do |renderer|
-          renderer.audio_rendering_finished
+        @mix_elements.each do |track|
+          track.audio_rendering_finished if track
         end
         @mix_elements.clear if @rendering_finished
         @rendering_finished = true
       end
 
       def on_visual_render(context_manager, current_frame)
-        @mix_elements.each do |track|
-          track.visual_render(context_manager)
+        @mix_elements.collect! do |track|
+          (track and track.visual_render(context_manager)) ? track : nil
         end
       end
 
       def visual_rendering_finished
-        @mix_elements.each do |renderer|
-          renderer.visual_rendering_finished
+        @mix_elements.each do |track|
+          track.visual_rendering_finished if track
         end
         @mix_elements.clear if @rendering_finished
         @rendering_finished = true

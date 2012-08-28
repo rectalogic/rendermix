@@ -54,6 +54,7 @@ module RenderMix
       def audio_rendering_prepare(context_manager)
       end
 
+      # @return false if rendering finished
       def audio_render(context_manager)
         @audio_render_manager.render(context_manager)
       end
@@ -84,6 +85,7 @@ module RenderMix
       def visual_rendering_prepare(context_manager)
       end
 
+      # @return false if rendering finished
       def visual_render(context_manager)
         @visual_render_manager.render(context_manager)
       end
