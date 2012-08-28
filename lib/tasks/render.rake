@@ -1,6 +1,6 @@
 namespace 'render' do
 
-  task :mix, [:manifest, :media] do |t, args|
+  task :mix, [:manifest, :media] => Fixtures::IMAGE_640x480 do |t, args|
     fail "Must specify :manifest and output :media args" unless args[:manifest] and args[:media]
     rendermix = File.expand_path('../../../bin/rendermix', __FILE__)
     ruby %{"#{rendermix}" -p -w 320 -h 240 -o "#{args[:media]}" "#{args[:manifest]}"}
