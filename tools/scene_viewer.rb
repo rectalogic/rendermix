@@ -43,6 +43,15 @@ class SceneViewer < RenderMix::ApplicationBase
     # Dump scene graph
     puts "Dumping scene graph"
     scene.depthFirstTraversal(self)
+
+    # Add antialiasing
+    fpp = RenderMix::Jme::Post::FilterPostProcessor.new(asset_manager)
+    fxaa = RenderMix::Jme::Post::Filters::FXAAFilter.new
+    # Higher quality, but blurrier
+    fxaa.subPixelShift = 0
+    fxaa.reduceMul = 0
+    fpp.addFilter(fxaa)
+    self.viewPort.addProcessor(fpp)
   end
 
   # Implements Jme::Scene::SceneGraphVisitor
