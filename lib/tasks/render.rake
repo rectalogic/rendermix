@@ -3,7 +3,8 @@ namespace 'render' do
   task :mix, [:manifest, :media] => Fixtures::IMAGE_640x480 do |t, args|
     fail "Must specify :manifest and output :media args" unless args[:manifest] and args[:media]
     rendermix = File.expand_path('../../../bin/rendermix', __FILE__)
-    ruby %{"#{rendermix}" -p -w 320 -h 240 -o "#{args[:media]}" "#{args[:manifest]}"}
+    # Disable UI when invoking on Mac
+    ruby %{-J-Dapple.awt.UIElement=true "#{rendermix}" -p -w 320 -h 240 -o "#{args[:media]}" "#{args[:manifest]}"}
   end
 
   task :crc, [:media, :crc] do |t, args|
@@ -18,8 +19,10 @@ namespace 'render' do
     FileList.new("#{args[:manifest_dir]}/*.json").each do |manifest|
       media = File.join(args[:media_dir], manifest.pathmap('%n.mov'))
       crc = File.join(args[:crc_dir], manifest.pathmap('%n.crc'))
-      task('render:mix').execute manifest: manifest, media: media
-      task('render:crc').execute media: media, crc: crc
+      task('render:mix').reenable
+      task('render:mix').invoke(manifest, media)
+      task('render:crc').reenable
+      task('render:crc').invoke(media, crc)
     end
   end
 
