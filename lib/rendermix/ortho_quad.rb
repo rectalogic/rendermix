@@ -69,9 +69,8 @@ module RenderMix
     # @param [VisualContext] visual_context configure and attach this quad
     #   as a child of the context
     def configure_context(visual_context)
-      visual_context.camera.parallelProjection = true
-
       visual_context.set_clear_flags(*@clear_flags)
+      # This forces JME RenderManager to use ortho projection matrices
       visual_context.render_bucket = :gui
 
       visual_context.attach_child(@quad)
