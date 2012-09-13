@@ -1,0 +1,33 @@
+{
+    "assets": [ "../assets" ],
+    "mix": {
+        "type": "parallel",
+        "visual_effects": [
+            {
+                "type": "cinematic",
+                "manifest": "TestEffects/Cinematic/animation.json",
+                "textures": [ "SourceVideo", "TargetVideo" ],
+                "in": 0,
+                "out": 119
+            }
+        ],
+        "audio_effects": [
+            {
+                "in": 0,
+                "out": 119
+            }
+        ],
+        "elements": [
+            {
+                "type": "media",
+                "filename": "../sample-media/media/red-4x3.mov",
+                "duration": 120
+            },
+            {
+                "type": "media",
+                "filename": "../sample-media/media/blue-4x3.mov",
+                "duration": 120
+            }
+        ]
+    }
+}

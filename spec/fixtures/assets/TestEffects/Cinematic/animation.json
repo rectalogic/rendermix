@@ -1,0 +1,14 @@
+{
+    "scenes" : [ "TestEffects/Cinematic/animation/animation.j3o" ],
+    "textures" : {
+        "SourceVideo" : [ { "geometry": "SourceVideo1", "uniform": "DiffuseMap" } ],
+        "TargetVideo" : [ { "geometry": "TargetVideo1", "uniform": "DiffuseMap" } ]
+    },
+    "animations": [
+        { "spatial": "SourceVideoMesh", "animation": "SourceVideoMeshAction" },
+        { "spatial": "TargetVideoMesh", "animation": "TargetVideoMeshAction" },
+        { "spatial": "PurpleBoxMesh", "animation": "PurpleBoxMeshAction" },
+        { "spatial": "GreenBoxMesh", "animation": "GreenBoxMeshAction" }
+    ],
+    "camera" : "TestEffects/Cinematic/static-camera.json"
+}

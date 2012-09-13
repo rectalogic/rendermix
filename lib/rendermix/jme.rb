@@ -9,6 +9,9 @@ module RenderMix
         include_package 'com.jme3.app.state'
       end
     end
+    module Animation
+      include_package 'com.jme3.animation'
+    end
     module Asset
       include_package 'com.jme3.asset'
       module Cache

@@ -17,6 +17,11 @@ module RenderMix
       #                             ],
       #           ...
       #       },
+      #       "animations": [
+      #           { "spatial": "<SpatialName>",
+      #             "animation": "<AnimationName>" },
+      #           ...
+      #       ],
       #       "texts": {
       #           "<TextName>": {
       #               "texture": "<TextureName>",
@@ -27,11 +32,21 @@ module RenderMix
       #       "camera" : "<asset-path-to-camera-animation-json>"
       #   }
       #
-      # "UniformName" is the name of a texture uniform on the
-      # Jme::Material::Material associated with the Jme::Scene::Geometry
-      # named "GeometryName"
-      # "TextParameters" are additional text configuration paramaters,
-      # see {TextTexture#create_text_texture}
+      # * "scenes" - array of j3o scene files
+      # * "filter" - optional path to j3f filter post processor
+      # * "textures" - hash mapping "TextureName" to array of hashes
+      #   containing a "UniformName" of a texture uniform on the
+      #   Jme::Material::Material associated with the Jme::Scene::Geometry
+      #   named "GeometryName"
+      # * "animations" - optional array of hashes mapping a
+      #   Jme::Scene::Spatial named "SpatialName" to an animation channel
+      #   named "AnimationName"
+      # * "texts" - optional hash mapping "TextName" to the "TextureName"
+      #   from "textures" that rendered text should be applied to.
+      #   "TextParameters" are additional text configuration paramaters,
+      #   see {TextTexture#create_text_texture}
+      # * "camera" - path to JSON animation file exported from Blender
+      #
       # @param [String] manifest_asset asset path to manifest JSON
       # @param [Array<String>] track_textures array of "TextureName"s
       #   from the manifest. These are in track order (i.e. the first texture
@@ -48,7 +63,7 @@ module RenderMix
       def on_rendering_prepare(context_manager)
         # Load manifest JSON
         manifest = Asset::JSONLoader.load(mixer.asset_manager, @manifest_asset)
-        manifest.validate_keys("scenes", "filter", "textures", "texts", "camera")
+        manifest.validate_keys("scenes", "filter", "textures", "animations", "texts", "camera")
 
         # Attach all model files to root node
         @root_node = Jme::Scene::Node.new("Cinematic")
@@ -63,6 +78,8 @@ module RenderMix
 
         manifest_texts = manifest.fetch('texts', {})
         apply_text_textures(manifest_texts, manifest_textures)
+
+        @animations = create_animations(manifest.fetch('animations', nil))
 
         camera_asset = manifest.fetch('camera') rescue raise(InvalidMixError, "Missing camera animation for #@manifest_asset")
         animation = Asset::JSONLoader.load(mixer.asset_manager, camera_asset)
@@ -117,6 +134,18 @@ module RenderMix
       end
       private :create_uniform_material
 
+      def create_animations(animations)
+        return unless animations
+        animations.collect do |animation|
+          spatial_name = animation.fetch("spatial")
+          spatial = @root_node.getChild(spatial_name)
+          raise(InvalidMixError, "Child spatial #{spatial_name} not found for Cinematic #@manifest_asset}") unless spatial
+          anim_name = animation.fetch("animation")
+          SpatialAnimation.new(spatial, anim_name)
+        end
+      end
+      private :create_animations
+
       def on_visual_render(context_manager, visual_context, track_visual_contexts)
         # Cinematics want antialiasing
         context_manager.request_antialias
@@ -128,6 +157,7 @@ module RenderMix
           @configure_context = false
         end
 
+        #XXX we should check that all remaining track_visual_contexts are nil - i.e. don't want to be rendering tracks that aren't consumed
         @track_materials.each_with_index do |uniform_materials, i|
           texture = track_visual_contexts[i] && track_visual_contexts[i].prepare_texture
           uniform_materials.each do |uniform_material|
@@ -136,6 +166,8 @@ module RenderMix
         end
 
         @camera_animation.animate(current_time)
+
+        @animations.each {|a| a.animate(current_time) } if @animations
       end
 
       def visual_context_released(context)
@@ -156,6 +188,21 @@ module RenderMix
 
         def apply(texture)
           @material.setTexture(@uniform, texture)
+        end
+      end
+
+      class SpatialAnimation
+        def initialize(spatial, anim_name)
+          control = spatial.getControl(Jme::Animation::AnimControl.java_class)
+          @channel = control.createChannel
+          @channel.setAnim(anim_name)
+          @duration = @channel.animMaxTime
+          #XXX support realtime/looping option in manifest - in which case we just leave speed alone and let them animate
+          @channel.setSpeed(0)
+        end
+
+        def animate(time)
+          @channel.setTime(time * @duration)
         end
       end
 
