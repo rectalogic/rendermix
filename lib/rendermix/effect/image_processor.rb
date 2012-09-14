@@ -50,6 +50,7 @@ module RenderMix
           @material.setFloat(TIME_UNIFORM, current_time)
         end
 
+        #XXX we should check that all remaining track_visual_contexts are nil - i.e. don't want to be rendering tracks that aren't consumed
         @texture_names.each_with_index do |name, i|
           texture = track_visual_contexts[i] && track_visual_contexts[i].prepare_texture
           @material.setTexture(name, texture)

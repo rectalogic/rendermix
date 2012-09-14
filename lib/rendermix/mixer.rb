@@ -10,6 +10,7 @@ module RenderMix
     attr_reader :framerate
     attr_reader :rawmedia_session
 
+    #XXX setup jme logging, also need to redirect rawmedia logging - should we do this here or in command.rb? (also logging for specs)
     def initialize(width, height, framerate=Rational(30))
       @width = width
       @height = height
