@@ -38,10 +38,10 @@ module RenderMix
         begin
           # Temporarily register filesystem root so we can load textures
           # from anywhere
-          mixer.asset_manager.registerLocator('/', Jme::Asset::Plugins::FileLocator.java_class)
-          texture = mixer.asset_manager.loadTexture(key)
+          mixer.render_system.asset_manager.registerLocator('/', Jme::Asset::Plugins::FileLocator.java_class)
+          texture = mixer.render_system.asset_manager.loadTexture(key)
         ensure
-          mixer.asset_manager.unregisterLocator('/', Jme::Asset::Plugins::FileLocator.java_class)
+          mixer.render_system.asset_manager.unregisterLocator('/', Jme::Asset::Plugins::FileLocator.java_class)
         end
         texture.magFilter = Jme::Texture::Texture::MagFilter::Bilinear
         # This does mipmapping
@@ -49,19 +49,21 @@ module RenderMix
         texture.wrap = Jme::Texture::Texture::WrapMode::Clamp
 
         image = texture.image
-        @quad = OrthoQuad.new(mixer.asset_manager, mixer.width, mixer.height,
+        @quad = OrthoQuad.new(mixer.render_system.asset_manager,
+                              mixer.width, mixer.height,
                               image.width, image.height, name: 'Image',
                               fit: @panzoom ? @panzoom.fit : "meet")
         @quad.material.setTexture('Texture', texture)
-        @configure_context = true
+
+        @scene_renderer = SceneRenderer.new(mixer,
+                                            depth: false,
+                                            clear_flags: [true, false, false])
+        @scene_renderer.rootnode.attachChild(@quad.quad)
       end
 
       def on_visual_render(context_manager, current_frame)
         visual_context = context_manager.acquire_context(self)
-        if @configure_context
-          @quad.configure_context(visual_context)
-          @configure_context = false
-        end
+        visual_context.scene_renderer = @scene_renderer
 
         if (@panzoom and (not @freezer or @freezer.render?(current_frame)))
           time = @freezer ? @freezer.current_time : frame_to_time(current_frame, @image_duration)
@@ -69,12 +71,9 @@ module RenderMix
         end
       end
 
-      def visual_context_released(context)
-        @configure_context = true
-      end
-
       def visual_rendering_finished
         @quad = nil
+        @scene_renderer = nil
       end
     end
   end

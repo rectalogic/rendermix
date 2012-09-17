@@ -4,14 +4,14 @@
 module RenderMix
   # Manages orthographic fullscreen screen-aligned quad
   class OrthoQuad
+    # @return [Jme::Scene::Geometry]
+    attr_reader :quad
     # @return [Jme::Material::Material]
     attr_reader :material
 
     # @param [Hash] opts
     # @option opts [Boolean] :flip_y (true) true if image should be
     #   flipped vertically.
-    # @option opts [Array<Boolean>] :clear_flags (\[true,false,false\])
-    #   array of boolean [color, depth, stencil].
     # @option opts [Jme::Material::Material] :material material to use.
     #   A default material will be used if not set.
     #   The default has a Texture param named 'Texture'
@@ -21,19 +21,19 @@ module RenderMix
     #   "fill" prescale to fully fill visual context (may be scaled larger),
     #   "auto" choose "meet" or "fill" whichever is a closer fit
     def initialize(asset_manager, quad_width, quad_height, image_width, image_height, opts={})
-      opts.validate_keys(:flip_y, :clear_flags, :material, :name, :fit)
+      opts.validate_keys(:flip_y, :material, :name, :fit)
       @image_width = image_width
       @image_height = image_height
       @quad_width = quad_width
       @quad_height = quad_height
 
-      @clear_flags = opts.fetch(:clear_flags, [true, false, false])
-
       flip_y = opts.fetch(:flip_y, true)
       quad = Jme::Scene::Shape::Quad.new(@image_width, @image_height, flip_y)
       @quad = Jme::Scene::Geometry.new(opts.fetch(:name, "quad"), quad)
       @quad.cullHint = Jme::Scene::Spatial::CullHint::Never
-      
+      # This forces JME RenderManager to use ortho projection matrices
+      @quad.queueBucket = Jme::Renderer::Queue::RenderQueue::Bucket::Gui
+
       @material = opts[:material]
       unless @material
         @material = Jme::Material::Material.new(asset_manager,
@@ -64,16 +64,6 @@ module RenderMix
       end
 
       panzoom
-    end
-
-    # @param [VisualContext] visual_context configure and attach this quad
-    #   as a child of the context
-    def configure_context(visual_context)
-      visual_context.set_clear_flags(*@clear_flags)
-      # This forces JME RenderManager to use ortho projection matrices
-      visual_context.render_bucket = :gui
-
-      visual_context.attach_child(@quad)
     end
 
     # @param [Float] scale amount to scale beyond the prescale for fit

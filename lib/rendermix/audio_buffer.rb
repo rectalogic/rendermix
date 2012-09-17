@@ -2,8 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 
 module RenderMix
-  class VisualContext
-    # @return [SceneRenderer]
-    attr_accessor :scene_renderer
+  class AudioBuffer
+    attr_reader :buffer
+
+    # @param [Mixer] mixer
+    def initialize(mixer)
+      @buffer = FFI::MemoryPointer.new(mixer.rawmedia_session.audio_framebuffer_size)
+    end
   end
 end

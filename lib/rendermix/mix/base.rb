@@ -72,13 +72,6 @@ module RenderMix
       def audio_rendering_finished
       end
 
-      # Subclasses can override to release any context specific data,
-      # or revert any context changes made when context initially acquired.
-      # Rendering is not yet complete at this point.
-      # @param [AudioContext] context
-      def audio_context_released(context)
-      end
-
       # Prepare for rendering visual. Called once before first call to #visual_render
       # Subclass can implement.
       # @param [VisualContextManager] context_manager
@@ -101,13 +94,6 @@ module RenderMix
       # #visual_render will not be called again.
       # Subclasses can override to cleanup state when rendering complete.
       def visual_rendering_finished
-      end
-
-      # Subclasses can override to release any context specific data,
-      # or revert any context changes made when context initially acquired.
-      # Rendering is not yet complete at this point.
-      # @param [VisualContext] context
-      def visual_context_released(context)
       end
     end
   end

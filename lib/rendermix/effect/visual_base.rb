@@ -22,9 +22,6 @@ module RenderMix
       def on_visual_render(context_manager, visual_context, track_visual_contexts)
       end
 
-      def visual_context_released(context)
-      end
-
       def on_rendering_finished
       end
     end

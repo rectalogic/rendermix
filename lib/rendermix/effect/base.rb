@@ -35,9 +35,9 @@ module RenderMix
       end
 
       def rendering_prepare(context_manager)
-        # Clone context manager for each track
+        # Create new context manager for each track
         @context_managers = Array.new(@tracks.length)
-        @context_managers.fill { context_manager.clone }
+        @context_managers.fill { context_manager.class.new }
         on_rendering_prepare(context_manager)
       end
 
@@ -54,8 +54,6 @@ module RenderMix
         # Render each track into its context manager
         current_contexts = @context_managers.each_with_index.collect do |cm, i|
           cm.render(@tracks[i])
-          # Propagate antialias request
-          context_manager.request_antialias if cm.reset_antialias
           cm.current_context
         end
         yield context, current_contexts

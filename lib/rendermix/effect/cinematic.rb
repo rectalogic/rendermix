@@ -10,6 +10,7 @@ module RenderMix
       #   {
       #       "scenes": [ "<asset-path-to-j3o>", ... ],
       #       "filter": "<asset-path-to-j3f>",
+      #       "antialias": <Boolean>,
       #       "textures": {
       #           "<TextureName>" : [ { "geometry": "<GeometryName>",
       #                                 "uniform": "<UniformName>" },
@@ -33,7 +34,10 @@ module RenderMix
       #   }
       #
       # * "scenes" - array of j3o scene files
-      # * "filter" - optional path to j3f filter post processor
+      # * "filter" - optional path to j3f filter post processor.
+      #   This should not contain an FXAA filter.
+      # * "antialias" - boolean, true if FXAA antialias should be used.
+      #   Default is true.
       # * "textures" - hash mapping "TextureName" to array of hashes
       #   containing a "UniformName" of a texture uniform on the
       #   Jme::Material::Material associated with the Jme::Scene::Geometry
@@ -62,15 +66,18 @@ module RenderMix
 
       def on_rendering_prepare(context_manager)
         # Load manifest JSON
-        manifest = Asset::JSONLoader.load(mixer.asset_manager, @manifest_asset)
+        manifest = Asset::JSONLoader.load(mixer.render_system.asset_manager, @manifest_asset)
         manifest.validate_keys("scenes", "filter", "textures", "animations", "texts", "camera")
 
+        @scene_renderer = SceneRenderer.new(mixer,
+                                            depth: true,
+                                            clear_flags: [true, true, true])
+
         # Attach all model files to root node
-        @root_node = Jme::Scene::Node.new("Cinematic")
         scenes = manifest.fetch('scenes') rescue raise(InvalidMixError, "Missing scenes key for #@manifest_asset")
         scenes.each do |scene|
-          model = mixer.asset_manager.loadModel(scene)
-          @root_node.attachChild(model)
+          model = mixer.render_system.asset_manager.loadModel(scene)
+          @scene_renderer.rootnode.attachChild(model)
         end
 
         manifest_textures = manifest.fetch('textures', {})
@@ -82,14 +89,23 @@ module RenderMix
         @animations = create_animations(manifest.fetch('animations', nil))
 
         camera_asset = manifest.fetch('camera') rescue raise(InvalidMixError, "Missing camera animation for #@manifest_asset")
-        animation = Asset::JSONLoader.load(mixer.asset_manager, camera_asset)
-        @camera_animation = CameraAnimation.new(animation, mixer.width / mixer.height.to_f) rescue raise(InvalidMixError, "Camera animation corrupt #{camera_asset}")
+        animation = Asset::JSONLoader.load(mixer.render_system.asset_manager, camera_asset)
+        @camera_animation = CameraAnimation.new(animation, @scene_renderer.camera) rescue raise(InvalidMixError, "Camera animation corrupt #{camera_asset}")
 
         filter = manifest.fetch('filter', nil)
         # This won't be cached
-        @fpp = mixer.asset_manager.loadFilter(filter) if filter
+        fpp = mixer.render_system.asset_manager.loadFilter(filter) if filter
 
-        @configure_context = true
+        # Add FXAA antialias filter if requested
+        if manifest.fetch('antialias', true)
+          fpp ||= Jme::Post::FilterPostProcessor.new(mixer.render_system.asset_manager)
+          fxaa = Jme::Post::Filters::FXAAFilter.new
+          # Higher quality, but blurrier
+          fxaa.subPixelShift = 0
+          fxaa.reduceMul = 0
+          fpp.addFilter(fxaa)
+        end
+        @scene_renderer.viewport.addProcessor(fpp) if fpp
       end
 
       def apply_text_textures(manifest_texts, manifest_textures)
@@ -121,7 +137,7 @@ module RenderMix
       def create_uniform_material(texture_map)
         texture_map.validate_keys('geometry', 'uniform')
         geometry_name = texture_map.fetch("geometry") rescue raise(InvalidMixerror, "Missing geometry key for Cinematic #@manifest_asset")
-        geometry = @root_node.getChild(geometry_name)
+        geometry = @scene_renderer.rootnode.getChild(geometry_name)
         raise(InvalidMixError, "Child geometry #{geometry_name} not found for Cinematic #@manifest_asset}") unless geometry
         material = geometry.material rescue raise(InvalidMixError, "Geometry #{geometry_name} has no material for Cinematic #@manifest_asset}")
         # Validate the uniform name
@@ -138,7 +154,7 @@ module RenderMix
         return unless animations
         animations.collect do |animation|
           spatial_name = animation.fetch("spatial")
-          spatial = @root_node.getChild(spatial_name)
+          spatial = @scene_renderer.rootnode.getChild(spatial_name)
           raise(InvalidMixError, "Child spatial #{spatial_name} not found for Cinematic #@manifest_asset}") unless spatial
           anim_name = animation.fetch("animation")
           SpatialAnimation.new(spatial, anim_name)
@@ -147,19 +163,12 @@ module RenderMix
       private :create_animations
 
       def on_visual_render(context_manager, visual_context, track_visual_contexts)
-        # Cinematics want antialiasing
-        context_manager.request_antialias
-
-        if @configure_context
-          visual_context.attach_child(@root_node)
-          visual_context.add_scene_processor(@fpp) if @fpp
-          @camera_animation.visual_context = visual_context
-          @configure_context = false
-        end
+        visual_context.scene_renderer = @scene_renderer
 
         #XXX we should check that all remaining track_visual_contexts are nil - i.e. don't want to be rendering tracks that aren't consumed
         @track_materials.each_with_index do |uniform_materials, i|
-          texture = track_visual_contexts[i] && track_visual_contexts[i].prepare_texture
+          vc = track_visual_contexts[i]
+          texture = vc.scene_renderer.render_scene if vc && vc.scene_renderer
           uniform_materials.each do |uniform_material|
               uniform_material.apply(texture)
           end
@@ -170,13 +179,9 @@ module RenderMix
         @animations.each {|a| a.animate(current_time) } if @animations
       end
 
-      def visual_context_released(context)
-        @camera_animation.visual_context = nil
-        @configure_context = true
-      end
-
       def on_rendering_finished
-        @root_node = nil
+        @scene_renderer = nil
+        @camera_animation = nil
         @track_materials = nil
       end
 
@@ -207,21 +212,17 @@ module RenderMix
       end
 
       class CameraAnimation
-        def initialize(animation, aspect)
+        # @param [Hash] animation camera animation data
+        # @param [Jme::Renderer::Camera] camera
+        def initialize(animation, camera)
           @animator = Animation::Animator.new(animation)
+          @camera = camera
           if @animator.camera
             # Convert from horizontal FOV in radians to vertical in degrees
+            aspect = camera.width / camera.height.to_f
             vertical_fov = @animator.camera.vertical_fov(aspect)
-            @vertical_fov = Animation::CameraData.rad_to_deg(vertical_fov)
-            @aspect = aspect
-          end
-        end
-
-        def visual_context=(visual_context)
-          @visual_context = visual_context
-          if @visual_context and @animator.camera
-            camera = @visual_context.camera
-            camera.setFrustumPerspective(@vertical_fov, @aspect,
+            vertical_fov = Animation::CameraData.rad_to_deg(vertical_fov)
+            camera.setFrustumPerspective(vertical_fov, aspect,
                                          @animator.camera.near,
                                          @animator.camera.far)
           end
@@ -229,8 +230,8 @@ module RenderMix
 
         def animate(time)
           @animator.evaluate_time(time)
-          @visual_context.camera.setFrame(@animator.transform.translation,
-                                          @animator.transform.rotation)
+          @camera.setFrame(@animator.transform.translation,
+                           @animator.transform.rotation)
         end
       end
     end

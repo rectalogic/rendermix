@@ -3,10 +3,7 @@
 
 module RenderMix
   class AudioContext
-    attr_reader :buffer
-
-    def initialize(size)
-      @buffer = FFI::MemoryPointer.new(size)
-    end
+    # @return [AudioBuffer]
+    attr_accessor :audio_buffer
   end
 end

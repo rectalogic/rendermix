@@ -21,7 +21,7 @@ module RenderMix
       end
 
       def on_rendering_prepare(context_manager)
-        @material = mixer.asset_manager.loadMaterial(@material_asset)
+        @material = mixer.render_system.asset_manager.loadMaterial(@material_asset)
         matdef = @material.materialDef
         @texture_names.each do |name|
           param = matdef.getMaterialParam(name)
@@ -32,19 +32,20 @@ module RenderMix
 
         @needs_time = !!matdef.getMaterialParam(TIME_UNIFORM)
 
-        @quad = OrthoQuad.new(mixer.asset_manager,
-                              mixer.width, mixer.height,
-                              mixer.width, mixer.height,
-                              material: @material, flip_y: false,
-                              name: 'ImageProcessor')
-        @configure_context = true
+        quad = OrthoQuad.new(mixer.render_system.asset_manager,
+                             mixer.width, mixer.height,
+                             mixer.width, mixer.height,
+                             material: @material, flip_y: false,
+                             name: 'ImageProcessor')
+
+        @scene_renderer = SceneRenderer.new(mixer,
+                                            depth: false,
+                                            clear_flags: [true, false, false])
+        @scene_renderer.rootnode.attachChild(quad.quad)
       end
 
       def on_visual_render(context_manager, visual_context, track_visual_contexts)
-        if @configure_context
-          @quad.configure_context(visual_context)
-          @configure_context = false
-        end
+        visual_context.scene_renderer = @scene_renderer
 
         if @needs_time
           @material.setFloat(TIME_UNIFORM, current_time)
@@ -52,18 +53,15 @@ module RenderMix
 
         #XXX we should check that all remaining track_visual_contexts are nil - i.e. don't want to be rendering tracks that aren't consumed
         @texture_names.each_with_index do |name, i|
-          texture = track_visual_contexts[i] && track_visual_contexts[i].prepare_texture
+          vc = track_visual_contexts[i]
+          texture = vc.scene_renderer.render_scene if vc && vc.scene_renderer
           @material.setTexture(name, texture)
         end
       end
 
-      def visual_context_released(context)
-        @configure_context = true
-      end
-
       def on_rendering_finished
-        @quad = nil
         @material = nil
+        @scene_renderer = nil
       end
     end
   end

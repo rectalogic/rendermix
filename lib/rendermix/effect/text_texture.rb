@@ -54,7 +54,7 @@ module RenderMix
         font_size = (opts.fetch(:font_size, 0.8) * image_height).to_f
 
         if opts.has_key?(:font_asset)
-          font = Asset::FontLoader.load(mixer.asset_manager, opts[:font_asset])
+          font = Asset::FontLoader.load(mixer.render_system.asset_manager, opts[:font_asset])
           font = font.deriveFont(font_size)
         else
           font_name = opts.fetch(:font_name, JavaAWT::Font::DIALOG)

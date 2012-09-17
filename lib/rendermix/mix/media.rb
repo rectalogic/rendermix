@@ -40,20 +40,28 @@ module RenderMix
         end
       end
 
+      def audio_rendering_prepare(context_manager)
+        return unless @decoder.has_audio?
+        @audio_buffer = AudioBuffer.new(mixer)
+      end
+
       def on_audio_render(context_manager, current_frame)
         return unless (@decoder.has_audio? and (not @freezer or not @freezer.freezing?(current_frame)))
         audio_context = context_manager.acquire_context(self)
-        @decoder.decode_audio(audio_context.buffer)
+        audio_context.audio_buffer = @audio_buffer
+        @decoder.decode_audio(@audio_buffer.buffer)
       end
 
       def audio_rendering_finished
         @audio_finished = true
+        @audio_buffer = nil
         cleanup
       end
 
       def visual_rendering_prepare(context_manager)
         return unless @decoder.has_video?
         texture = Jme::Texture::Texture2D.new
+        # No filtering, UYVY shader needs the real pixels
         texture.magFilter = Jme::Texture::Texture::MagFilter::Nearest
         texture.minFilter = Jme::Texture::Texture::MinFilter::NearestNoMipMaps
         texture.wrap = Jme::Texture::Texture::WrapMode::Clamp
@@ -63,32 +71,23 @@ module RenderMix
         texture.setImage(@image)
 
         # Create UYVY decoding material
-        @material = Jme::Material::Material.new(mixer.asset_manager,
-                                                'rendermix/MatDefs/UYVY/UYVY2RGB.j3md')
+        @material = Jme::Material::Material.new(mixer.render_system.asset_manager,
+                                               'rendermix/MatDefs/UYVY/UYVY2RGB.j3md')
         @material.setTexture('Texture', texture)
+
+        @scene_renderer = SceneRenderer.new(mixer,
+                                            depth: false,
+                                            clear_flags: [true, false, false])
       end
 
       def on_visual_render(context_manager, current_frame)
         return unless @decoder.has_video?
         visual_context = context_manager.acquire_context(self)
+        visual_context.scene_renderer = @scene_renderer
 
         should_render = (not @freezer or @freezer.render?(current_frame))
 
         result = should_render ? @decoder.decode_video : 0
-
-        unless @quad
-          @quad = OrthoQuad.new(mixer.asset_manager,
-                                mixer.width, mixer.height,
-                                @decoder.width, @decoder.height,
-                                material: @material, name: 'Media',
-                                fit: @panzoom ? @panzoom.fit : "meet")
-          @configure_context = true
-        end
-
-        if @configure_context
-          @quad.configure_context(visual_context)
-          @configure_context = false
-        end
 
         # Only reset the texture if something new decoded
         if result > 0
@@ -96,6 +95,18 @@ module RenderMix
           @image.width = @decoder.width / 2
           @image.height = @decoder.height
           @image.data = @decoder.video_byte_buffer
+
+          # We have to defer quad creation until we decode the first frame,
+          # so we have the video dimensions
+          unless @quad
+            @quad = OrthoQuad.new(mixer.render_system.asset_manager,
+                                  mixer.width, mixer.height,
+                                  @decoder.width, @decoder.height,
+                                  material: @material, name: 'Media',
+                                  fit: @panzoom ? @panzoom.fit : "meet")
+            @scene_renderer.rootnode.attachChild(@quad.quad)
+            @material = nil
+          end
         end
 
         if @panzoom and should_render
@@ -104,14 +115,10 @@ module RenderMix
         end
       end
 
-      def visual_context_released(context)
-        @configure_context = true
-      end
-
       def visual_rendering_finished
         @image = nil
-        @material = nil
         @quad = nil
+        @scene_renderer = nil
 
         @visual_finished = true
         cleanup

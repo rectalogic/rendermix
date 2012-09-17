@@ -4,28 +4,13 @@
 module RenderMix
 
   class ContextManager
-
-    def initialize(context_pool, name, initial_context=nil)
-      @context_pool = context_pool
+    def initialize(name)
       @name = name
-      @initial_context = initial_context
-      @context = initial_context
       @rendered = false
     end
 
-    # Use clone to create a new context sharing this contexts pools
-    def initialize_copy(source)
-      super
-      @current_renderer = nil
-      @rendered = false
-      @context = nil
-      @initial_context = nil
-      @antialias = nil
-    end
-
-    # @param [#visual_render, #visual_context_released,
-    #  #audio_render, #audio_context_released] renderer
-    #  should implement either the set of visual or audio methods,
+    # @param [#visual_render, #audio_render] renderer
+    #  should implement either the visual or audio methods,
     #  depending on the ContextManager subclass.
     # Subclasses must implement #on_render(renderer) hook
     def render(renderer)
@@ -52,66 +37,42 @@ module RenderMix
       @current_renderer = renderer
       @rendered = true
 
-      @context ||= @context_pool.acquire_context
+      @context ||= create_context
     end
 
-    # Subclasses should implement on_release_context
     def release_context
-      return unless @current_renderer
-      on_release_context(@current_renderer, @context)
       @current_renderer = nil
-      # If context not pooled, keep it
-      if @context != @initial_context
-        @context_pool.release_context(@context)
-        @context = nil
-      elsif @initial_context
-        @context_pool.reset_context(@initial_context)
-      end
-    end
-
-    # Request global antialiasing via this ContextManager
-    def request_antialias
-      @antialias = true
-    end
-
-    # Reset antialias request
-    # @return [Boolean] true if antialias was requested
-    def reset_antialias
-      antialias = @antialias
-      @antialias = nil
-      antialias
+      @context = nil
     end
   end
 
   class AudioContextManager < ContextManager
-    def initialize(audio_framebuffer_size, initial_context=nil)
-      super(AudioContextPool.new(audio_framebuffer_size), 'Audio', initial_context)
+    def initialize
+      super('Audio')
+    end
+
+    def create_context
+      AudioContext.new
     end
 
     def on_render(renderer)
       renderer.audio_render(self)
     end
     protected :on_render
-
-    def on_release_context(renderer, context)
-      renderer.audio_context_released(context)
-    end
-    protected :on_release_context
   end
 
   class VisualContextManager < ContextManager
-    def initialize(render_manager, width, height, tpf, initial_context=nil)
-      super(VisualContextPool.new(render_manager, width, height, tpf), 'Visual', initial_context)
+    def initialize
+      super('Visual')
+    end
+
+    def create_context
+      VisualContext.new
     end
 
     def on_render(renderer)
       renderer.visual_render(self)
     end
     protected :on_render
-
-    def on_release_context(renderer, context)
-      renderer.visual_context_released(context)
-    end
-    protected :on_release_context
   end
 end
