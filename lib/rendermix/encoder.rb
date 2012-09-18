@@ -14,10 +14,10 @@ module RenderMix
 
     # @param [Jme::System::AppSettings] settings
     def configure(settings)
-      # Configure 1x1 offscreen pbuffer, no depth buffer.
-      # We will install an override FBO and not render to pbuffer.
+      # Configure 1x1 offscreen pbuffer, we don't use this.
+      # We render to FBO instead. On Linux, JME requests no alpha on
+      # the Pbuffer and so we can't use it.
       settings.setResolution(1, 1)
-      settings.depthBits = 0
     end
 
     def prepare

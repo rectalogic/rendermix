@@ -114,7 +114,7 @@ module RenderMix
       settings = Jme::System::AppSettings.new(true)
       settings.renderer = Jme::System::AppSettings::LWJGL_OPENGL2
       settings.setSamples(1)
-      settings.setDepthBits(DEPTH_FORMAT.bitsPerPixel)
+      settings.setDepthBits(0)
       settings.frameRate = -1
       settings.useInput = false
       settings.useJoysticks = false
@@ -234,6 +234,9 @@ module RenderMix
         scene_renderer.render_scene if scene_renderer
         # Blit rendered FBO to window
         scene_renderer.copy_framebuffer
+        # On MacOS, buffers are not swapped unless the default FB is active.
+        # http://renderingpipeline.com/2012/05/nsopenglcontext-flushbuffer-might-not-do-what-you-think/
+        render_manager.renderer.setFrameBuffer(nil)
       end
 
       @progress_block.call(@current_frame) if @progress_block
