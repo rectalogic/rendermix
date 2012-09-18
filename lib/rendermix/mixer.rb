@@ -22,6 +22,7 @@ module RenderMix
       @framerate = framerate
       @rawmedia_session = RawMedia::Session.new(framerate)
       @asset_locations = []
+      @render_system = create_render_system(@asset_locations)
     end
 
     # @param [String] location filesystem path to an asset root.
@@ -63,13 +64,12 @@ module RenderMix
     # @yieldparam [Fixnum] frame number being rendered
     def mix(mix, filename=nil, &progress_block)
       mix.validate(self)
-      @render_system = create_render_system
       @render_system.mix(mix, filename, &progress_block)
     end
 
     # @return [MixRenderSystem]
-    def create_render_system
-      MixRenderSystem.new(self, @asset_locations)
+    def create_render_system(asset_locations)
+      MixRenderSystem.new(self, asset_locations)
     end
     protected :create_render_system
   end
@@ -106,8 +106,8 @@ module RenderMix
       @context.create(false)
     end
 
-    def stop
-      @context.destroy(false)
+    def stop(wait=false)
+      @context.destroy(wait)
     end
 
     def create_settings
