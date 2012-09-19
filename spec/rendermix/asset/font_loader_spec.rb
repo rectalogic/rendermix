@@ -8,7 +8,7 @@ module RenderMix
       it 'should load a Font' do
         on_render_thread do
           register_test_assets
-          font = FontLoader.load(@app.mixer.asset_manager, "fonts/MarkerSD.ttf")
+          font = FontLoader.load(@mixer.render_system.asset_manager, "fonts/MarkerSD.ttf")
           font.family.should eq "MarkerSD"
           font.numGlyphs.should eq 221
         end

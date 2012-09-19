@@ -9,33 +9,32 @@ module RenderMix
 
       let(:tracks) do
         Array.new(5).fill do
-          @app.mixer.new_blank(duration: 10)
+          @mixer.new_blank(duration: 10)
         end
       end
 
       it 'should stop rendering the shortest track' do
         duration = 10
-        media = @app.mixer.new_media(FIXTURE_MEDIA, duration: 5)
-        par = @app.mixer.new_parallel(@app.mixer.new_blank(duration: duration),
-                                      media)
+        media = @mixer.new_media(FIXTURE_MEDIA, duration: 5)
+        par = @mixer.new_parallel(@mixer.new_blank(duration: duration), media)
         par.duration.should eq duration
         media.should_receive_invoke(:on_audio_render).exactly(media.duration).times
         media.should_receive_invoke(:on_visual_render).exactly(media.duration).times
         (duration + 1).times do
           on_render_thread do
-            @app.audio_context_manager.render(par)
-            @app.visual_context_manager.render(par)
+            @mixer.render_system.audio_context_manager.render(par)
+            @mixer.render_system.visual_context_manager.render(par)
           end
         end
       end
 
       it_should_behave_like 'a mix element' do
         let!(:mix_element) do
-          @app.mixer.new_parallel(@app.mixer.new_blank(duration: 10))
+          @mixer.new_parallel(@mixer.new_blank(duration: 10))
         end
 
         let!(:par) do
-          @app.mixer.new_parallel(tracks)
+          @mixer.new_parallel(tracks)
         end
 
         it 'should have a track for each child' do
@@ -50,7 +49,7 @@ module RenderMix
 
       it_should_behave_like 'a container element' do
         let(:mix_element) do
-          @app.mixer.new_parallel(tracks)
+          @mixer.new_parallel(tracks)
         end
       end
     end

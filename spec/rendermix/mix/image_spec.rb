@@ -6,7 +6,7 @@ module RenderMix
     describe Image do 
       it_should_behave_like 'a mix element' do
         let!(:mix_element) do
-          @app.mixer.new_image(FIXTURE_IMAGE, duration: 10)
+          @mixer.new_image(FIXTURE_IMAGE, duration: 10)
         end
       end
       it_should_behave_like 'an image/media element'

@@ -30,7 +30,7 @@ shared_examples 'a mix element' do
     mix_element.should_receive_invoke(:audio_rendering_finished).once
     (duration + 1).times do
       on_render_thread do
-        @app.audio_context_manager.render(mix_element)
+        @mixer.render_system.audio_context_manager.render(mix_element)
       end
     end
   end
@@ -42,7 +42,7 @@ shared_examples 'a mix element' do
     mix_element.should_receive_invoke(:visual_rendering_finished).once
     (duration + 1).times do
       on_render_thread do
-        @app.visual_context_manager.render(mix_element)
+        @mixer.render_system.visual_context_manager.render(mix_element)
       end
     end
   end
@@ -69,8 +69,8 @@ shared_examples 'a container element' do
 
     (duration + 1).times do
       on_render_thread do
-        @app.audio_context_manager.render(mix_element)
-        @app.visual_context_manager.render(mix_element)
+        @mixer.render_system.audio_context_manager.render(mix_element)
+        @mixer.render_system.visual_context_manager.render(mix_element)
       end
     end
   end
@@ -89,15 +89,14 @@ shared_examples 'an image/media element' do
     effect_out = effect_in + effect_dur - 1
 
     panzoom1 = double("panzoom1", fit: "meet")
-    media1 = @app.mixer.new_media(FIXTURE_MEDIA, duration: media1_dur, post_freeze: freeze_dur, panzoom: panzoom1)
-    seq1 = @app.mixer.new_sequence(media1)
+    media1 = @mixer.new_media(FIXTURE_MEDIA, duration: media1_dur, post_freeze: freeze_dur, panzoom: panzoom1)
+    seq1 = @mixer.new_sequence(media1)
 
     panzoom2 = double("panzoom2", fit: "meet")
-    media2 = @app.mixer.new_media(FIXTURE_MEDIA, duration: media2_dur, pre_freeze: freeze_dur, panzoom: panzoom2)
-    seq2 = @app.mixer.new_sequence(@app.mixer.new_blank(duration: effect_in),
-                                   media2)
+    media2 = @mixer.new_media(FIXTURE_MEDIA, duration: media2_dur, pre_freeze: freeze_dur, panzoom: panzoom2)
+    seq2 = @mixer.new_sequence(@mixer.new_blank(duration: effect_in), media2)
 
-    par = @app.mixer.new_parallel(seq1, seq2)
+    par = @mixer.new_parallel(seq1, seq2)
 
     media1.duration.should == media1_dur + freeze_dur
     media2.duration.should == media2_dur + freeze_dur
@@ -114,7 +113,6 @@ shared_examples 'an image/media element' do
 
     effect.should_receive_invoke(:on_rendering_prepare).once
     effect.should_receive_invoke(:on_visual_render).exactly(effect.duration).times
-    effect.should_receive_invoke(:visual_context_released).once
     effect.should_receive_invoke(:on_rendering_finished).once
 
     panzoom1.should_receive(:panzoom).exactly(media1_dur).times
@@ -126,8 +124,8 @@ shared_examples 'an image/media element' do
 
     (par.duration + 1).times do
       on_render_thread do
-        @app.audio_context_manager.render(par)
-        @app.visual_context_manager.render(par)
+        @mixer.render_system.audio_context_manager.render(par)
+        @mixer.render_system.visual_context_manager.render(par)
       end
     end
   end

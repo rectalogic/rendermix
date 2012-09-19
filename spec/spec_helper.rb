@@ -19,6 +19,6 @@ FIXTURE_MEDIA = File.join(FIXTURES, '320x240-30fps.mov')
 
 # Must be called from on_render_thread
 def register_test_assets
-  @app.mixer.asset_manager.registerLocator(File.join(FIXTURES, 'assets'),
-                                           RenderMix::Jme::Asset::Plugins::FileLocator.java_class)
+  @mixer.render_system.asset_manager.registerLocator(File.join(FIXTURES, 'assets'),
+                                                     RenderMix::Jme::Asset::Plugins::FileLocator.java_class)
 end

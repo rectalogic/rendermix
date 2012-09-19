@@ -1,58 +1,40 @@
 shared_context 'requires render thread' do
   before(:all) do
-    # We can't use rspec mocks in before(:all)
 
-    # Subclass MixerApplication to noop some methods.
-    # Also make start() wait until render thread is actually started
-    class MixerApplicationMock < RenderMix::MixerApplication
-      attr_reader :mixer
-      attr_reader :visual_context_manager
+    class MockRenderSystem < RenderMix::MixRenderSystem
       attr_reader :audio_context_manager
+      attr_reader :visual_context_manager
 
-      def initialize(mixer, asset_locations)
+      def ruby_initialize(mixer, asset_locations)
         super
-        configure_settings do |settings|
-          settings.setResolution(mixer.width, mixer.height)
-        end
+        @queue = java.util.concurrent.ConcurrentLinkedQueue.new
       end
-      def simpleInitApp
-        super
-        @mutex.synchronize { @condvar.signal }
+
+      def enqueue(&callable)
+        task = RenderMix::Jme::App::AppTask.new(callable)
+        @queue.add(task)
+        task
       end
-      def simpleUpdate(tpf); end
-      def simpleRender(render_manager); end
-      def start
-        super(RenderMix::Jme::System::JmeContext::Type::OffscreenSurface)
-        @mutex.synchronize { @condvar.wait(@mutex) }
-      end
-      def shutdown
-        @mutex.synchronize do
-          stop
-          @condvar.wait(@mutex)
+
+      def update
+        while (task = @queue.poll) != nil
+          task.invoke if not task.isCancelled
         end
       end
     end
 
-    class MixerMock < RenderMix::Mixer
-      attr_reader :app
-      attr_reader :tpf
-      def initialize(width, height, framerate)
-        super
-        @tpf = framerate.denominator / framerate.numerator.to_f
-        @app = create_mixer_application
-      end
-      def create_mixer_application
-        MixerApplicationMock.new(self, @asset_locations)
+    class MockMixer < RenderMix::Mixer
+      def create_render_system(asset_locations)
+        MockRenderSystem.new(self, asset_locations)
       end
     end
 
-    mixer = MixerMock.new(640, 480, Rational(30))
-    @app = mixer.app
-    @app.start
+    @mixer = MockMixer.new(640, 480, Rational(30))
+    @mixer.render_system.start(RenderMix::Jme::System::JmeContext::Type::OffscreenSurface)
   end
 
   def on_render_thread(&block)
-    result = @app.enqueue(&block)
+    result = @mixer.render_system.enqueue(&block)
     result.get
 =begin XXX This sometimes rescues 'nil' http://stackoverflow.com/questions/8947954/jruby-makes-rescue-exception-nil-with-rescue-javasystem-out
 
@@ -62,7 +44,7 @@ shared_context 'requires render thread' do
   end
 
   after(:all) do
-    # Stop and wait for the app to finish
-    @app.shutdown
+    # Stop and wait for shutdown
+    @mixer.render_system.stop(true)
   end
 end

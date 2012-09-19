@@ -6,17 +6,17 @@ module RenderMix
     describe Sequence do 
       let(:tracks) do
         Array.new(5).fill do
-          @app.mixer.new_blank(duration: 10)
+          @mixer.new_blank(duration: 10)
         end
       end
 
       it_should_behave_like 'a mix element' do
         let!(:mix_element) do
-          @app.mixer.new_sequence(@app.mixer.new_blank(duration: 10))
+          @mixer.new_sequence(@mixer.new_blank(duration: 10))
         end
 
         let!(:seq) do
-          @app.mixer.new_sequence(tracks)
+          @mixer.new_sequence(tracks)
         end
 
         it 'should have a single track' do
@@ -36,7 +36,7 @@ module RenderMix
 
       it_should_behave_like 'a container element' do
         let(:mix_element) do
-          @app.mixer.new_sequence(tracks)
+          @mixer.new_sequence(tracks)
         end
       end
     end
