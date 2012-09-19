@@ -16,7 +16,7 @@ module RenderMix
   end
 end
 
-class SceneViewer < RenderMix::ApplicationBase
+class SceneViewer < RenderMix::Jme::App::SimpleApplication
   WIDTH = 640
   HEIGHT = 480
   CAMERA_DISTANCE = 10
@@ -26,10 +26,15 @@ class SceneViewer < RenderMix::ApplicationBase
 
   def initialize(model_key)
     super([RenderMix::Jme::App::FlyCamAppState.new, RenderMix::Jme::App::DebugKeysAppState.new].to_java(RenderMix::Jme::App::State::AppState))
-    configure_settings do |settings|
-      settings.setResolution(WIDTH, HEIGHT)
-      settings.useInput = true
-    end
+    settings = RenderMix::Jme::System::AppSettings.new(true)
+    settings.setResolution(WIDTH, HEIGHT)
+    settings.setSamples(1)
+    settings.frameRate = 30
+    settings.useInput = true
+    settings.useJoysticks = false
+    settings.audioRenderer = nil
+    self.settings = settings
+    self.showSettings = false
     @model_key = model_key
   end
 
