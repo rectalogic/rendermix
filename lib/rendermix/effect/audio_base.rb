@@ -9,14 +9,14 @@ module RenderMix
       end
 
       def audio_render(context_manager)
-        render(context_manager) do |context, track_contexts|
-          on_audio_render(context, track_contexts)
+        render(context_manager) do |track_contexts|
+          on_audio_render(context_manager, track_contexts)
         end
       end
 
-      # @param [AudioContext] audio_context
+      # @param [AudioContextManager] context_manager
       # @param [Array<AudioContext>] track_audio_contexts contexts for each track
-      def on_audio_render(audio_context, track_audio_contexts)
+      def on_audio_render(context_manager, track_audio_contexts)
       end
 
       def on_rendering_finished

@@ -55,15 +55,14 @@ module RenderMix
                               fit: @panzoom ? @panzoom.fit : "meet")
         @quad.material.setTexture('Texture', texture)
 
-        @scene_renderer = SceneRenderer.new(mixer,
+        @visual_context = VisualContext.new(mixer,
                                             depth: false,
                                             clear_flags: [true, false, false])
-        @scene_renderer.rootnode.attachChild(@quad.quad)
+        @visual_context.rootnode.attachChild(@quad.quad)
       end
 
       def on_visual_render(context_manager, current_frame)
-        visual_context = context_manager.acquire_context(self)
-        visual_context.scene_renderer = @scene_renderer
+        context_manager.context = @visual_context
 
         if (@panzoom and (not @freezer or @freezer.render?(current_frame)))
           time = @freezer ? @freezer.current_time : frame_to_time(current_frame, @image_duration)
@@ -73,7 +72,7 @@ module RenderMix
 
       def visual_rendering_finished
         @quad = nil
-        @scene_renderer = nil
+        @visual_context = nil
       end
     end
   end

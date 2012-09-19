@@ -225,15 +225,14 @@ module RenderMix
       @visual_context_manager.render(@mix)
 
       if @encoder
-        @encoder.encode(@audio_context_manager.current_context,
-                        @visual_context_manager.current_context)
+        @encoder.encode(@audio_context_manager.context,
+                        @visual_context_manager.context)
       else
         # Render toplevel scene
-        vc = @visual_context_manager.current_context
-        scene_renderer = vc.scene_renderer if vc
-        scene_renderer.render_scene if scene_renderer
+        vc = @visual_context_manager.context
+        vc.render_scene if vc
         # Blit rendered FBO to window
-        scene_renderer.copy_framebuffer
+        vc.copy_framebuffer
         # On MacOS, buffers are not swapped unless the default FB is active.
         # http://renderingpipeline.com/2012/05/nsopenglcontext-flushbuffer-might-not-do-what-you-think/
         render_manager.renderer.setFrameBuffer(nil)

@@ -69,7 +69,7 @@ module RenderMix
         manifest = Asset::JSONLoader.load(mixer.render_system.asset_manager, @manifest_asset)
         manifest.validate_keys("scenes", "filter", "textures", "animations", "texts", "camera")
 
-        @scene_renderer = SceneRenderer.new(mixer,
+        @visual_context = VisualContext.new(mixer,
                                             depth: true,
                                             clear_flags: [true, true, true])
 
@@ -77,7 +77,7 @@ module RenderMix
         scenes = manifest.fetch('scenes') rescue raise(InvalidMixError, "Missing scenes key for #@manifest_asset")
         scenes.each do |scene|
           model = mixer.render_system.asset_manager.loadModel(scene)
-          @scene_renderer.rootnode.attachChild(model)
+          @visual_context.rootnode.attachChild(model)
         end
 
         manifest_textures = manifest.fetch('textures', {})
@@ -90,7 +90,7 @@ module RenderMix
 
         camera_asset = manifest.fetch('camera') rescue raise(InvalidMixError, "Missing camera animation for #@manifest_asset")
         animation = Asset::JSONLoader.load(mixer.render_system.asset_manager, camera_asset)
-        @camera_animation = CameraAnimation.new(animation, @scene_renderer.camera) rescue raise(InvalidMixError, "Camera animation corrupt #{camera_asset}")
+        @camera_animation = CameraAnimation.new(animation, @visual_context.camera) rescue raise(InvalidMixError, "Camera animation corrupt #{camera_asset}")
 
         filter = manifest.fetch('filter', nil)
         # This won't be cached
@@ -105,7 +105,7 @@ module RenderMix
           fxaa.reduceMul = 0
           fpp.addFilter(fxaa)
         end
-        @scene_renderer.viewport.addProcessor(fpp) if fpp
+        @visual_context.viewport.addProcessor(fpp) if fpp
       end
 
       def apply_text_textures(manifest_texts, manifest_textures)
@@ -137,7 +137,7 @@ module RenderMix
       def create_uniform_material(texture_map)
         texture_map.validate_keys('geometry', 'uniform')
         geometry_name = texture_map.fetch("geometry") rescue raise(InvalidMixerror, "Missing geometry key for Cinematic #@manifest_asset")
-        geometry = @scene_renderer.rootnode.getChild(geometry_name)
+        geometry = @visual_context.rootnode.getChild(geometry_name)
         raise(InvalidMixError, "Child geometry #{geometry_name} not found for Cinematic #@manifest_asset}") unless geometry
         material = geometry.material rescue raise(InvalidMixError, "Geometry #{geometry_name} has no material for Cinematic #@manifest_asset}")
         # Validate the uniform name
@@ -154,7 +154,7 @@ module RenderMix
         return unless animations
         animations.collect do |animation|
           spatial_name = animation.fetch("spatial")
-          spatial = @scene_renderer.rootnode.getChild(spatial_name)
+          spatial = @visual_context.rootnode.getChild(spatial_name)
           raise(InvalidMixError, "Child spatial #{spatial_name} not found for Cinematic #@manifest_asset}") unless spatial
           anim_name = animation.fetch("animation")
           SpatialAnimation.new(spatial, anim_name)
@@ -162,13 +162,14 @@ module RenderMix
       end
       private :create_animations
 
-      def on_visual_render(context_manager, visual_context, track_visual_contexts)
-        visual_context.scene_renderer = @scene_renderer
+      def on_visual_render(context_manager, track_visual_contexts)
+        context_manager.context = @visual_context
 
         #XXX we should check that all remaining track_visual_contexts are nil - i.e. don't want to be rendering tracks that aren't consumed
         @track_materials.each_with_index do |uniform_materials, i|
           vc = track_visual_contexts[i]
-          texture = vc.scene_renderer.render_scene if vc && vc.scene_renderer
+          texture = vc.render_scene if vc
+          #XXX set filtering on texture?
           uniform_materials.each do |uniform_material|
               uniform_material.apply(texture)
           end
@@ -180,7 +181,7 @@ module RenderMix
       end
 
       def on_rendering_finished
-        @scene_renderer = nil
+        @visual_context = nil
         @camera_animation = nil
         @track_materials = nil
       end

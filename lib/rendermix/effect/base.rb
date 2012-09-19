@@ -41,29 +41,23 @@ module RenderMix
         on_rendering_prepare(context_manager)
       end
 
-      # Acquires the effects context, and renders effect tracks into their
-      # context managers.
-      # Yields the effects acquired context, and an array of contexts
-      # for each track.
-      # @yieldparam [AudioContext, VisualContext] context
+      # Renders effect tracks into their context managers.
+      # Yields an array of contexts for each track.
       # @yieldparam [Array<AudioContext>, Array<VisualContext>] current_contexts
       def render(context_manager)
-        # Acquire context first, before rendering tracks.
-        # So if any track was using this context, it will lose it first.
-        context = context_manager.acquire_context(self)
         # Render each track into its context manager
         current_contexts = @context_managers.each_with_index.collect do |cm, i|
           cm.render(@tracks[i])
-          cm.current_context
+          cm.context
         end
-        yield context, current_contexts
+        yield current_contexts
         @current_frame += 1
       end
       protected :render
 
       def rendering_finished
         @context_managers.each do |context_manager|
-          context_manager.release_context
+          context_manager.context = nil
         end
         @context_managers = nil
         on_rendering_finished

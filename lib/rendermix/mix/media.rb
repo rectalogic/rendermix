@@ -42,19 +42,18 @@ module RenderMix
 
       def audio_rendering_prepare(context_manager)
         return unless @decoder.has_audio?
-        @audio_buffer = AudioBuffer.new(mixer)
+        @audio_context = AudioContext.new(mixer)
       end
 
       def on_audio_render(context_manager, current_frame)
         return unless (@decoder.has_audio? and (not @freezer or not @freezer.freezing?(current_frame)))
-        audio_context = context_manager.acquire_context(self)
-        audio_context.audio_buffer = @audio_buffer
-        @decoder.decode_audio(@audio_buffer.buffer)
+        context_manager.context = @audio_context
+        @decoder.decode_audio(@audio_context.buffer)
       end
 
       def audio_rendering_finished
         @audio_finished = true
-        @audio_buffer = nil
+        @audio_context = nil
         cleanup
       end
 
@@ -75,15 +74,14 @@ module RenderMix
                                                'rendermix/MatDefs/UYVY/UYVY2RGB.j3md')
         @material.setTexture('Texture', texture)
 
-        @scene_renderer = SceneRenderer.new(mixer,
+        @visual_context = VisualContext.new(mixer,
                                             depth: false,
                                             clear_flags: [true, false, false])
       end
 
       def on_visual_render(context_manager, current_frame)
         return unless @decoder.has_video?
-        visual_context = context_manager.acquire_context(self)
-        visual_context.scene_renderer = @scene_renderer
+        context_manager.context = @visual_context
 
         should_render = (not @freezer or @freezer.render?(current_frame))
 
@@ -104,7 +102,7 @@ module RenderMix
                                   @decoder.width, @decoder.height,
                                   material: @material, name: 'Media',
                                   fit: @panzoom ? @panzoom.fit : "meet")
-            @scene_renderer.rootnode.attachChild(@quad.quad)
+            @visual_context.rootnode.attachChild(@quad.quad)
             @material = nil
           end
         end
@@ -118,7 +116,7 @@ module RenderMix
       def visual_rendering_finished
         @image = nil
         @quad = nil
-        @scene_renderer = nil
+        @visual_context = nil
 
         @visual_finished = true
         cleanup

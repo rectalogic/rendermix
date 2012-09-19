@@ -6,20 +6,20 @@ module RenderMix
     class AudioMixer < AudioBase
       def on_rendering_prepare(context_manager)
         @audio_mixer = mixer.rawmedia_session.create_audio_mixer
-        @audio_buffer = AudioBuffer.new(mixer)
+        @audio_context = AudioContext.new(mixer)
       end
 
-      def on_audio_render(audio_context, track_audio_contexts)
-        audio_context.audio_buffer = @audio_buffer
+      def on_audio_render(context_manager, track_audio_contexts)
+        context_manager.context = @audio_context
         buffers = track_audio_contexts.collect do |context|
-          context.audio_buffer.buffer if context && context.audio_buffer
+          context.buffer if context
         end
-        @audio_mixer.mix(buffers, audio_context.audio_buffer.buffer)
+        @audio_mixer.mix(buffers, @audio_context.buffer)
       end
 
       def on_rendering_finished
         @audio_mixer = nil
-        @audio_buffer = nil
+        @audio_context = nil
       end
     end
   end

@@ -4,9 +4,19 @@
 module RenderMix
 
   class ContextManager
+    # Subclass specific context.
+    # @return [AudioContext, VisualContext, nil] the context set during
+    #   the last render, or nil if none
+    attr_reader :context
+
     def initialize(name)
       @name = name
-      @rendered = false
+    end
+
+    # Set subclass specific context.
+    def context=(context)
+      raise(InvalidMixError, "#@name context already set for this frame") if context and @context
+      @context = context
     end
 
     # @param [#visual_render, #audio_render] renderer
@@ -14,45 +24,14 @@ module RenderMix
     #  depending on the ContextManager subclass.
     # Subclasses must implement #on_render(renderer) hook
     def render(renderer)
-      @rendered = false
-
-      on_render(renderer)
-
-      # If we have a renderer, and nothing rendered this frame, then end it
-      release_context unless @rendered
-    end
-
-    # @return [AudioContext, VisualContext, nil] returns the current context if
-    #  the context was acquired during the last #render
-    #  Returns nil if nothing was rendered.
-    def current_context
-      return @context if @rendered
-    end
-
-    def acquire_context(renderer)
-      # Someone already rendered for this frame
-      raise(InvalidMixError, "#@name frame already rendered for this context") if @rendered
-
-      release_context if renderer != @current_renderer
-      @current_renderer = renderer
-      @rendered = true
-
-      @context ||= create_context
-    end
-
-    def release_context
-      @current_renderer = nil
       @context = nil
+      on_render(renderer)
     end
   end
 
   class AudioContextManager < ContextManager
     def initialize
       super('Audio')
-    end
-
-    def create_context
-      AudioContext.new
     end
 
     def on_render(renderer)
@@ -64,10 +43,6 @@ module RenderMix
   class VisualContextManager < ContextManager
     def initialize
       super('Visual')
-    end
-
-    def create_context
-      VisualContext.new
     end
 
     def on_render(renderer)

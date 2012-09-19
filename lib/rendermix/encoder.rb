@@ -25,10 +25,11 @@ module RenderMix
       width = @mixer.width / 2
       height = @mixer.height
 
-      @scene_renderer = SceneRenderer.new(@mixer,
-                                          width: width, height: height,
-                                          clear_flags: [false, false, false],
-                                          depth: false, texture: false)
+      @encoding_visual_context =
+        VisualContext.new(@mixer,
+                          width: width, height: height,
+                          clear_flags: [false, false, false],
+                          depth: false, texture: false)
 
       @material = Jme::Material::Material.new(@mixer.render_system.asset_manager,
                                               'rendermix/MatDefs/UYVY/RGB2UYVY.j3md')
@@ -37,22 +38,22 @@ module RenderMix
                            width, height, width, height,
                            material: @material, flip_y: true,
                            name: 'EncodingQuad')
-      @scene_renderer.rootnode.attachChild(quad.quad)
+      @encoding_visual_context.rootnode.attachChild(quad.quad)
     end
 
     def encode(audio_context, visual_context)
-      audio = audio_context && audio_context.audio_buffer && audio_context.audio_buffer.buffer
+      audio = audio_context && audio_context.buffer
       @encoder.encode_audio(audio || audio_silence_buffer)
 
       @visual_byte_buffer.clear
-      if visual_context and visual_context.scene_renderer
-        texture = visual_context.scene_renderer.render_scene
+      if visual_context
+        texture = visual_context.render_scene
         @material.setTexture('Texture', texture)
 
         # Render UYVY quad
-        @scene_renderer.render_scene
+        @encoding_visual_context.render_scene
         # Read back the UYVY data
-        @scene_renderer.read_framebuffer(@visual_byte_buffer)
+        @encoding_visual_context.read_framebuffer(@visual_byte_buffer)
         @encoder.encode_video(@visual_buffer_pointer, @visual_buffer_pointer.size)
       else
         @encoder.encode_video(visual_black_buffer, visual_black_buffer.size)

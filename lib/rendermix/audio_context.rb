@@ -3,7 +3,11 @@
 
 module RenderMix
   class AudioContext
-    # @return [AudioBuffer]
-    attr_accessor :audio_buffer
+    attr_reader :buffer
+
+    # @param [Mixer] mixer
+    def initialize(mixer)
+      @buffer = FFI::MemoryPointer.new(mixer.rawmedia_session.audio_framebuffer_size)
+    end
   end
 end

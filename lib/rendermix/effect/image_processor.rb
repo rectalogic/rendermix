@@ -38,14 +38,14 @@ module RenderMix
                              material: @material, flip_y: false,
                              name: 'ImageProcessor')
 
-        @scene_renderer = SceneRenderer.new(mixer,
+        @visual_context = VisualContext.new(mixer,
                                             depth: false,
                                             clear_flags: [true, false, false])
-        @scene_renderer.rootnode.attachChild(quad.quad)
+        @visual_context.rootnode.attachChild(quad.quad)
       end
 
-      def on_visual_render(context_manager, visual_context, track_visual_contexts)
-        visual_context.scene_renderer = @scene_renderer
+      def on_visual_render(context_manager, track_visual_contexts)
+        context_manager.context = @visual_context
 
         if @needs_time
           @material.setFloat(TIME_UNIFORM, current_time)
@@ -54,14 +54,14 @@ module RenderMix
         #XXX we should check that all remaining track_visual_contexts are nil - i.e. don't want to be rendering tracks that aren't consumed
         @texture_names.each_with_index do |name, i|
           vc = track_visual_contexts[i]
-          texture = vc.scene_renderer.render_scene if vc && vc.scene_renderer
+          texture = vc.render_scene if vc
           @material.setTexture(name, texture)
         end
       end
 
       def on_rendering_finished
         @material = nil
-        @scene_renderer = nil
+        @visual_context = nil
       end
     end
   end
