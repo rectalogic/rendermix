@@ -129,8 +129,7 @@ module RenderMix
       @asset_manager = Jme::System::JmeSystem::newAssetManager(config)
       @render_manager = Jme::Renderer::RenderManager.new(@context.getRenderer)
       @render_manager.setTimer(@timer)
-      #XXX hack to set internal 'shader' ivar - patch this in JME RenderManager
-      @render_manager.render(0, false)
+      @render_manager.usingShaders = true
     end
 
     # Implements SystemListener
