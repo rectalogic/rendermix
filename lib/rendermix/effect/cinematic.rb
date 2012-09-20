@@ -73,25 +73,76 @@ module RenderMix
                                             depth: true,
                                             clear_flags: [true, true, true])
 
+        load_scenes(manifest)
+
+        textures = manifest.fetch('textures', {})
+        texts = manifest.fetch('texts', {})
+
+        load_textures(textures)
+        load_texts(texts, textures)
+
+        load_animations(manifest)
+        load_camera(manifest)
+
+        load_filter_antialias(manifest)
+      end
+
+      def load_scenes(manifest)
         # Attach all model files to root node
         scenes = manifest.fetch('scenes') rescue raise(InvalidMixError, "Missing scenes key for #@manifest_asset")
         scenes.each do |scene|
           model = mixer.render_system.asset_manager.loadModel(scene)
           @visual_context.rootnode.attachChild(model)
         end
+      end
+      private :load_scenes
 
-        manifest_textures = manifest.fetch('textures', {})
-        @track_materials = create_track_materials(manifest_textures)
+      def load_textures(textures)
+        @track_materials = @track_textures.collect do |texture_name|
+          texture_maps = textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for Cinematic #@manifest_asset")
+          texture_maps.collect do |texture_map|
+            create_uniform_material(texture_map)
+          end
+        end
+      end
+      private :load_textures
 
-        manifest_texts = manifest.fetch('texts', {})
-        apply_text_textures(manifest_texts, manifest_textures)
+      def load_texts(texts, textures)
+        @text_values.each_pair do |text_name, text|
+          # Symbolize keys dups
+          text_options = texts.fetch(text_name).symbolize_keys rescue raise(InvalidMixError, "Invalid text #{text_name} for Cinematic #@manifest_asset")
+          texture_name = text_options.delete(:texture)
+          raise(InvalidMixError, "Missing texture key for text #{text_name} in Cinematic #@manifest_asset") unless texture_name
+          texture_maps = textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for text #{text_name} in Cinematic #@manifest_asset")
+          texture = create_text_texture(text, text_options)
+          texture_maps.each do |texture_map|
+            create_uniform_material(texture_map).apply(texture)
+          end
+        end
+      end
+      private :load_texts
 
-        @animations = create_animations(manifest.fetch('animations', nil))
+      def load_animations(manifest)
+        animations = manifest.fetch('animations', nil)
+        return unless animations
+        @animations = animations.collect do |animation|
+          spatial_name = animation.fetch("spatial")
+          spatial = @visual_context.rootnode.getChild(spatial_name)
+          raise(InvalidMixError, "Child spatial #{spatial_name} not found for Cinematic #@manifest_asset}") unless spatial
+          anim_name = animation.fetch("animation")
+          SpatialAnimation.new(spatial, anim_name)
+        end
+      end
+      private :load_animations
 
+      def load_camera(manifest)
         camera_asset = manifest.fetch('camera') rescue raise(InvalidMixError, "Missing camera animation for #@manifest_asset")
         animation = Asset::JSONLoader.load(mixer.render_system.asset_manager, camera_asset)
         @camera_animation = CameraAnimation.new(animation, @visual_context.camera) rescue raise(InvalidMixError, "Camera animation corrupt #{camera_asset}")
+      end
+      private :load_camera
 
+      def load_filter_antialias(manifest)
         filter = manifest.fetch('filter', nil)
         # This won't be cached
         fpp = mixer.render_system.asset_manager.loadFilter(filter) if filter
@@ -107,31 +158,7 @@ module RenderMix
         end
         @visual_context.viewport.addProcessor(fpp) if fpp
       end
-
-      def apply_text_textures(manifest_texts, manifest_textures)
-        @text_values.each_pair do |text_name, text|
-          # Symbolize keys dups
-          text_options = manifest_texts.fetch(text_name).symbolize_keys rescue raise(InvalidMixError, "Invalid text #{text_name} for Cinematic #@manifest_asset")
-          texture_name = text_options.delete(:texture)
-          raise(InvalidMixError, "Missing texture key for text #{text_name} in Cinematic #@manifest_asset") unless texture_name
-          texture_maps = manifest_textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for text #{text_name} in Cinematic #@manifest_asset")
-          texture = create_text_texture(text, text_options)
-          texture_maps.each do |texture_map|
-            create_uniform_material(texture_map).apply(texture)
-          end
-        end
-      end
-      private :apply_text_textures
-
-      def create_track_materials(manifest_textures)
-        @track_textures.collect do |texture_name|
-          texture_maps = manifest_textures.fetch(texture_name) rescue raise(InvalidMixError, "Invalid texture #{texture_name} for Cinematic #@manifest_asset")
-          texture_maps.collect do |texture_map|
-            create_uniform_material(texture_map)
-          end
-        end
-      end
-      private :create_track_materials
+      private :load_filter_antialias
 
       # @return [UniformMaterial] mapping uniform name to Jme::Material::Material
       def create_uniform_material(texture_map)
@@ -150,18 +177,6 @@ module RenderMix
       end
       private :create_uniform_material
 
-      def create_animations(animations)
-        return unless animations
-        animations.collect do |animation|
-          spatial_name = animation.fetch("spatial")
-          spatial = @visual_context.rootnode.getChild(spatial_name)
-          raise(InvalidMixError, "Child spatial #{spatial_name} not found for Cinematic #@manifest_asset}") unless spatial
-          anim_name = animation.fetch("animation")
-          SpatialAnimation.new(spatial, anim_name)
-        end
-      end
-      private :create_animations
-
       def on_visual_render(context_manager, track_visual_contexts)
         context_manager.context = @visual_context
 
@@ -171,7 +186,7 @@ module RenderMix
           texture = vc.render_scene if vc
           #XXX set filtering on texture?
           uniform_materials.each do |uniform_material|
-              uniform_material.apply(texture)
+            uniform_material.apply(texture)
           end
         end
 
