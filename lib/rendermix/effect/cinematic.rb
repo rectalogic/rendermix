@@ -236,8 +236,8 @@ module RenderMix
           if @animator.camera
             # Convert from horizontal FOV in radians to vertical in degrees
             aspect = camera.width / camera.height.to_f
-            vertical_fov = @animator.camera.vertical_fov(aspect)
-            vertical_fov = Animation::CameraData.rad_to_deg(vertical_fov)
+            vertical_fov = @animator.camera.vertical_fov(aspect) *
+              Jme::Math::FastMath::RAD_TO_DEG
             camera.setFrustumPerspective(vertical_fov, aspect,
                                          @animator.camera.near,
                                          @animator.camera.far)

@@ -19,11 +19,6 @@ module RenderMix
         def vertical_fov(aspect)
           2 * Math.atan(Math.tan(@horizontal_fov / 2.0) / aspect)
         end
-
-        # Convert radians to degrees
-        def self.rad_to_deg(rad)
-          rad * 180.0 / Math::PI
-        end
       end
     end
   end
