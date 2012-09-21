@@ -1,0 +1,15 @@
+{
+    "scenes": [ "TestEffects/Cinematic/buffers/buffers.j3o" ],
+    "textures": {
+        "Video": [ { "geometry": "Video1", "uniform": "LightMap" } ]
+    },
+    "buffers": [
+        { "geometry": "Video1",
+          "buffer": [1,0, 1,1, 0,1, 1,0, 0,1, 0,0],
+          "components": 2,
+          "format": "Float",
+          "type": "TexCoord2"
+        }
+    ],
+    "camera": "TestEffects/Cinematic/buffers-camera.json"
+}

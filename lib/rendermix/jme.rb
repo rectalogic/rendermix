@@ -57,5 +57,8 @@ module RenderMix
         include_package 'com.jme3.texture.plugins'
       end
     end
+    module Util
+      include_package 'com.jme3.util'
+    end
   end
 end

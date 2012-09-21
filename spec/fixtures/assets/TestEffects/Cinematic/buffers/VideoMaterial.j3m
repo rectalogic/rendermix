@@ -1,0 +1,18 @@
+Material VideoMaterial : Common/MatDefs/Misc/Unshaded.j3md {
+    MaterialParameters {
+        ColorMap : Flip Repeat TestEffects/Cinematic/buffers/grid.png
+        SeparateTexCoord : true
+        Color : 1.0 1.0 1.0 1.0
+    }
+    AdditionalRenderState {
+      FaceCull Off
+      Wireframe Off
+      DepthWrite On
+      PolyOffset 0.0 0.0
+      AlphaTestFalloff 0.0
+      Blend Off
+      PointSprite Off
+      ColorWrite On
+      DepthTest On
+    }
+}
