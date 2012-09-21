@@ -293,6 +293,7 @@ module RenderMix
       end
 
       class CameraAnimation
+        RAD_TO_DEG = 180.0 / Math::PI
         # @param [Hash] animation camera animation data
         # @param [Jme::Renderer::Camera] camera
         def initialize(animation, camera)
@@ -301,8 +302,7 @@ module RenderMix
           if @animator.camera
             # Convert from horizontal FOV in radians to vertical in degrees
             aspect = camera.width / camera.height.to_f
-            vertical_fov = @animator.camera.vertical_fov(aspect) *
-              Jme::Math::FastMath::RAD_TO_DEG
+            vertical_fov = @animator.camera.vertical_fov(aspect) * RAD_TO_DEG
             camera.setFrustumPerspective(vertical_fov, aspect,
                                          @animator.camera.near,
                                          @animator.camera.far)
