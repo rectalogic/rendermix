@@ -5,9 +5,8 @@ module RenderMix
   module Command
     def self.run(args)
       options = parse(args)
-      mixer = Mixer.new(options.width, options.height, Rational(30))
-      builder = Builder.new(mixer)
-      mix = builder.load(options.manifest)
+      builder = Builder.new(options.width, options.height)
+      mixer, mix = builder.load(options.manifest)
       if options.progress
         progress = lambda {|p| puts p }
       end

@@ -3,9 +3,11 @@
 
 module RenderMix
   class Builder
-    # @param [Mixer] mixer
-    def initialize(mixer)
-      @mixer = mixer
+    # @param [Fixnum] width
+    # @param [Fixnum] height
+    def initialize(width, height)
+      @width = width
+      @height = height
     end
 
     def load(filename)
@@ -24,6 +26,7 @@ module RenderMix
 
     # Mix manifest structure:
     # * +assets+ - array of asset paths
+    # * +framerate+ - framerate of mix (Rational), defaults to 30/1
     # * +mix+ - (required) root mix element hash
     #
     # An element hash contains the following:
@@ -66,37 +69,39 @@ module RenderMix
     # @param [Hash] manifest describes mix structure
     # @param [String] root_directory all paths in manifest will be resolved
     #   relative to this directory if specified.
-    # @return [Mix::Base] root element of mix
+    # @return [Mixer, Mix::Base] mixer and root of mix
     def build(manifest, root_directory=nil)
-      manifest.validate_keys("assets", "mix")
-      @root_directory = root_directory
-      register_assets(manifest["assets"])
-      process_mix_element(manifest.fetch("mix"))
+      manifest.validate_keys("assets", "framerate", "mix")
+      framerate = Rational(manifest.fetch("framerate", 30))
+      mixer = Mixer.new(@width, @height, framerate)
+      register_assets(manifest["assets"], mixer, root_directory)
+      mix = process_mix_element(manifest.fetch("mix"), mixer, root_directory)
+      return mixer, mix
     rescue KeyError => e
       raise(InvalidMixError, "Missing manifest key - #{e.message}")
     end
 
-    def register_assets(assets)
+    def register_assets(assets, mixer, root_directory)
       return unless assets
       assets.each do |asset|
-        asset_location = File.expand_path(asset, @root_directory)
-        @mixer.register_asset_location(asset_location)
+        asset_location = File.expand_path(asset, root_directory)
+        mixer.register_asset_location(asset_location)
       end
     end
     private :register_assets
 
-    def process_mix_element(element)
+    def process_mix_element(element, mixer, root_directory)
       case element.delete("type")
       when "blank"
-        process_blank_element(element)
+        process_blank_element(element, mixer)
       when "image"
-        process_image_element(element)
+        process_image_element(element, mixer, root_directory)
       when "media"
-        process_media_element(element)
+        process_media_element(element, mixer, root_directory)
       when "sequence"
-        process_sequence_element(element)
+        process_sequence_element(element, mixer, root_directory)
       when "parallel"
-        process_parallel_element(element)
+        process_parallel_element(element, mixer, root_directory)
       when nil
         raise(InvalidMixError, "Mix element type missing")
       else
@@ -105,64 +110,64 @@ module RenderMix
     end
     private :process_mix_element
 
-    def process_blank_element(element)
+    def process_blank_element(element, mixer)
       opts = element.dup
       visual_effects = element_visual_effects(opts)
-      blank = @mixer.new_blank(opts.symbolize_keys!)
+      blank = mixer.new_blank(opts.symbolize_keys!)
       apply_element_visual_effects(blank, visual_effects)
       blank
     end
     private :process_blank_element
 
-    def process_image_element(element)
-      filename = element_filename(element)
+    def process_image_element(element, mixer, root_directory)
+      filename = element_filename(element, root_directory)
       opts = element.dup
       process_element_panzoom(opts)
       visual_effects = element_visual_effects(opts)
       audio_effects = element_audio_effects(opts)
       opts.symbolize_keys!
-      image = @mixer.new_image(filename, opts)
+      image = mixer.new_image(filename, opts)
       apply_element_visual_effects(image, visual_effects)
       apply_element_audio_effects(image, audio_effects)
       image
     end
     private :process_image_element
 
-    def process_media_element(element)
-      filename = element_filename(element)
+    def process_media_element(element, mixer, root_directory)
+      filename = element_filename(element, root_directory)
       opts = element.dup
       process_element_panzoom(opts)
       visual_effects = element_visual_effects(opts)
       audio_effects = element_audio_effects(opts)
       opts.symbolize_keys!
-      media = @mixer.new_media(filename, opts)
+      media = mixer.new_media(filename, opts)
       apply_element_visual_effects(media, visual_effects)
       apply_element_audio_effects(media, audio_effects)
       media
     end
     private :process_media_element
 
-    def process_sequence_element(element)
+    def process_sequence_element(element, mixer, root_directory)
       elements = element.fetch("elements").collect do |e|
-        process_mix_element(e)
+        process_mix_element(e, mixer, root_directory)
       end
-      sequence = @mixer.new_sequence(elements)
+      sequence = mixer.new_sequence(elements)
       apply_element_visual_effects(sequence, element.fetch("visual_effects", []))
       apply_element_audio_effects(sequence, element.fetch("audio_effects", []))
       sequence
     end
     private :process_sequence_element
 
-    def process_parallel_element(element)
+    def process_parallel_element(element, mixer, root_directory)
       elements = element.fetch("elements").collect do |e|
-        process_mix_element(e)
+        process_mix_element(e, mixer, root_directory)
       end
-      parallel = @mixer.new_parallel(elements)
+      parallel = mixer.new_parallel(elements)
       apply_element_visual_effects(parallel, element.fetch("visual_effects", []))
       apply_element_audio_effects(parallel, element.fetch("audio_effects", []))
       parallel
     end
-    private :process_sequence_element
+    private :process_parallel_element
 
     def apply_element_visual_effects(mix, effects)
       effects.each do |e|
@@ -218,8 +223,8 @@ module RenderMix
     end
     private :process_element_panzoom
 
-    def element_filename(element)
-      File.expand_path(element.delete("filename"), @root_directory) || raise(InvalidMixError, "Mix element missing filename")
+    def element_filename(element, root_directory)
+      File.expand_path(element.delete("filename"), root_directory) || raise(InvalidMixError, "Mix element missing filename")
     end
     private :element_filename
   end

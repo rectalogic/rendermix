@@ -1,5 +1,6 @@
 {
     "assets": [ "../assets" ],
+    "framerate": "30/1",
     "mix": {
         "type": "parallel",
         "visual_effects": [
