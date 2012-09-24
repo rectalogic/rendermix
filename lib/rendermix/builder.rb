@@ -34,8 +34,8 @@ module RenderMix
     #   "sequence" or "parallel"
     # * +visual_effects+ - array of effect hashes. Each effect has the
     #   following keys:
-    #   * +in+ - (required) in frame number
-    #   * +out+ - (required) out frame number
+    #   * +in+ - (optional) in frame number, defaults to beginning of element.
+    #   * +out+ - (optional) out frame number, defaults to end of element.
     #   * +type+ - (required) effect type, "cinematic" or "image_processor"
     #     * "cinematic" - contains the following keys:
     #       * +manifest+ - (required) asset path to manifest JSON.
@@ -48,8 +48,9 @@ module RenderMix
     #       * +textures+ - array of texture uniform names
     # * +audio_effects+ - array of audio mixing effect hashes. Each effect
     #   has the following keys:
-    #   * +in+ - (required) in frame number
-    #   * +out+ - (required) out frame number
+    #   * +type+ - (required) effect type: "mix"
+    #   * +in+ - (optional) in frame number, defaults to beginning of element.
+    #   * +out+ - (optional) out frame number, defaults to end of element.
     #
     # Each element type may contain type specific keys:
     # * "blank" - See {Mix::Blank#initialize}
@@ -184,18 +185,19 @@ module RenderMix
         else
           raise(InvalidMixError, "Invalid visual effect type")
         end
-        mix.apply_visual_effect(effect,
-                                e.fetch("in").to_i,
-                                e.fetch("out").to_i)
+        mix.apply_visual_effect(effect, e["in"], e["out"])
       end
     end
     private :apply_element_visual_effects
 
     def apply_element_audio_effects(mix, effects)
       effects.each do |e|
-        mix.apply_audio_effect(Effect::AudioMixer.new,
-                               e.fetch("in").to_i,
-                               e.fetch("out").to_i)
+        case e.fetch("type")
+        when "mix"
+          mix.apply_audio_effect(Effect::AudioMixer.new, e["in"], e["out"])
+        else
+          raise(InvalidMixError, "Invalid audio effect type")
+        end
       end
     end
     private :apply_element_audio_effects

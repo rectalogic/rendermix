@@ -13,8 +13,7 @@
         ],
         "audio_effects": [
             {
-                "in": 0,
-                "out": 479
+                "type": "mix"
             }
         ],
         "elements": [

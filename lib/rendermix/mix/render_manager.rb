@@ -16,7 +16,11 @@ module RenderMix
 
       # @param [Effect::Audio, Effect::Visual] effect the type of the
       #  effect depends on the type of the RenderManager
+      # @param [Fixnum] in_frame first frame of element if nil
+      # @param [Fixnum] out_frame last frame of element if nil
       def apply_effect(effect, in_frame, out_frame)
+        in_frame ||= 0
+        out_frame ||= @mix_element.duration - 1
         if in_frame < 0 || in_frame >= @mix_element.duration ||
             out_frame < in_frame || out_frame >= @mix_element.duration
           raise InvalidMixError, "Effect frame range (#{in_frame}..#{out_frame}) is invalid"
