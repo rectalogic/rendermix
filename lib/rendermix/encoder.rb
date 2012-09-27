@@ -38,7 +38,7 @@ module RenderMix
                            width, height, width, height,
                            material: @material, flip_y: true,
                            name: 'EncodingQuad')
-      @encoding_visual_context.rootnode.attachChild(quad.quad)
+      @encoding_visual_context.attach_scene(quad.quad)
     end
 
     def encode(audio_context, visual_context)

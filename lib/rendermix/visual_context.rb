@@ -3,8 +3,6 @@
 
 module RenderMix
   class VisualContext
-    # @return [Jme::Scene::Node]
-    attr_reader :rootnode
     # @return [Jme::Renderer::Camera]
     attr_reader :camera
     # @return [Jme::Renderer::ViewPort]
@@ -51,15 +49,19 @@ module RenderMix
         fbo.colorBuffer = Jme::Texture::Image::Format::RGBA8
       end
       @viewport.outputFrameBuffer = fbo
+    end
 
-      @rootnode = Jme::Scene::Node.new("SceneRoot")
-      @viewport.attachScene(@rootnode)
+    # @param [Jme::Scene::Spatial] scene
+    def attach_scene(scene)
+      @viewport.attachScene(scene)
     end
 
     # @return [Jme::Texture::Texture]
     def render_scene
-      @rootnode.updateLogicalState(@tpf)
-      @rootnode.updateGeometricState
+      @viewport.scenes.each do |scene|
+        scene.updateLogicalState(@tpf)
+        scene.updateGeometricState
+      end
 
       @render_manager.renderViewPort(@viewport, @tpf)
       @texture

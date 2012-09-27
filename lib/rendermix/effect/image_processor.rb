@@ -41,7 +41,7 @@ module RenderMix
         @visual_context = VisualContext.new(mixer,
                                             depth: false,
                                             clear_flags: [true, false, false])
-        @visual_context.rootnode.attachChild(quad.quad)
+        @visual_context.attach_scene(quad.quad)
       end
 
       def on_visual_render(context_manager, track_visual_contexts)

@@ -102,7 +102,7 @@ module RenderMix
                                   @decoder.width, @decoder.height,
                                   material: @material, name: 'Media',
                                   fit: @panzoom ? @panzoom.fit : "meet")
-            @visual_context.rootnode.attachChild(@quad.quad)
+            @visual_context.attach_scene(@quad.quad)
             @material = nil
           end
         end

@@ -88,6 +88,8 @@ module RenderMix
         @visual_context = VisualContext.new(mixer,
                                             depth: true,
                                             clear_flags: [true, true, true])
+        @rootnode = Jme::Scene::Node.new("CinematicRoot")
+        @visual_context.attach_scene(@rootnode)
 
         load_scenes(manifest)
 
@@ -110,7 +112,7 @@ module RenderMix
         scenes = manifest.fetch('scenes') rescue error("Missing key 'scenes'")
         scenes.each do |scene|
           model = mixer.render_system.asset_manager.loadModel(scene)
-          @visual_context.rootnode.attachChild(model)
+          @rootnode.attachChild(model)
         end
       end
       private :load_scenes
@@ -120,7 +122,7 @@ module RenderMix
         vb = Jme::Scene::VertexBuffer
         buffers.each do |buffer|
           geometry_name = buffer.fetch('geometry') rescue error("Missing 'buffers' key 'geometry'")
-          geometry = @visual_context.rootnode.getChild(geometry_name) || error("Invalid 'geometry' name #{geometry_name}")
+          geometry = @rootnode.getChild(geometry_name) || error("Invalid 'geometry' name #{geometry_name}")
 
           data = buffer.fetch('buffer').to_a rescue error("Missing 'buffers' key 'buffer'")
           components = buffer.fetch('components').to_i rescue error("Missing 'buffers' key 'components'")
@@ -160,7 +162,7 @@ module RenderMix
         return unless animations = manifest['animations']
         @animations = animations.collect do |animation|
           spatial_name = animation.fetch("spatial") rescue error("Missing 'animations' key 'spatial'")
-          spatial = @visual_context.rootnode.getChild(spatial_name) || error("Invalid 'spatial' name #{spatial_name}")
+          spatial = @rootnode.getChild(spatial_name) || error("Invalid 'spatial' name #{spatial_name}")
           anim_name = animation.fetch("animation") rescue error("Missing 'animations' key 'animation'")
           SpatialAnimation.new(spatial, anim_name)
         end
@@ -196,7 +198,7 @@ module RenderMix
       def create_uniform_material(texture_map)
         texture_map.validate_keys('geometry', 'uniform')
         geometry_name = texture_map.fetch("geometry") rescue error("Missing 'textures' key 'geometry'")
-        geometry = @visual_context.rootnode.getChild(geometry_name) || error("Invalid 'geometry' name #{geometry_name}")
+        geometry = @rootnode.getChild(geometry_name) || error("Invalid 'geometry' name #{geometry_name}")
         material = geometry.material rescue error("Geometry #{geometry_name} has no material")
         # Validate the uniform name
         uniform_name = texture_map.fetch("uniform") rescue error("Missing 'textures' key 'uniform'")
