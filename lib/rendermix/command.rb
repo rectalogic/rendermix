@@ -5,6 +5,9 @@ module RenderMix
   module Command
     def self.run(args)
       options = parse(args)
+
+      setup_logging(options.loglevel)
+
       builder = Builder.new(options.width, options.height)
       mixer, mix = builder.load(options.manifest)
       if options.progress
@@ -17,6 +20,7 @@ module RenderMix
       options = OpenStruct.new
       options.width = 320
       options.height = 240
+
       opts = OptionParser.new do |opts|
         opts.banner = "Usage: #{$0} [options] <manifest-file>"
         opts.on("-w", "--width W", Integer, "Width of mix") do |w|
@@ -31,18 +35,39 @@ module RenderMix
         opts.on("-p", "--progress", "Report progress (frames rendered)") do |p|
           options.progress = p
         end
-        opts.on_tail("-h", "--help", "Show this message") do
+        levels = %w(OFF SEVERE WARNING INFO CONFIG FINE FINER FINEST ALL)
+        opts.on("-l", "--loglevel LEVEL", levels, "Set logging level") do |l|
+          options.loglevel = l
+        end
+        opts.on_tail("-e", "--help", "Show this message") do
           puts opts
           exit
         end
       end
-      opts.parse!(args)
+
+      begin
+        opts.parse!(args)
+      rescue OptionParser::InvalidArgument => e
+        puts opts
+        puts e.message
+        exit 1
+      end
+
       options.manifest = args.first
       unless options.manifest
         puts opts
         exit 1
       end
+
       options
+    end
+
+    def self.setup_logging(level_name)
+      JavaLog::LogManager.getLogManager().reset
+      handler = JavaLog::ConsoleHandler.new
+      logger = JavaLog::Logger.getLogger('')
+      logger.setLevel(JavaLog::Level::parse(level_name)) if level_name
+      logger.addHandler(handler)
     end
   end
 end

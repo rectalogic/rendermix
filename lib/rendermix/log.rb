@@ -16,15 +16,27 @@ module RenderMix
       nil => RawMedia::Log::LEVEL_INFO,
     }
 
+    RENDERMIX_NAME = 'com.rendermix.RenderMix'
+    RAWMEDIA_NAME = 'com.rendermix.RawMedia'
+
     # Configure RawMedia logging
-    logger = JavaLog::Logger.getLogger('RawMedia')
-    current = logger
+    rmlogger = JavaLog::Logger.getLogger(RAWMEDIA_NAME)
+    current = rmlogger
     until current.nil? or (level = current.level)
       current = current.parent
     end
-    log = Proc.new do |msg|
-      logger.logp(level, 'RawMedia', 'log', msg)
+    logproc = Proc.new do |msg|
+      rmlogger.logp(level, RAWMEDIA_NAME, 'log', msg)
     end
-    RawMedia::Log.set_callback(LEVEL_MAP[level], log)
+    RawMedia::Log.set_callback(LEVEL_MAP[level], logproc)
+
+    @@logger = JavaLog::Logger.getLogger(RENDERMIX_NAME)
+    def self.log(level, msg, ex=nil)
+      if ex
+        @@logger.logp(level, RENDERMIX_NAME, 'log', msg, ex)
+      else
+        @@logger.logp(level, RENDERMIX_NAME, 'log', msg)
+      end
+    end
   end
 end

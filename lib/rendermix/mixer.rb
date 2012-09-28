@@ -156,7 +156,6 @@ module RenderMix
       super(Timer.new(mixer.framerate))
       @mixer = mixer
       @asset_locations = asset_locations
-      @logger = JavaLog::Logger::getLogger('MixRenderSystem')
 
       @mutex = Mutex.new
       @condvar = ConditionVariable.new
@@ -258,12 +257,10 @@ module RenderMix
 
     # Implements SystemListener
     def handleError(msg, ex)
-      @mutex.synchronize do
-        @logger.log(JavaLog::Level::SEVERE, msg, ex)
-        stop
-        @error = ex
-        @condvar.signal
-      end
+      @error = ex
+      Log.log(JavaLog::Level::SEVERE, msg, ex)
+      # stop will signal condvar
+      stop
     end
     private :handleError
   end
