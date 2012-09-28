@@ -36,7 +36,7 @@ module RenderMix
       @viewport = Jme::Renderer::ViewPort.new("Viewport", @camera)
       @viewport.setClearFlags(*opts[:clear_flags]) if opts.has_key?(:clear_flags)
       fbo = Jme::Texture::FrameBuffer.new(width, height, 1)
-      fbo.setDepthBuffer(DEPTH_FORMAT) if opts[:depth]
+      fbo.setDepthBuffer(RenderSystem::DEPTH_FORMAT) if opts[:depth]
       if opts.fetch(:texture, true)
         @texture = Jme::Texture::Texture2D.new(width, height,
                                                Jme::Texture::Image::Format::RGBA8)

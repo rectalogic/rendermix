@@ -29,6 +29,7 @@ require 'rendermix/log'
 require 'rendermix/frame_time'
 require 'rendermix/encoder'
 require 'rendermix/mixer'
+require 'rendermix/render_system'
 require 'rendermix/builder'
 require 'rendermix/command'
 
