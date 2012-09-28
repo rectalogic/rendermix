@@ -8,6 +8,7 @@ require 'java'
 require 'jruby/core_ext'
 require 'thread'
 
+ENV['BUNDLE_GEMFILE'] = File.expand_path('../../Gemfile', __FILE__)
 require 'bundler'
 Bundler.setup(:default)
 
