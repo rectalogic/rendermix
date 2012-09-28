@@ -190,8 +190,9 @@ module RenderMix
 
     # Implements SystemListener
     def handleError(msg, ex)
+      # Save error to be re-raised in main thread
       @error = ex
-      Log.log(JavaLog::Level::SEVERE, msg, ex)
+      Log.log(JavaLog::Level::SEVERE, msg)
       # stop will signal condvar
       stop
     end

@@ -11,9 +11,17 @@ module RenderMix
       builder = Builder.new(options.width, options.height)
       mixer, mix = builder.load(options.manifest)
       if options.progress
-        progress = lambda {|p| puts p }
+        progress = lambda {|p| puts "f: #{p}" }
       end
       mixer.mix(mix, options.output, &progress)
+    rescue Exception => e
+      Log.log(JavaLog::Level::SEVERE,
+              "Exception raised #{e.class} (#{e.message}):\n    " +
+              e.backtrace.join("\n    "))
+      exit 1
+    rescue java.lang.Throwable => e
+      Log.log(JavaLog::Level::SEVERE, 'Java exception raised', e)
+      exit 1
     end
 
     def self.parse(args)
