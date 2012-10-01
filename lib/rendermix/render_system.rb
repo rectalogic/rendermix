@@ -193,8 +193,12 @@ module RenderMix
       # Save error to be re-raised in main thread
       @error = ex
       Log.log(JavaLog::Level::SEVERE, msg)
-      # stop will signal condvar
+      # stop will signal condvar in destroy callback
       stop
+      # But we signal here because LWJGL thread may have already exited
+      @mutex.synchronize do
+        @condvar.signal
+      end
     end
     private :handleError
   end
