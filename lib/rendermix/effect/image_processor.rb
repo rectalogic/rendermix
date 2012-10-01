@@ -55,7 +55,7 @@ module RenderMix
         @texture_names.each_with_index do |name, i|
           vc = track_visual_contexts[i]
           texture = vc.render_scene if vc
-          @material.setTexture(name, texture)
+          @material.setTexture(name, texture || blank_texture)
         end
       end
 

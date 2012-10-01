@@ -6,6 +6,13 @@ module RenderMix
     class VisualBase < Base
       include TextTexture
 
+      # Returns a shared blank texture. This should be used in place of
+      # setting a texture uniform to nil because JME can end up using
+      # the wrong texture unit for nil textures.
+      def blank_texture
+        @@blank_texture ||= Jme::Texture::Texture2D.new(1, 1, Jme::Texture::Image::Format::RGBA8)
+      end
+
       # @param [VisualContextManager] context_manager
       def on_rendering_prepare(context_manager)
       end
