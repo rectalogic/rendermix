@@ -14,6 +14,7 @@ module RenderMix
       # @param [Array<String>] texture_names array of material uniform names
       #   for each texture. These are in track order (i.e. the first texture
       #   name will be used for the first track etc.)
+      #   nil entries mean that track will not be rendered.
       def initialize(material_asset, texture_names=[])
         super()
         @material_asset = material_asset
@@ -24,6 +25,7 @@ module RenderMix
         @material = mixer.render_system.asset_manager.loadMaterial(@material_asset)
         matdef = @material.materialDef
         @texture_names.each do |name|
+          next unless name
           param = matdef.getMaterialParam(name)
           if not param or param.varType != Jme::Shader::VarType::Texture2D
             raise(InvalidMixError, "Material #@material_asset missing texture uniform #{name}")
@@ -53,6 +55,7 @@ module RenderMix
 
         #XXX we should check that all remaining track_visual_contexts are nil - i.e. don't want to be rendering tracks that aren't consumed
         @texture_names.each_with_index do |name, i|
+          next unless name
           vc = track_visual_contexts[i]
           texture = vc.render_scene if vc
           @material.setTexture(name, texture || blank_texture)

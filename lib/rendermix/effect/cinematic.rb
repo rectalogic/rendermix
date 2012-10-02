@@ -70,7 +70,8 @@ module RenderMix
       # @param [String] manifest_asset asset path to manifest JSON
       # @param [Array<String>] track_textures array of "TextureName"s
       #   from the manifest. These are in track order (i.e. the first texture
-      #   name will be used for the first track etc.)
+      #   name will be used for the first track etc.).
+      #   nil entries mean that track will not be rendered.
       # @param [Hash] text_values hash mapping text "TextName" keys to
       #   String text values.
       def initialize(manifest_asset, track_textures=[], text_values={})
@@ -136,6 +137,7 @@ module RenderMix
 
       def load_textures(textures)
         @track_materials = @track_textures.collect do |texture_name|
+          next unless texture_name
           texture_maps = textures.fetch(texture_name) rescue error("Invalid texture name #{texture_name}")
           texture_maps.collect do |texture_map|
             create_uniform_material(texture_map)
@@ -266,6 +268,7 @@ module RenderMix
 
         #XXX we should check that all remaining track_visual_contexts are nil - i.e. don't want to be rendering tracks that aren't consumed
         @track_materials.each_with_index do |uniform_materials, i|
+          next unless uniform_materials
           vc = track_visual_contexts[i]
           texture = vc.render_scene if vc
           #XXX set filtering on texture?

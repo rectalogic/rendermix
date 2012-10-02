@@ -121,7 +121,8 @@ module RenderMix
                    Jme::System::JmeContext::Type::Display)
         @condvar.wait(@mutex)
       end
-      raise @error if @error
+      #XXX this can raise nil due to https://github.com/jruby/jruby/pull/311
+      raise(@error) if @error
     end
 
     # Implements SystemListener
