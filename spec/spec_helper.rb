@@ -1,5 +1,7 @@
 require_relative '../lib/rendermix'
 
+require_relative 'sample_media'
+
 Dir[File.expand_path("../support/**/*.rb", __FILE__)].each {|f| require f}
 
 RSpec.configure do |config|
@@ -14,8 +16,8 @@ handler.formatter = RenderMix::JavaLog::SimpleFormatter.new
 RenderMix::JavaLog::Logger.getLogger('').addHandler(handler)
 
 FIXTURES = File.expand_path('../fixtures', __FILE__)
-FIXTURE_IMAGE = File.join(FIXTURES, '640x480.png')
-FIXTURE_MEDIA = File.join(FIXTURES, '320x240-30fps.mov')
+FIXTURE_IMAGE = File.join(SAMPLE_MEDIA, '640x480.png')
+FIXTURE_MEDIA = File.join(SAMPLE_MEDIA, 'red-4x3.mov')
 
 # Must be called from on_render_thread
 def register_test_assets

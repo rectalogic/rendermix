@@ -9,7 +9,9 @@ module RenderMix
       setup_logging(options.loglevel)
 
       builder = Builder.new(options.width, options.height)
-      mixer, mix = builder.load(options.manifest)
+      manifest_root = File.dirname(File.expand_path(options.manifest))
+      mixer, mix = builder.load(options.manifest, manifest_root,
+                                options.mediaroot)
       if options.progress
         progress = lambda {|p| puts "f: #{p}" }
       end
@@ -28,7 +30,6 @@ module RenderMix
       options = OpenStruct.new
       options.width = 320
       options.height = 240
-
       opts = OptionParser.new do |opts|
         opts.banner = "Usage: #{$0} [options] <manifest-file>"
         opts.on("-w", "--width W", Integer, "Width of mix") do |w|
@@ -39,6 +40,9 @@ module RenderMix
         end
         opts.on("-o", "--output FILENAME", "File to encode") do |f|
           options.output = f
+        end
+        opts.on("-r", "--mediaroot DIRECTORY", "Directory to resolve relative media/image filenames against. Defaults to manifest directory.") do |r|
+          options.mediaroot = r
         end
         opts.on("-p", "--progress", "Report progress (frames rendered)") do |p|
           options.progress = p

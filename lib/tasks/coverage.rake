@@ -9,4 +9,4 @@ RSpec::Core::RakeTask.new(:coverage) do |task|
   task.rcov_path = 'rspec'
   task.rcov_opts = '--require simplecov_start'
 end
-task :coverage => [PKG, Fixtures::VIDEO_320x240_30fps, Fixtures::IMAGE_640x480]
+task :coverage => [PKG, 'rendermix:media']

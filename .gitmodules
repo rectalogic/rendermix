@@ -1,3 +1,0 @@
-[submodule "spec/fixtures/sample-media"]
-	path = spec/fixtures/sample-media
-	url = https://github.com/rectalogic/rendermix-sample-media.git

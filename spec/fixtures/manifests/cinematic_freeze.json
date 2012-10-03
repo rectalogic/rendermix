@@ -19,7 +19,7 @@
                 "elements": [
                     {
                         "type": "media",
-                        "filename": "../sample-media/media/red-4x3.mov",
+                        "filename": "red-4x3.mov",
                         "duration": 240,
                         "post_freeze": 210
                     }
@@ -34,7 +34,7 @@
                     },
                     {
                         "type": "media",
-                        "filename": "../sample-media/media/blue-4x3.mov",
+                        "filename": "blue-4x3.mov",
                         "duration": 240,
                         "start_frame": 300,
                         "pre_freeze": 210

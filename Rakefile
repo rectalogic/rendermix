@@ -9,7 +9,12 @@ Bundler.setup(:default, :test)
 PKG = File.expand_path('../pkg', __FILE__)
 directory PKG
 
-load File.expand_path('../lib/tasks/fixtures.rake', __FILE__)
+FIXTURES = File.expand_path('../spec/fixtures', __FILE__)
+
+task 'rendermix:media' do
+  require_relative 'spec/sample_media'
+end
+
 load File.expand_path('../lib/tasks/doc.rake', __FILE__)
 load File.expand_path('../lib/tasks/test.rake', __FILE__)
 load File.expand_path('../lib/tasks/coverage.rake', __FILE__)

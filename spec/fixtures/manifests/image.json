@@ -1,7 +1,7 @@
 {
     "mix": {
         "type": "image",
-        "filename": "../640x480.png",
+        "filename": "640x480.png",
         "duration": 30
     }
 }
