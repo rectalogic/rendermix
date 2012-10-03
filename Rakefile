@@ -4,7 +4,7 @@
 require 'rubygems'
 require 'bundler'
 
-Bundler.setup(:default, :test)
+Bundler.setup(:default, :development)
 
 PKG = File.expand_path('../pkg', __FILE__)
 directory PKG

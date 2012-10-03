@@ -10,7 +10,7 @@ module RenderMix
       # setting a texture uniform to nil because JME can end up using
       # the wrong texture unit for nil textures.
       def blank_texture
-        @@blank_texture ||= Jme::Texture::Texture2D.new(1, 1, Jme::Texture::Image::Format::RGBA8)
+        @@blank_texture ||= Jme::Texture::Texture2D.new(Jme::Texture::Image.new(Jme::Texture::Image::Format::RGBA8, 1, 1, JavaNIO::ByteBuffer::allocateDirect(4)))
       end
 
       # @param [VisualContextManager] context_manager

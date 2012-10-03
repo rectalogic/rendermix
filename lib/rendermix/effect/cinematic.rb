@@ -143,39 +143,22 @@ module RenderMix
             create_uniform_material(texture_map)
           end
         end
-        apply_blank_textures(@track_textures, textures)
       end
       private :load_textures
 
       def render_texts(texts, textures)
-        texture_names = []
         @text_values.each_pair do |text_name, text|
           # Symbolize keys dups
           text_options = texts.fetch(text_name).symbolize_keys rescue error("Invalid text name #{text_name}")
           texture_name = text_options.delete(:texture) || error(%Q(Missing key "texture" for text "#{text_name}"))
-          texture_names << texture_name
           texture_maps = textures.fetch(texture_name) rescue error("Invalid texture #{texture_name} for text #{text_name}")
           texture = create_text_texture(text, text_options)
           texture_maps.each do |texture_map|
             create_uniform_material(texture_map).apply(texture)
           end
         end
-        apply_blank_textures(texture_names, textures)
       end
       private :render_texts
-
-      # Set a blank texture on any texture names that are unused.
-      # @param [Array<String>] used_texture_names
-      # @param [Hash] textures textures hash from manifest
-      def apply_blank_textures(used_texture_names, textures)
-        blanks = textures.reject {|k, v| used_texture_names.include?(k) }
-        blanks.each_value do |texture_maps|
-          texture_maps.each do |texture_map|
-            create_uniform_material(texture_map).apply(blank_texture)
-          end
-        end
-      end
-      private :apply_blank_textures
 
       def load_animations(manifest)
         return unless animations = manifest['animations']
