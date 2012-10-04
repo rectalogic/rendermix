@@ -16,7 +16,7 @@ module RenderMix
         progress = lambda {|p| puts "f: #{p}" }
       end
       mixer.mix(mix, options.output, &progress)
-    rescue Exception => e
+    rescue StandardError => e
       Log.log(JavaLog::Level::SEVERE,
               "Exception raised #{e.class} (#{e.message}):\n    " +
               e.backtrace.join("\n    "))

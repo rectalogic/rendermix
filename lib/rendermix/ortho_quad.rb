@@ -49,7 +49,6 @@ module RenderMix
                 @quad_height / @image_height.to_f]
       meet_scale = scales.min
       fill_scale = scales.max
-      auto_scale = fill_scale >= 1.5 ? meet_scale : fill_scale
 
       fit = opts.fetch(:fit, "meet")
       case fit

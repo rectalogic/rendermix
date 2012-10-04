@@ -31,12 +31,12 @@ module RenderMix
                                          discard_video: opts[:discard_video])
         pre_freeze = opts.fetch(:pre_freeze, 0)
         post_freeze = opts.fetch(:post_freeze, 0)
-        media_duration = opts.fetch(:duration, @decoder.duration)
-        media_duration = @decoder.duration if media_duration > @decoder.duration
-        super(mixer, pre_freeze + media_duration + post_freeze)
+        @media_duration = opts.fetch(:duration, @decoder.duration)
+        @media_duration = @decoder.duration if @media_duration > @decoder.duration
+        super(mixer, pre_freeze + @media_duration + post_freeze)
         @panzoom = opts[:panzoom]
         if pre_freeze > 0 or post_freeze > 0
-          @freezer = Freezer.new(pre_freeze, post_freeze, media_duration)
+          @freezer = Freezer.new(pre_freeze, post_freeze, @media_duration)
         end
       end
 
@@ -108,7 +108,7 @@ module RenderMix
         end
 
         if @panzoom and should_render
-          time = @freezer ? @freezer.current_time : frame_to_time(current_frame, @decoder.duration)
+          time = @freezer ? @freezer.current_time : frame_to_time(current_frame, @media_duration)
           @panzoom.panzoom(time, @quad)
         end
       end
