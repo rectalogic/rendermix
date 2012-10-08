@@ -11,7 +11,7 @@ RenderMix requires [librawmedia](https://github.com/rectalogic/librawmedia)
 ## WIP
 
 RenderMix is currently a work in progress and incomplete.
-Currently testing with jme3 SVN r9753 using JRuby 1.7.0.preview2.
+Currently testing with jme3 SVN r9857 using JRuby 1.7.0.RC1.
 
 ## License
 
